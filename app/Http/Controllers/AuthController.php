@@ -17,13 +17,20 @@ use Illuminate\Support\Facades\Validator;
 use GuzzleHttp\Exception\GuzzleException;
 use App\Http\Requests\Auth\{
     SignUpRequest,
-    LoginRequest
+    LoginRequest,
+    ForgotPasswordRequest,
+    ChangePasswordRequest,
 };
 
 class AuthController extends Controller
 {
+    
     /**
-     * Create user
+     * @method signup: Function to register a customer.
+     * 
+     * @param SignUpRequest $request: Contains SignUp data.
+     * 
+     * @return JSON response.
      */
     public function signup(SignUpRequest $request)
     {
@@ -153,10 +160,15 @@ class AuthController extends Controller
                             ], 500);
         }
     }
+    
     /**
-     * email for new account email confirmation
+     * @method _welcomeEmail: Function to send welcome email to customer.
+     * 
+     * @user User $user: User Model instance.
+     * 
+     * @return void
      */
-    public function _welcomeEmail($user)
+    public function _welcomeEmail(User $user)
     {
         $name = $user->first_name . ' ' . $user->last_name;
         $data = array(
@@ -288,20 +300,14 @@ class AuthController extends Controller
     }
 
     /**
-     * forgot password
+     * @method forgotPassword: Function to handle forgot password feature.
+     * 
+     * @param ForgotPasswordRequest $request: Contains valid forgot password data.
+     * 
+     * @return JSON response.
      */
-    public function forgotPassword(Request $request)
+    public function forgotPassword(ForgotPasswordRequest $request)
     {
-        $validator = Validator::make($request->all(), [
-                    'email' => 'required',
-        ]);
-        if ($validator->fails()) {
-            return response()->json([
-                        'status' => false,
-                        'message' => 'The given data was invalid.',
-                        'data' => $validator->errors()
-                            ], 422);
-        }
         try {
             $user = User::whereEmail($request->email)->first();
             if (!$user) {
@@ -309,48 +315,56 @@ class AuthController extends Controller
                             'status' => false,
                             'message' => 'Email not found!',
                             'data' => []
-                                ], 404);
+                        ], 404);
             }
             $name = $user->first_name . ' ' . $user->last_name;
-            $data = array(
-                'name' => $name,
-                'email' => $user->email,
-                'verificationLink' => env('APP_URL') . 'change-password/' . base64_encode($user->email)
-            );
+            $data = [
+                        'name' => $name,
+                        'email' => $user->email,
+                        'verificationLink' => env('APP_URL') . 'change-password/' . base64_encode($user->email)
+                    ];
 
             $sendForGotEmail = Mail::send('email_templates.forgot_password', $data, function ($message) use ($user, $name) {
-                $message->to($user->email, $name)->subject('Email Confirmation');
+                $message->to($user->email, $name)->subject('Change Password');
                 $message->from(env('MAIL_USERNAME'), env('MAIL_USERNAME'));
             });
 
             return response()->json([
                         'status' => true,
-                        'message' => 'We have sent you a email for change password link. Please check and proceed further.',
+                        'message' => 'We have sent you a email with a change password link. Please check email and proceed further.',
                         'data' => []
-            ]);
+                    ]);
         } catch (\Exception $e) {
             Log::error(json_encode($e->getMessage()));
             return response()->json([
                         'status' => false,
                         'message' => $e->getMessage(),
                         'data' => []
-                            ], 500);
+                    ], 500);
         }
     }
 
-    public function changePassword(Request $request)
+
+    /**
+     * @method changePassword: Function to handle change password feature.
+     * 
+     * @param ChangePasswordRequest $request: Contains valid change password data.
+     * 
+     * @return JSON response.
+     */
+    public function changePassword(ChangePasswordRequest $request)
     {
-        $validator = Validator::make($request->all(), [
-                    'password' => 'required|confirmed'
-        ]);
-        if ($validator->fails()) {
+        $userEmail = base64_decode($request->token);
+        $user = User::where('email', $userEmail)->first();
+
+        if (!$user) {
             return response()->json([
-                        'status' => false,
-                        'message' => 'The given data was invalid.',
-                        'data' => $validator->errors()
-                            ], 422);
+                    'status' => false,
+                    'message' => 'Invalid token.',
+                    'data' => []
+                ], 404);
         }
-        $user = $request->user();
+
         $user->password = bcrypt($request->password);
         $user->password_changed_at = Carbon::now();
         if ($user->save()) {
@@ -366,8 +380,9 @@ class AuthController extends Controller
                     'status' => $status,
                     'message' => $message,
                     'data' => []
-                        ], $errCode);
+                ], $errCode);
     }
+
     /**
      * recover password
      */
@@ -381,7 +396,7 @@ class AuthController extends Controller
                         'status' => false,
                         'message' => 'The given data was invalid.',
                         'data' => $validator->errors()
-                            ], 422);
+                    ], 422);
         }
         $user = User::whereEmail(base64_decode($request->hash_code))->first();
         if (!$user) {
@@ -389,7 +404,7 @@ class AuthController extends Controller
                         'status' => false,
                         'message' => 'Link Expired!',
                         'data' => []
-                            ], 422);
+                    ], 422);
         } else {
             $user->password = bcrypt($request->password);
             $user->password_changed_at = Carbon::now();
@@ -398,7 +413,7 @@ class AuthController extends Controller
                         'status' => true,
                         'message' => 'Password changed successfully',
                         'data' => []
-                            ], 200);
+                    ], 200);
         }
     }
 
@@ -472,20 +487,9 @@ class AuthController extends Controller
         $request->user()->token()->revoke();
         return response()->json([
             'status' => true,
-            'message' => 'Successfully logged out',
+            'message' => 'Successfully logged out.',
             'data' => []
         ]);
     }
-    /**
-     * Edit Admin Profile
-     */
 
-
-//
-//
-//
-//    /**
-//     * email for email address confirmation
-//     */
-//
 }
