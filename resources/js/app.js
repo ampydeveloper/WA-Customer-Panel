@@ -2,8 +2,11 @@ require("./bootstrap");
 // import Router from "vue-router";
 import App from "./App.vue";
 import router from "./router";
+import VueFormGenerator from "vue-form-generator";
 
 window.Vue = require("vue");
+
+Vue.use(VueFormGenerator);
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to
