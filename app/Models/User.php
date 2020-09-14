@@ -7,10 +7,14 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Passport\HasApiTokens;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Models\Traits\User\{
+    UserRelationship
+};
+use App\Models\CustomerFarm;
 
 class User extends Authenticatable
 {
-    use Notifiable, HasApiTokens;
+    use Notifiable, HasApiTokens, UserRelationship;
     use SoftDeletes;
     /**
      * The attributes that are mass assignable.
@@ -40,56 +44,25 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
-    public function managerDetails()
+    public function isCustomer()
     {
-        return $this->hasOne('App\Models\ManagerDetail');
+        return ($this->role_id == config('constant.roles.Customer') || $this->role_id == config('constant.roles.haulers'));
     }
 
-    //self relationship
-    public function customerManager()
-    {
-        return $this->hasMany('App\Models\User', 'created_by');
-    }
 
-    public function farms()
+    public function canAccessFarm($farmId)
     {
-        return $this->hasOne('App\Models\CustomerFarm', 'customer_id');
-    }
+     
+        $farm = (get_class($farmId) == 'App\Models\CustomerFarm') ? $farmId :CustomerFarm::find($farmId);
+        if (!$farm) {
+            return false;
+        }
+        if ($this->isCustomer() && $farm->customer_id == $this->id) {
+            return true;
+        } else if ($this->role_id == config('constant.roles.Customer_Manager') && $farm->id == $this->farm_id) {
+            return true;
+        }
 
-    public function farmlist()
-    {
-        return $this->hasMany('App\Models\CustomerFarm', 'customer_id');
+        return false;
     }
-    
-    public function manager_farms()
-    {
-        return $this->hasOne('App\Models\CustomerFarm', 'id', 'farm_id');
-    }
-
-    public function messages()
-    {
-        return $this->hasMany(Message::class);
-    }
-
-    public function driver()
-    {
-        return $this->hasOne('App\Models\Driver');
-    }
-
-    public function jobTruckDriver()
-    {
-        return $this->hasOne('App\Models\Job', 'truck_driver_id');
-    }
-
-    public function jobSkidsteerDriver()
-    {
-        return $this->hasOne('App\Models\Job', 'skidsteer_driver_id');
-    }
-
-    public function employeeSalaries()
-    {
-        return $this->hasOne('App\Models\EmployeeSalaries', 'user_id');
-    }
-
-    
 }

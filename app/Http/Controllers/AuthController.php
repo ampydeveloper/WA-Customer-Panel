@@ -446,34 +446,16 @@ class AuthController extends Controller
         ], $errCode);
     }
 
-    public function confirmUpdateEmail(Request $request, $email, $id)
-    {
-        $userId = base64_decode($request->id);
-        $userEmail = base64_decode($email);
-        $getUser = User::whereId($userId)->first();
-        if ($getUser->email == $userEmail && $getUser->is_confirmed == 0) {
-            $getUser->is_confirmed = 1;
-            $getUser->save();
-            $message = "Your email address has been successfully confirmed. Please login to proceed further.";
-            $status = true;
-            $errCode = 200;
-        } else {
-            $status = false;
-            $message = "Your confirmation link has been expired.";
-            $errCode = 400;
-        }
-        return redirect()->route('/');
-    }
     /**
-     * Get the authenticated User
+     * @method profile: Get the authenticated User
      *
-     * @return [json] user object
+     * @return JSON
      */
-    public function user(Request $request)
+    public function profile(Request $request)
     {
         return response()->json([
             'success' => true,
-            'message' => 'User details!',
+            'message' => 'User details.',
             'data' => $request->user()
         ]);
     }
@@ -485,6 +467,7 @@ class AuthController extends Controller
     public function logout(Request $request)
     {
         $request->user()->token()->revoke();
+        
         return response()->json([
             'status' => true,
             'message' => 'Successfully logged out.',

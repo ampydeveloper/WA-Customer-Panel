@@ -15,16 +15,38 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::group(['prefix' => 'auth'], function () {
-    Route::post('signup', 'AuthController@signup');
-    Route::get('confirm-email/{decode_code}', 'AuthController@confirmEmail');
-    Route::post('social-signup', 'AuthController@SocialSignup');
-    Route::post('login', 'AuthController@login');
-    Route::post('forgot-password', 'AuthController@forgotPassword');
-    Route::post('change-password', 'AuthController@changePassword');
-    Route::get('logout', 'AuthController@logout')->middleware('auth:api');
+    Route::post('signup', 'AuthController@signup')->name('signup');
+    Route::get('confirm-email/{decode_code}', 'AuthController@confirmEmail')->name('confirm.email');
+    Route::post('social-signup', 'AuthController@SocialSignup')->name('social.login');
+    Route::post('login', 'AuthController@login')->name('login');
+    Route::post('forgot-password', 'AuthController@forgotPassword')->name('forgot.password');
+    Route::post('change-password', 'AuthController@changePassword')->name('change.password');
+    Route::get('logout', 'AuthController@logout')->middleware('auth:api')->name('logout');
+    Route::get('profile', 'AuthController@profile')->middleware('auth:api')->name('profile');
 });
 
-Route::group(['middleware' => 'auth:api', 'prefix' => 'customer'], function () {
+Route::group(['middleware' => 'auth:api', 'prefix' => 'customer', 'as' => 'customer'], function () {
+
+    // Services related routes
+    Route::group(['prefix' => 'service', 'as' => 'service'], function () {
+        Route::get('list', 'ServiceController@list')->name('list');
+        Route::get('{service}', 'ServiceController@get')->name('get');
+    });
+
+    // Route::group(['prefix' => 'job', 'as' => 'job'], function () {
+    //     Route::put('', 'ServiceController@create')->name('create');
+    //     Route::get('{job}', 'ServiceController@get')->name('get');
+    //     Route::get('list', 'ServiceController@list')->name('get');
+    // });
+
+    // Farm related apis
+
+    Route::group(['prefix' => 'farm', 'as' => 'farm'], function () {
+        Route::put('', 'FarmController@create')->name('create');
+        Route::get('{customer_farm}', 'FarmController@get')->name('get');
+        Route::get('list', 'FarmController@list')->name('get');
+    });
+
     // Route::get('list', 'CustomerController@listCustomer');
     // Route::get('{customer_id}', 'CustomerController@getCustomer');
     // Route::put('', 'CustomerController@createCustomer');
