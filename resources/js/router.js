@@ -6,6 +6,8 @@ import Contact from "./pages/Contact.vue";
 import Services from "./pages/Services.vue";
 import FAQ from "./pages/FAQ.vue";
 import SignUp from "./pages/SignUp.vue";
+import SignIn from "./pages/SignIn.vue";
+import CreateFarm from "./pages/UserPanel/Farms/CreateFarm.vue";
 
 Vue.use(Router);
 
@@ -41,6 +43,24 @@ const router = new Router({
             path: "/sign-up",
             name: "signup",
             component: SignUp
+        },
+        {
+            path: "/sign-in",
+            name: "signin",
+            component: SignIn
+        },
+        {
+            path: "/create-farm",
+            name: "createFarm",
+            component: CreateFarm,
+            beforeEnter(to, from, next) {
+                const token = window.localStorage.getItem("token");
+                if (token !== undefined && token !== null) {
+                    next();
+                } else {
+                    window.location.href = "/sign-in";
+                }
+            }
         }
     ]
 });

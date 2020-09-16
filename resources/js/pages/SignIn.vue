@@ -19,7 +19,7 @@
                         <div class="col-md-6">
                             <div class="new-user-signup">
                                 <h1>
-                                    Sign Up
+                                    Sign In
                                     <small>As Customer</small>
                                 </h1>
 
@@ -33,8 +33,8 @@
                                 </form>
 
                                 <p class="already-account">
-                                    Already have an Account
-                                    <a href="/sign-in">Sign In</a>
+                                    Do not have an Account
+                                    <a href="/sign-up">Sign Up</a>
                                 </p>
                             </div>
                         </div>
@@ -47,7 +47,7 @@
 
 <script>
 import AppHeader from "../shared/components/AppHeader";
-import signUpFormSchema from "../forms/signUpFormSchema";
+import signInFormSchema from "../forms/signInFormSchema";
 import AuthService from "../services/AuthService";
 
 export default {
@@ -57,57 +57,50 @@ export default {
     data() {
         return {
             model: {
-                first_name: undefined,
-                last_name: "",
                 email: "",
-                password: "",
-                password_confirmation: "",
-                phone: "",
-                address: "",
-                city: "",
-                province: "",
-                zipcode: "",
-                role_id: 4
+                password: ""
             },
             schema: {
                 fields: [
-                    ...signUpFormSchema.fields,
+                    ...signInFormSchema.fields,
                     {
                         type: "submit",
                         styleClasses: "submit-button",
-                        label: "Submit",
-                        caption: "Submit form",
+                        label: "Sign In",
+                        caption: "Sign In form",
                         validateBeforeSubmit: true,
-                        disabled: () => this.isRegistering,
+                        disabled: () => this.isSigningIn,
                         onSubmit: (model, schema) => {
-                            this.isRegistering = true;
-                            AuthService.register(model)
+                            this.isSigningIn = true;
+                            AuthService.signIn(model)
                                 .then(
                                     response => {
+                                        const {
+                                            access_token,
+                                            user
+                                        } = response.data.data;
+                                        window.localStorage.setItem(
+                                            "token",
+                                            access_token
+                                        );
+                                        window.localStorage.setItem(
+                                            "user",
+                                            JSON.stringify(user)
+                                        );
+                                        window.location.href = "/create-farm";
+                                    },
+                                    error => {
                                         this.$toast.open({
-                                            message: "Sign up is successfull",
-                                            type: "success",
+                                            message:
+                                                error.response.data.message,
+                                            type: "error",
                                             position: "bottom-right",
                                             dismissible: false
                                         });
-                                        window.location.href = "/";
-                                    },
-                                    error => {
-                                        for (const errorKey in error.response
-                                            .data.errors) {
-                                            this.$toast.open({
-                                                message: error.response.data.errors[
-                                                    errorKey
-                                                ].join("<br/>"),
-                                                type: "error",
-                                                position: "bottom-right",
-                                                dismissible: false
-                                            });
-                                        }
                                     }
                                 )
                                 .finally(_ => {
-                                    this.isRegistering = false;
+                                    this.isSigningIn = false;
                                 });
                         }
                     }
@@ -116,7 +109,7 @@ export default {
             formOptions: {
                 validateAfterChanged: true
             },
-            isRegistering: false
+            isSigningIn: false
         };
     }
 };
