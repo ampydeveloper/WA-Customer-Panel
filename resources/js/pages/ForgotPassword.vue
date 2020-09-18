@@ -16,10 +16,7 @@
 
             <div class="col-md-6">
               <div class="new-user-signup">
-                <h1>
-                  Sign In
-                  <small>As Customer</small>
-                </h1>
+                <h1>Forgot Password</h1>
 
                 <form action novalidate>
                   <vue-form-generator
@@ -29,14 +26,6 @@
                     :model="model"
                   />
                 </form>
-
-                <p class="already-account">
-                  Do not have an Account
-                  <a href="/sign-up">Sign Up</a>
-                </p>
-                <p class="already-account">
-                  <a href="/forgot-password">Forgot Password</a>
-                </p>
               </div>
             </div>
           </div>
@@ -48,7 +37,7 @@
 
 <script>
 import AppHeader from "../shared/components/AppHeader";
-import signInFormSchema from "../forms/signInFormSchema";
+import forgotPasswordFormSchema from "../forms/forgotPasswordFormSchema";
 import AuthService from "../services/AuthService";
 
 export default {
@@ -59,27 +48,23 @@ export default {
     return {
       model: {
         email: "",
-        password: "",
       },
       schema: {
         fields: [
-          ...signInFormSchema.fields,
+          ...forgotPasswordFormSchema.fields,
           {
             type: "submit",
             styleClasses: "submit-button",
-            label: "Sign In",
-            caption: "Sign In form",
+            label: "Forgot Password",
+            caption: "Forgot Password In form",
             validateBeforeSubmit: true,
-            disabled: () => this.isSigningIn,
+            disabled: () => this.isSubmitting,
             onSubmit: (model, schema) => {
-              this.isSigningIn = true;
-              AuthService.signIn(model)
+              this.isSubmitting = true;
+              AuthService.forgotPassword(model)
                 .then(
                   (response) => {
-                    const { access_token, user } = response.data.data;
-                    window.localStorage.setItem("token", access_token);
-                    window.localStorage.setItem("user", JSON.stringify(user));
-                    window.location.href = "/create-farm";
+                    window.location.href = "/sign-in";
                   },
                   (error) => {
                     this.$toast.open({
@@ -91,7 +76,7 @@ export default {
                   }
                 )
                 .finally((_) => {
-                  this.isSigningIn = false;
+                  this.isSubmitting = false;
                 });
             },
           },
@@ -100,7 +85,7 @@ export default {
       formOptions: {
         validateAfterChanged: true,
       },
-      isSigningIn: false,
+      isSubmitting: false,
     };
   },
 };
