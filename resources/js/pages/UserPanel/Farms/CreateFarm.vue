@@ -1,53 +1,49 @@
 <template>
   <div>
-    <dashboard-header />
-    <div class="main-wrapper" style="padding-top: 0;">
-      <div class="sign-up-form-outer">
-        <div class="sign-up-form-inner">
-          <div class="row">
-            <div class="col-md-12">
-              <div class="new-user-signup">
-                <div v-if="addManagers">
-                  <h1>New Manager</h1>
-                  <manager
-                    v-on:updatemanager="updateManager"
-                    v-bind:new-manager="newManager"
-                  />
-                </div>
-                <form action novalidate v-if="!addManagers">
-                  <h1>New Farm</h1>
-                  <vue-form-generator
-                    tag="div"
-                    :schema="schema"
-                    :options="formOptions"
-                    :model="model"
-                  />
-                </form>
-                <div class="form-group" v-if="hasManager && !addManagers">
-                  <ul class="list-group">
-                    <li
-                      class="list-group-item"
-                      v-for="(manager, index) in model.manager_details"
-                      :key="index"
-                    >
-                      {{ manager.manager_first_name }} / {{ manager.email }}
-                    </li>
-                  </ul>
-                  <button
-                    class="btn btn-success btn-lg btn-block"
-                    style="display: inline; margin-top: 20px"
-                    @click="addNewManager"
+    <div class="sign-up-form-outer">
+      <div class="sign-up-form-inner">
+        <div class="row">
+          <div class="col-md-12">
+            <div class="new-user-signup">
+              <div v-if="addManagers">
+                <create-manager
+                  v-on:updatemanager="updateManager"
+                  v-bind:new-manager="newManager"
+                />
+              </div>
+              <form action novalidate v-if="!addManagers">
+                <h1>New Farm</h1>
+                <vue-form-generator
+                  tag="div"
+                  :schema="schema"
+                  :options="formOptions"
+                  :model="model"
+                />
+              </form>
+              <div class="form-group" v-if="hasManager && !addManagers">
+                <ul class="list-group">
+                  <li
+                    class="list-group-item"
+                    v-for="(manager, index) in model.manager_details"
+                    :key="index"
                   >
-                    Add New Manager
-                  </button>
-                  <button
-                    class="btn btn-success btn-lg btn-block"
-                    style="display: inline; margin-top: 20px"
-                    @click="createFarm"
-                  >
-                    Create Farm
-                  </button>
-                </div>
+                    {{ manager.manager_first_name }} / {{ manager.email }}
+                  </li>
+                </ul>
+                <button
+                  class="btn btn-success btn-lg btn-block"
+                  style="display: inline; margin-top: 20px"
+                  @click="addNewManager"
+                >
+                  Add New Manager
+                </button>
+                <button
+                  class="btn btn-success btn-lg btn-block"
+                  style="display: inline; margin-top: 20px"
+                  @click="createFarm"
+                >
+                  Create Farm
+                </button>
               </div>
             </div>
           </div>
@@ -58,10 +54,9 @@
 </template>
 
 <script>
-import DashboardHeader from "../../../shared/components/DashboardHeader";
 import farmFormSchema from "../../../forms/farmFormSchema";
 import FarmService from "../../../services/FarmService";
-import Manager from "./Manager";
+import CreateManager from "./Managers/CreateManager";
 
 const emptyManager = {
   manager_first_name: "",
@@ -90,8 +85,7 @@ const emptyFarmRequest = {
 
 export default {
   components: {
-    DashboardHeader,
-    Manager
+    CreateManager
   },
   computed: {
     hasManager: function() {
