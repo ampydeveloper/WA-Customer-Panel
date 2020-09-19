@@ -28,6 +28,7 @@ import HowWeWork from "./HowWeWork";
 import OurServices from "./OurServices";
 import Testimonials from "./Testimonials";
 import LatestNews from "./LatestNews";
+import OurSocialMedia from "./OurSocialMedia";
 
 import AppHeader from "../../shared/components/AppHeader";
 import AppFooter from "../../shared/components/AppFooter";
@@ -42,6 +43,7 @@ export default {
     Testimonials,
     LatestNews,
     AppFooter,
+    OurSocialMedia,
   },
 };
 </script>

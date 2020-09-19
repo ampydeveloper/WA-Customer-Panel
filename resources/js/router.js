@@ -1,5 +1,5 @@
 import Vue from "vue";
-import Router from "vue-router";
+import VueRouter from "vue-router";
 import About from "./pages/About";
 import Home from "./pages/Home";
 import Contact from "./pages/Contact.vue";
@@ -7,11 +7,13 @@ import Services from "./pages/Services.vue";
 import FAQ from "./pages/FAQ.vue";
 import SignUp from "./pages/SignUp.vue";
 import SignIn from "./pages/SignIn.vue";
+import ForgotPassword from "./pages/ForgotPassword.vue";
+import ChangePassword from "./pages/ChangePassword.vue";
 import CreateFarm from "./pages/UserPanel/Farms/CreateFarm.vue";
 
-Vue.use(Router);
+Vue.use(VueRouter);
 
-const router = new Router({
+const router = new VueRouter({
     mode: "history",
     routes: [
         {
@@ -48,6 +50,16 @@ const router = new Router({
             path: "/sign-in",
             name: "signin",
             component: SignIn
+        },
+        {
+            path: "/forgot-password",
+            name: "forgotPassword",
+            component: ForgotPassword
+        },
+        {
+            path: "/change-password/:token",
+            name: "changePassword",
+            component: ChangePassword
         },
         {
             path: "/create-farm",

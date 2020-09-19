@@ -2,6 +2,7 @@
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 
 <head>
+    <base href="/">
     <meta charset="utf-8">
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <title>Wellington Agriculuture Services</title>
@@ -26,7 +27,6 @@
         <app></app>
     </div>
     <script src="{{ mix('js/app.js') }}" type="text/javascript"></script>
-    <script src="assets/js/jquery.min.js"></script>
     <script src="assets/js/bootstrap.min.js"></script>
     <script src="assets/js/owl.carousel.js" defer></script>
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
@@ -39,7 +39,6 @@
         function closeNav() {
             document.getElementById("mySidenav").style.width = "0";
         }
-
     </script>
 
     <script>
@@ -88,7 +87,6 @@
 
 
         });
-
     </script>
 
     <script>
@@ -101,14 +99,12 @@
                 $(".site-header").removeClass("stickyHeader");
             }
         });
-
     </script>
 
     <script>
         AOS.init({
             duration: 1200,
         })
-
     </script>
 
 </body>
