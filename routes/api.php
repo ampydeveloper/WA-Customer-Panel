@@ -25,6 +25,9 @@ Route::group(['prefix' => 'auth'], function () {
     Route::get('profile', 'AuthController@profile')->middleware('auth:api')->name('profile');
 });
 
+Route::group(['middleware' => 'auth:api', 'prefix' => 'my', 'as' => 'my'], function () {
+    Route::get('farms', 'CustomerController@myFarms')->name('farms');
+});
 Route::group(['middleware' => 'auth:api', 'prefix' => 'customer', 'as' => 'customer'], function () {
 
     // Services related routes
@@ -33,18 +36,12 @@ Route::group(['middleware' => 'auth:api', 'prefix' => 'customer', 'as' => 'custo
         Route::get('{service}', 'ServiceController@get')->name('get');
     });
 
-    // Route::group(['prefix' => 'job', 'as' => 'job'], function () {
-    //     Route::put('', 'ServiceController@create')->name('create');
-    //     Route::get('{job}', 'ServiceController@get')->name('get');
-    //     Route::get('list', 'ServiceController@list')->name('get');
-    // });
-
     // Farm related apis
-
     Route::group(['prefix' => 'farm', 'as' => 'farm'], function () {
         Route::put('', 'FarmController@create')->name('create');
+        Route::patch('{customer_farm}', 'FarmController@update')->name('create');
         Route::get('{customer_farm}', 'FarmController@get')->name('get');
-        Route::get('list', 'FarmController@list')->name('get');
+        Route::get('{customer_farm}/managers', 'FarmController@getFarmManagers')->name('get');
     });
 
     // Route::get('list', 'CustomerController@listCustomer');

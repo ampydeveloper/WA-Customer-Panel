@@ -18,13 +18,26 @@ class CustomerFarm extends Model
         'customer_id', 'farm_address', 'farm_city', 'farm_image', 'farm_province', 'farm_unit', 'farm_zipcode', 'farm_active', 'latitude', 'longitude', 'created_by'
     ];
 
-    public function manager()
-    {
-        return $this->belongsTo('App\Models\User', 'farm_id');
-    }
+    protected $hidden = ['deleted_at', 'updated_at'];
 
-    public function farmManager()
+    public function managers()
     {
         return $this->hasMany('App\Models\User', 'farm_id');
+    }
+
+    public function user()
+    {
+        return $this->belongsTo('App\Models\User', 'customer_id');
+    }
+
+    /**
+     * @method isOwner:  Function to check if user is owner of map.
+     * 
+     */
+    public function isOwner($userId = null)
+    {
+        $userId = ($userId) ? $userId : (\Auth::user()) ? \Auth::user()->id : null;
+        
+        return ($userId && $this->customer_id == $userId);
     }
 }

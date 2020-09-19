@@ -19,6 +19,7 @@ use App\CustomerCardDetail;
 use App\Payment;
 use App\Job;
 use Carbon\Carbon;
+use Auth;
 
 class CustomerController extends Controller {
     /**
@@ -383,14 +384,14 @@ class CustomerController extends Controller {
     }
 
     /**
-     * get customer farm
+     * @method myFarms : Function to get logged in customer's farms.
      */
-    public function getFarms(Request $request) {
+    public function myFarms() {
         return response()->json([
                     'status' => true,
                     'message' => 'Customer farms details',
-                    'data' => CustomerFarm::where('customer_id', $request->customer_id)->get()
-                        ], 200);
+                    'farms' => Auth::user()->farms
+                ], 200);
     }
 
     /**

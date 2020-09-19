@@ -8,13 +8,15 @@ use Illuminate\Notifications\Notifiable;
 use Laravel\Passport\HasApiTokens;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Models\Traits\User\{
-    UserRelationship
+    UserRelationship,
+    UserAttributes,
+    UserMethods
 };
 use App\Models\CustomerFarm;
 
 class User extends Authenticatable
 {
-    use Notifiable, HasApiTokens, UserRelationship;
+    use Notifiable, HasApiTokens, UserRelationship, UserAttributes, UserMethods;
     use SoftDeletes;
     /**
      * The attributes that are mass assignable.
@@ -32,8 +34,10 @@ class User extends Authenticatable
      * @var array
      */
     protected $hidden = [
-        'password', 'remember_token',
+        'password', 'remember_token', 'deleted_at', 'updated_at'
     ];
+
+    protected $appends = ['full_name'];
 
     /**
      * The attributes that should be cast to native types.
@@ -44,25 +48,4 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
-    public function isCustomer()
-    {
-        return ($this->role_id == config('constant.roles.Customer') || $this->role_id == config('constant.roles.haulers'));
-    }
-
-
-    public function canAccessFarm($farmId)
-    {
-     
-        $farm = (get_class($farmId) == 'App\Models\CustomerFarm') ? $farmId :CustomerFarm::find($farmId);
-        if (!$farm) {
-            return false;
-        }
-        if ($this->isCustomer() && $farm->customer_id == $this->id) {
-            return true;
-        } else if ($this->role_id == config('constant.roles.Customer_Manager') && $farm->id == $this->farm_id) {
-            return true;
-        }
-
-        return false;
-    }
 }
