@@ -17,7 +17,7 @@ trait UserRelationship
 
     public function farms()
     {
-        return $this->hasOne('App\Models\CustomerFarm', 'customer_id');
+        return $this->hasMany('App\Models\CustomerFarm', 'customer_id');
     }
 
     public function farmlist()
