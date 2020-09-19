@@ -14,8 +14,8 @@ window.Vue = require("vue");
 Vue.use(VueFormGenerator);
 
 const sweetAlertOptions = {
-    confirmButtonColor: "#41b882",
-    cancelButtonColor: "#ff7674"
+  confirmButtonColor: "#41b882",
+  cancelButtonColor: "#ff7674"
 };
 
 /** Vue Sweet Alert */
@@ -30,7 +30,7 @@ Vue.use(VueToast);
  * or customize the JavaScript scaffolding to fit your unique needs.
  */
 const app = new Vue({
-    el: "#app",
-    components: { App },
-    router
+  el: "#app",
+  components: { App },
+  router
 });

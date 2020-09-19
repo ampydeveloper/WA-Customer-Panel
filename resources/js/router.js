@@ -13,6 +13,15 @@ import CreateFarm from "./pages/UserPanel/Farms/CreateFarm.vue";
 
 Vue.use(VueRouter);
 
+const checkAuthentication = (to, from, next) => {
+    const token = window.localStorage.getItem("token");
+    if (token !== undefined && token !== null) {
+        next();
+    } else {
+        window.location.href = "/sign-in";
+    }
+};
+
 const router = new VueRouter({
     mode: "history",
     routes: [
@@ -62,17 +71,17 @@ const router = new VueRouter({
             component: ChangePassword
         },
         {
-            path: "/create-farm",
-            name: "createFarm",
+            path: "/farms",
+            name: "farmsList",
             component: CreateFarm,
-            beforeEnter(to, from, next) {
-                const token = window.localStorage.getItem("token");
-                if (token !== undefined && token !== null) {
-                    next();
-                } else {
-                    window.location.href = "/sign-in";
+            beforeEnter: checkAuthentication,
+            children: [
+                {
+                    path: "create",
+                    name: "createFarm",
+                    component: CreateFarm
                 }
-            }
+            ]
         }
     ]
 });
