@@ -40,6 +40,33 @@ class FarmService {
       }
     );
   }
+
+  static isEmailUnique(email) {
+    const token = window.localStorage.getItem("token");
+    return Axios.get(`/api/customer/farm/manager/is-unique/${email}`, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
+  }
+
+  static get(farmId) {
+    const token = window.localStorage.getItem("token");
+    return Axios.get(`/api/customer/farm/${farmId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
+  }
+
+  static update(farmId, editFarmRequest) {
+    const token = window.localStorage.getItem("token");
+    return Axios.patch(`/api/customer/farm/${farmId}`, editFarmRequest, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
+  }
 }
 
 export default FarmService;

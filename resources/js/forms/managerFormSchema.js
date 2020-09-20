@@ -1,4 +1,5 @@
 import VueFormGenerator from "vue-form-generator";
+import FarmService from "../services/FarmService";
 
 export default {
   fields: [
@@ -24,7 +25,18 @@ export default {
       label: "Email*",
       model: "email",
       required: true,
-      validator: VueFormGenerator.validators.email
+      validator: [
+        VueFormGenerator.validators.email,
+        async (value, field, model) => {
+          let result = [];
+          try {
+            await FarmService.isEmailUnique(value);
+          } catch (error) {
+            result = error.response.data.data.email;
+          }
+          return result;
+        }
+      ]
     },
     {
       type: "input",
@@ -94,7 +106,16 @@ export default {
       label: "Salary*",
       model: "salary",
       required: true,
-      validator: ["required"]
+      validator: [
+        "required",
+        (value, field, model) => {
+          let result = [];
+          if (isNaN(parseInt(value))) {
+            result = ["Invalid Salary Value"];
+          }
+          return result;
+        }
+      ]
     }
   ]
 };

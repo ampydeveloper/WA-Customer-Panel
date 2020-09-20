@@ -8,10 +8,15 @@ import VueToast from "vue-toast-notification";
 // Import one of available themes
 import "vue-toast-notification/dist/theme-default.css";
 
+import VueMapbox from "vue-mapbox";
+import Mapbox from "mapbox-gl";
+
 window.Vue = require("vue");
 
 /** Vue Form Generator */
 Vue.use(VueFormGenerator);
+
+Vue.use(VueMapbox, { mapboxgl: Mapbox });
 
 const sweetAlertOptions = {
   confirmButtonColor: "#41b882",

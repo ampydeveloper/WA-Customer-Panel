@@ -5,7 +5,7 @@
       <div class="sign-up-form-outer">
         <div class="sign-up-form-inner">
           <div class="row">
-            <div class="col-md-6 signup-im-bg">
+            <div class="col-md-6 signup-im-bg"
               <div class="im-text">
                 <h2>
                   WELLINGTON
