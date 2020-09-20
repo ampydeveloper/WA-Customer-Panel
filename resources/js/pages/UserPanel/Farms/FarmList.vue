@@ -30,8 +30,14 @@
             >
           </td>
           <td>
-            <button class="btn btn-sm btn-info">Edit</button>
-            <button class="btn btn-sm btn-danger">Delete</button>
+            <router-link
+              :to="{
+                name: 'editFarm',
+                params: { farmId: farm.id }
+              }"
+              class="btn btn-info btn-sm"
+              >Edit</router-link
+            >
           </td>
         </tr>
       </tbody>

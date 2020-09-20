@@ -9,11 +9,20 @@ import SignUp from "./pages/SignUp.vue";
 import SignIn from "./pages/SignIn.vue";
 import ForgotPassword from "./pages/ForgotPassword.vue";
 import ChangePassword from "./pages/ChangePassword.vue";
+import MapBox from "./pages/UserPanel/MapBox.vue";
+
+/** Farm Imports */
 import Farms from "./pages/UserPanel/Farms";
+import EditFarm from "./pages/UserPanel/Farms/EditFarm.vue";
 import CreateFarm from "./pages/UserPanel/Farms/CreateFarm.vue";
 import FarmList from "./pages/UserPanel/Farms/FarmList.vue";
 import ManagerList from "./pages/UserPanel/Farms/Managers/ManagerList.vue";
 import CreateManager from "./pages/UserPanel/Farms/Managers/CreateManager.vue";
+
+/** Job Imports */
+import Jobs from "./pages/UserPanel/Jobs";
+import JobList from "./pages/UserPanel/Jobs/JobList.vue";
+import CreateJob from "./pages/UserPanel/Jobs/CreateJob.vue";
 
 Vue.use(VueRouter);
 
@@ -75,14 +84,18 @@ const router = new VueRouter({
       component: ChangePassword
     },
     {
+      path: "/mapbox",
+      name: "MapBox",
+      component: MapBox
+    },
+    {
       path: "/farms",
-      name: "farmsList",
       component: Farms,
       beforeEnter: checkAuthentication,
       children: [
         {
           path: "",
-          name: "Farm",
+          name: "farmsList",
           component: FarmList
         },
         {
@@ -99,6 +112,28 @@ const router = new VueRouter({
           path: ":farmId/managers/create",
           name: "createManager",
           component: CreateManager
+        },
+        {
+          path: ":farmId/edit",
+          name: "editFarm",
+          component: EditFarm
+        }
+      ]
+    },
+    {
+      path: "/jobs",
+      component: Jobs,
+      beforeEnter: checkAuthentication,
+      children: [
+        {
+          path: "",
+          name: "jobsList",
+          component: JobList
+        },
+        {
+          path: "create",
+          name: "createJob",
+          component: CreateJob
         }
       ]
     }
