@@ -23,7 +23,9 @@ use App\Http\Requests\Farm\{
     CreateFarmRequest,
     UpdateFarmRequest
 };
-
+use App\Http\Requests\Farm\Manager\{
+    CreateFarmManagerRequest,
+};
 class FarmController extends Controller
 {
     /**
@@ -126,6 +128,7 @@ class FarmController extends Controller
 
     /**
      * @method getFarmManagers : Function to get all managers of a farm.
+     * 
      */
     public function getFarmManagers(CustomerFarm $customer_farm)
     {
@@ -139,13 +142,14 @@ class FarmController extends Controller
 
         return response()->json([
                 'status' => true,
-                'message' => 'Customer manager details',
+                'message' => 'Farm manager details.',
                 'data' => $customer_farm->managers
             ], 200);
     }
 
     /*
-     * update farm details
+     * @method update : Function to update farm details.
+     * 
      */
     public function update(CustomerFarm $customerFarm, UpdateFarmRequest $request)
     {
@@ -168,6 +172,71 @@ class FarmController extends Controller
                         'farm' => $customerFarm
                     ], 200);
         } catch (\Exception $e) {
+            return response()->json([
+                        'status' => false,
+                        'message' => $e->getMessage(),
+                        'data' => []
+                    ], 500);
+        }
+    }
+
+    /*
+     * @method createFarmManager : Function to create farm managers.
+     * 
+     */
+    public function createFarmManager(CustomerFarm $customerFarm, CreateFarmManagerRequest $request)
+    {
+        if (!$customerFarm->isOwner()) {
+            return response()->json([
+                    'status' => false,
+                    'message' => 'Unauthorized access.',
+                    'data' => []
+                ], 421);
+        }
+
+        try {
+            DB::beginTransaction();
+            $newPassword = Str::random();
+            $saveManager = new User([
+                'prefix' => (isset($request->manager_prefix) && $request->manager_prefix != '' && $request->manager_prefix != null) ? $request->manager_prefix : null,
+                'first_name' => $request->manager_first_name,
+                'last_name' => $request->manager_last_name,
+                'email' => $request->email,
+                'phone' => $request->manager_phone,
+                'address' => $request->manager_address,
+                'city' => $request->manager_city,
+                'state' => $request->manager_province,
+                'zip_code' => $request->manager_zipcode,
+                'user_image' => (isset($request->manager_image) && $request->manager_image != '' && $request->manager_image != null) ? $request->manager_image : null,
+                'role_id' => config('constant.roles.Customer_Manager'),
+                'created_from_id' => $request->user()->id,
+                'is_confirmed' => 1,
+                'is_active' => 1,
+                'created_by' => $request->user()->id,
+                'farm_id' => $customerFarm->id,
+                'password' => bcrypt($newPassword)
+            ]);
+
+            if ($saveManager->save()) {
+                $managerDetails = new ManagerDetail([
+                    'user_id' => $saveManager->id,
+                    'identification_number' => $request->manager_id_card,
+                    'document' => $request->manager_card_image,
+                    'salary' => $request->salary,
+                    'joining_date' => date('Y/m/d'),
+                ]);
+                if ($managerDetails->save()) {
+                    $this->_confirmPassword($saveManager, $newPassword);
+                    DB::commit();
+                    return response()->json([
+                                'status' => true,
+                                'message' => 'Customer created successfully.',
+                                'data' => []
+                            ], 200);
+                }
+            }
+        } catch (\Exception $e) {
+            DB::rollBack();
             return response()->json([
                         'status' => false,
                         'message' => $e->getMessage(),
