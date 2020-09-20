@@ -12,93 +12,98 @@ use Mail;
 use App\Models\User;
 use App\Models\Service;
 use App\Models\TimeSlots;
-use App\Job;
-use App\CustomerFarm;
-
+use App\Models\Job;
+use App\Models\CustomerFarm;
+use App\Http\Requests\Job\{
+    CreateJobRequest
+};
 class JobController extends Controller {
   
     /**
-     * create job
+     * @method createJob : Function to Create job.
      */
-    public function createJob(Request $request) {
-        $validator = Validator::make($request->all(), [
-                    'customer_id' => 'required',
-                    'service_id' => 'required',
-                    'job_providing_date' => 'required',
-                    'is_repeating_job' => 'required',
-                    'payment_mode' => 'required',
-                    'amount' => 'required',
-                    'repeating_days' => 'required_if:is_repeating_job,==,2',
-        ]);
-        if ($validator->fails()) {
+    public function create(CreateJobRequest $createJobRequest)
+    {
+        $farm = CustomerFarm::find($createJobRequest->farm_id);
+        if (!$farm->isOwner()) {
             return response()->json([
-                        'status' => false,
-                        'message' => 'The given data was invalid.',
-                        'data' => $validator->errors()
-                            ], 422);
+                    'status' => false,
+                    'message' => 'Unauthorized access.',
+                ], 421);
         }
-        $checkService = Service::where('id', $request->service_id)->first();
-        if ($checkService->service_for == config('constant.roles.Customer')) {
-            if ((isset($request->manager_id) && $request->manager_id == null && $request->manager_id == '') || (isset($request->farm_id) && $request->farm_id == null && $request->farm_id == '') || (isset($request->time_slots_id) && $request->time_slots_id == null && $request->time_slots_id == '')) {
-                return response()->json([
-                            'status' => false,
-                            'message' => 'The given data was invalid.',
-                            'data' => []
-                                ], 422);
-            }
-        }
+        $checkService = Service::where('id', $createJobRequest->service_id)->first();
+        DB::beginTransaction();
         try {
             $job = new Job([
-                'job_created_by' => $request->user()->id,
-                'customer_id' => $request->customer_id,
-                'manager_id' => (isset($request->manager_id) && $request->manager_id != '' && $request->manager_id != null) ? $request->manager_id : null,
-                'farm_id' => (isset($request->farm_id) && $request->farm_id != '' && $request->farm_id != null) ? $request->farm_id : null,
-                'service_id' => $request->service_id,
-                'gate_no' => (isset($request->gate_no) && $request->gate_no != '' && $request->gate_no != null) ? $request->gate_no : null,
-                'time_slots_id' => (isset($request->time_slots_id) && $request->time_slots_id != '' && $request->time_slots_id != null) ? $request->time_slots_id : null,
-                'job_providing_date' => $request->job_providing_date,
-                'weight' => (isset($request->weight) && $request->weight != '' && $request->weight != null) ? $request->weight : null,
-                'is_repeating_job' => $request->is_repeating_job,
-                'repeating_days' => (isset($request->repeating_days) && $request->repeating_days != '' && $request->repeating_days != null) ? $request->repeating_days : null,
-                'payment_mode' => $request->payment_mode,
-                'images' => (isset($request->images) && $request->images != '' && $request->images != null) ? $request->images : null,
-                'notes' => (isset($request->notes) && $request->notes != '' && $request->notes != null) ? $request->notes : null,
-                'amount' => $request->amount,
+                'job_created_by' => $createJobRequest->user()->id,
+                'customer_id' => $createJobRequest->user()->id,
+                'manager_id' => (isset($createJobRequest->manager_id) && $createJobRequest->manager_id != '' && $createJobRequest->manager_id != null) ? $createJobRequest->manager_id : null,
+                'farm_id' => (isset($createJobRequest->farm_id) && $createJobRequest->farm_id != '' && $createJobRequest->farm_id != null) ? $createJobRequest->farm_id : null,
+                'service_id' => $createJobRequest->service_id,
+                'gate_no' => (isset($createJobRequest->gate_no) && $createJobRequest->gate_no != '' && $createJobRequest->gate_no != null) ? $createJobRequest->gate_no : null,
+                'time_slots_id' => (isset($createJobRequest->time_slots_id) && $createJobRequest->time_slots_id != '' && $createJobRequest->time_slots_id != null) ? $createJobRequest->time_slots_id : null,
+                'job_providing_date' => $createJobRequest->job_providing_date,
+                'weight' => (isset($createJobRequest->weight) && $createJobRequest->weight != '' && $createJobRequest->weight != null) ? $createJobRequest->weight : null,
+                'is_repeating_job' => $createJobRequest->is_repeating_job,
+                'repeating_days' => (isset($createJobRequest->repeating_days) && $createJobRequest->repeating_days != '' && $createJobRequest->repeating_days != null) ? $createJobRequest->repeating_days : null,
+                'payment_mode' => (isset($createJobRequest->payment_mode) && $createJobRequest->payment_mode != '' && $createJobRequest->payment_mode != null) ? $createJobRequest->payment_mode : 3,
+                'images' => (isset($createJobRequest->images) && $createJobRequest->images != '' && $createJobRequest->images != null) ? $createJobRequest->images : null,
+                'notes' => (isset($createJobRequest->notes) && $createJobRequest->notes != '' && $createJobRequest->notes != null) ? $createJobRequest->notes : null,
+                'amount' => $createJobRequest->amount,
             ]);
             if ($job->save()) {
                 $mailData = [
                     'job_id' => $job->id,
-                    'customer_id' => $request->customer_id,
-                    'manager_id' => isset($request->manager_id) ? $request->manager_id : null
+                    'customer_id' => $job->customer_id,
+                    'manager_id' => isset($job->manager_id) ? $job->manager_id : null
                 ];
                 $this->_sendPaymentEmail($mailData);
                 return response()->json([
                             'status' => true,
                             'message' => 'Job created successfully.',
                             'data' => []
-                                ], 200);
+                        ], 200);
             }
+            DB::commit();
+
         } catch (\Exception $e) {
-            Log::error(json_encode($e->getMessage()));
+            DB::rollBack();
             return response()->json([
                         'status' => false,
                         'message' => $e->getMessage(),
                         'data' => []
-                            ], 500);
+                    ], 500);
         }
     }
 
     /**
-     * get customers and hauler
-     */
-    public function getCustomers() {
-        return response()->json([
-                    'status' => true,
-                    'message' => 'Customers Details',
-                    'data' => User::whereRoleId(config('constant.roles.Customer'))
-                            ->orWhere('role_id', config('constant.roles.Haulers'))
-                            ->get()
-                        ], 200);
+    * @method _sendPaymentEmail : Function to send job booking email.
+    */
+    public function _sendPaymentEmail($mailData) {
+        $customerDetails = User::whereId($mailData['customer_id'])->first();
+        $customerName = $customerDetails->first_name . ' ' . $customerDetails->last_name;
+        $data = array(
+            'user' => $customerDetails,
+            'name' => $customerName,
+        );
+        //send to customer
+        Mail::send('email_templates.payment_email', $data, function ($message) use ($customerDetails, $customerName) {
+            $message->to($customerDetails->email, $customerName)->subject('Job Created');
+            $message->from(env('MAIL_USERNAME'), env('MAIL_USERNAME'));
+        });
+        //send to manager
+        if ($mailData['manager_id'] !== null) {
+            $managerDetails = User::whereId($mailData['manager_id'])->first();
+            $managerName = $managerDetails->first_name . ' ' . $managerDetails->last_name;
+            $data = array(
+                'user' => $managerDetails,
+                'name' => $managerName,
+            );
+            Mail::send('email_templates.payment_email', $data, function ($message) use ($managerDetails, $managerName) {
+                $message->to($managerDetails->email, $managerName)->subject('Job Created');
+                $message->from(env('MAIL_USERNAME'), env('MAIL_USERNAME'));
+            });
+        }
     }
 
     /**

@@ -364,7 +364,6 @@ class FarmController extends Controller
             return response()->json([
                 'status' => false,
                 'message' => 'Unable to delete farm try again later.',
-                '_m' => $e->getMessage()
             ], 423);
         }
     }

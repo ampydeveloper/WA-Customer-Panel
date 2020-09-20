@@ -12,7 +12,6 @@ class Job extends Model
     use \Staudenmeir\EloquentJsonRelations\HasJsonRelationships;
 
     protected $casts = [
-        'options' => 'json',
     ];
     /**
      * The attributes that are mass assignable.

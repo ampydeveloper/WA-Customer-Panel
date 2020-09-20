@@ -45,7 +45,6 @@ Route::group(['middleware' => 'auth:api', 'prefix' => 'customer', 'as' => 'custo
 
         Route::get('manager/is-unique/{email}', 'FarmController@isUniqueManager')->name('manage.is-unique');
 
-
         // Route group to manage farm managers
         Route::group(['prefix' => '{customer_farm}', 'as' => 'manager'], function () {
             Route::get('managers', 'FarmController@getFarmManagers')->name('list');
@@ -53,8 +52,12 @@ Route::group(['middleware' => 'auth:api', 'prefix' => 'customer', 'as' => 'custo
             Route::patch('manager', 'FarmController@updateFarmManager')->name('update');
             Route::delete('manager/{user}', 'FarmController@deleteFarmManager')->name('delete');
         });
-
-
     });
+
+     // Job related apis
+     Route::group(['prefix' => 'job', 'as' => 'job'], function () {
+        Route::get('{job}', 'JobController@get')->name('get');
+        Route::put('', 'JobController@create')->name('create');
+     });
 
 });
