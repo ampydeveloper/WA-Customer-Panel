@@ -23,6 +23,8 @@ Route::group(['prefix' => 'auth'], function () {
     Route::post('change-password', 'AuthController@changePassword')->name('change.password');
     Route::get('logout', 'AuthController@logout')->middleware('auth:api')->name('logout');
     Route::get('profile', 'AuthController@profile')->middleware('auth:api')->name('profile');
+    // Route::get('confirm-update-email/{email_token}/{user_token}', 'AuthController@profile')->middleware('auth:api')->name('profile');
+
 });
 
 Route::group(['middleware' => 'auth:api', 'prefix' => 'my', 'as' => 'my'], function () {
@@ -42,7 +44,7 @@ Route::group(['middleware' => 'auth:api', 'prefix' => 'customer', 'as' => 'custo
         Route::patch('{customer_farm}', 'FarmController@update')->name('create');
         Route::get('{customer_farm}', 'FarmController@get')->name('get');
 
-        Route::post('manager/is-unique', 'FarmController@isUniqueManager')->name('manage.is-unique');
+        Route::get('manager/is-unique/{email}', 'FarmController@isUniqueManager')->name('manage.is-unique');
 
 
         // Route group to manage farm managers
@@ -54,22 +56,4 @@ Route::group(['middleware' => 'auth:api', 'prefix' => 'customer', 'as' => 'custo
 
     });
 
-    // Route::get('list', 'CustomerController@listCustomer');
-    // Route::get('{customer_id}', 'CustomerController@getCustomer');
-    // Route::put('', 'CustomerController@createCustomer');
-    // Route::patch('', 'CustomerController@updateCustomer');
-    
-    
-    // Route::post('list-customer-mobile', 'CustomerController@listCustomerMobile');
-    // Route::post('create-farm', 'CustomerController@createFarm');
-    // Route::post('create-manager', 'CustomerController@createCustomerManager');
-
-
-    // Route::get('get-farm/{customer_id}', 'CustomerController@getFarms');
-    // Route::get('get-farm-and-manager/{customer_id}', 'CustomerController@getCustomerManager');
-    // Route::get('get-farm-manager/{farm_id}', 'CustomerController@getFarmManager');
-    // Route::get('card-list/{customer_id}', 'CustomerController@getAllCard');
-    // Route::get('record-list/{customer_id}', 'CustomerController@getAllRecords');
-    // Route::post('update-farm', 'CustomerController@updateFarm');
-    // Route::post('update-manager', 'CustomerController@updateManager');
 });
