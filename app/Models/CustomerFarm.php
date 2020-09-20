@@ -40,4 +40,13 @@ class CustomerFarm extends Model
         
         return ($userId && $this->customer_id == $userId);
     }
+
+    // public function deleteAllManagers()
+    // {
+    //     $this->managers->delete();
+    //     // $this->managers()->each(function($manager){
+    //     //     $manager->managerDetails()->delete();
+    //     //     $manager->delete();
+    //     // });
+    // }
 }

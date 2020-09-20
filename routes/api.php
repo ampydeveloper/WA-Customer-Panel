@@ -23,8 +23,6 @@ Route::group(['prefix' => 'auth'], function () {
     Route::post('change-password', 'AuthController@changePassword')->name('change.password');
     Route::get('logout', 'AuthController@logout')->middleware('auth:api')->name('logout');
     Route::get('profile', 'AuthController@profile')->middleware('auth:api')->name('profile');
-    // Route::get('confirm-update-email/{email_token}/{user_token}', 'AuthController@profile')->middleware('auth:api')->name('profile');
-
 });
 
 Route::group(['middleware' => 'auth:api', 'prefix' => 'my', 'as' => 'my'], function () {
@@ -43,6 +41,7 @@ Route::group(['middleware' => 'auth:api', 'prefix' => 'customer', 'as' => 'custo
         Route::put('', 'FarmController@create')->name('create');
         Route::patch('{customer_farm}', 'FarmController@update')->name('create');
         Route::get('{customer_farm}', 'FarmController@get')->name('get');
+        Route::delete('{customer_farm}', 'FarmController@deleteFarm')->name('delete');
 
         Route::get('manager/is-unique/{email}', 'FarmController@isUniqueManager')->name('manage.is-unique');
 
@@ -51,6 +50,8 @@ Route::group(['middleware' => 'auth:api', 'prefix' => 'customer', 'as' => 'custo
         Route::group(['prefix' => '{customer_farm}', 'as' => 'manager'], function () {
             Route::get('managers', 'FarmController@getFarmManagers')->name('list');
             Route::put('manager', 'FarmController@createFarmManager')->name('create');
+            Route::patch('manager', 'FarmController@updateFarmManager')->name('update');
+            Route::delete('manager/{user}', 'FarmController@deleteFarmManager')->name('delete');
         });
 
 

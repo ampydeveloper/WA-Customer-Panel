@@ -245,8 +245,9 @@ class FarmController extends Controller
         }
     }
 
-    public function updateManager(Request $request)
+    public function updateFarmManager(Request $request)
     {
+        die('In progress.');
         $validator = Validator::make($request->all(), [
                     'manager_id' => 'required',
                     'farm_id' => 'required',
@@ -331,6 +332,71 @@ class FarmController extends Controller
                         'message' => $e->getMessage(),
                         'data' => []
                     ], 500);
+        }
+    }
+
+    /**
+     * @method deleteFarm: Function to delete a farm.
+     * 
+     * @param CustomerFarm $CustomerFarm : Farm model ( Farm to be deleted ).
+     */
+    public function deleteFarm(CustomerFarm $customerFarm)
+    {
+        if (!$customerFarm->isOwner()) {
+            return response()->json([
+                    'status' => false,
+                    'message' => 'Unauthorized access.',
+                ], 421);
+        }
+        try {
+            DB::beginTransaction();
+            $customerFarm->managers()->delete();
+            $customerFarm->delete();
+            DB::commit();
+            
+            return response()->json([
+                'status' => false,
+                'message' => 'Farm deleted successfully.',
+            ], 200);
+        } catch(\Exception $e) {
+            DB::rollBack();
+
+            return response()->json([
+                'status' => false,
+                'message' => 'Unable to delete farm try again later.',
+                '_m' => $e->getMessage()
+            ], 423);
+        }
+    }
+
+    /**
+     * @method deleteFarmManager: Function to delete manager of a farm.
+     * 
+     * @param CustomerFarm $CustomerFarm : Farm model.
+     * @param User $user : User model ( Customer that need to be deleted ).
+     */
+    public function deleteFarmManager(CustomerFarm $customerFarm, User $user)
+    {
+        $farm = $user->managerOf;
+        if (!$farm || !$farm->isOwner() || $customerFarm->id != $farm->id) {
+            return response()->json([
+                    'status' => false,
+                    'message' => 'Unauthorized access.',
+                ], 421);
+        }
+
+        try {
+            // There is no need to delete data from manager details table.
+            $user->delete();
+            return response()->json([
+                'status' => false,
+                'message' => 'Manager deleted successfully.',
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Unable to delete manager try again later.',
+            ], 423);   
         }
     }
     /**
