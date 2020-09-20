@@ -174,7 +174,7 @@ class AuthController extends Controller
         $data = array(
             'name' => $name,
             'email' => $user->email,
-            'verificationLink' => env('APP_URL') . 'confirm-email/' . base64_encode($user->email)
+            'verificationLink' => env('APP_URL') . 'auth/confirm-email/' . base64_encode($user->email)
         );
 
         Mail::send('email_templates.welcome_email', $data, function ($message) use ($user, $name) {
@@ -428,22 +428,20 @@ class AuthController extends Controller
     {
         $userEmail = base64_decode($email);
         $getUser = User::where('email', $userEmail)->first();
-        if ($getUser->email == $userEmail && $getUser->is_confirmed == 0) {
-            $getUser->is_confirmed = 1;
-            $getUser->save();
-            $message = "Your email address has been successfully confirmed. Please login to proceed further.";
-            $status = true;
-            $errCode = 200;
-        } else {
-            $status = false;
-            $message = "Your confirmation link has been expired.";
-            $errCode = 400;
+
+        if (!$getUser) {
+            return redirect(env('APP_URL').'sign-in?emailConfirmed=0');
         }
 
-        return response()->json([
-            'status' => $status,
-            'message' => $message
-        ], $errCode);
+        if ($getUser->is_confirmed == 0) {
+            $getUser->is_confirmed = 1;
+            if ($getUser->save()) {
+                return redirect(env('APP_URL').'sign-in?emailConfirmed=1');
+            }
+            return redirect(env('APP_URL').'sign-in?emailConfirmed=0');
+        } else {
+            return redirect(env('APP_URL').'sign-in?emailConfirmed=2');
+        }
     }
 
     /**

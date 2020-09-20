@@ -23,8 +23,6 @@ Route::group(['prefix' => 'auth'], function () {
     Route::post('change-password', 'AuthController@changePassword')->name('change.password');
     Route::get('logout', 'AuthController@logout')->middleware('auth:api')->name('logout');
     Route::get('profile', 'AuthController@profile')->middleware('auth:api')->name('profile');
-    // Route::get('confirm-update-email/{email_token}/{user_token}', 'AuthController@profile')->middleware('auth:api')->name('profile');
-
 });
 
 Route::group(['middleware' => 'auth:api', 'prefix' => 'my', 'as' => 'my'], function () {
