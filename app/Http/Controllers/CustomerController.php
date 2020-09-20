@@ -356,7 +356,7 @@ class CustomerController extends Controller {
                                 'status' => true,
                                 'message' => 'Customer created successfully.',
                                 'data' => []
-                                    ], 200);
+                            ], 200);
                 }
             }
         } catch (\Exception $e) {

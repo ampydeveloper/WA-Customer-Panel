@@ -41,7 +41,12 @@ Route::group(['middleware' => 'auth:api', 'prefix' => 'customer', 'as' => 'custo
         Route::put('', 'FarmController@create')->name('create');
         Route::patch('{customer_farm}', 'FarmController@update')->name('create');
         Route::get('{customer_farm}', 'FarmController@get')->name('get');
-        Route::get('{customer_farm}/managers', 'FarmController@getFarmManagers')->name('get');
+
+        // Route group to manage farm managers
+        Route::group(['prefix' => '{customer_farm}', 'as' => 'manager'], function () {
+            Route::get('managers', 'FarmController@getFarmManagers')->name('list');
+            Route::put('manager', 'FarmController@createFarmManager')->name('create');
+        });
     });
 
     // Route::get('list', 'CustomerController@listCustomer');
