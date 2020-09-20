@@ -230,7 +230,7 @@ class FarmController extends Controller
                     DB::commit();
                     return response()->json([
                                 'status' => true,
-                                'message' => 'Customer created successfully.',
+                                'message' => 'Manager created successfully.',
                                 'data' => []
                             ], 200);
                 }
@@ -364,26 +364,15 @@ class FarmController extends Controller
             $message->from(env('MAIL_USERNAME'), env('MAIL_USERNAME'));
         });
     }
-
-     /**
-     * create customer manager
+    
+    /**
+     * @method isUniqueManager: Function to check if email address is unique or not
+     * 
      */
-    public function createCustomerManager(Request $request)
+    public function isUniqueManager(Request $request)
     {
         $validator = Validator::make($request->all(), [
-                    'customer_id' => 'required',
-                    'farm_id' => 'required',
-                    'manager_first_name' => 'required',
-                    'manager_last_name' => 'required',
-                    'email' => 'required|email|unique:users',
-                    'manager_phone' => 'required',
-                    'manager_address' => 'required',
-                    'manager_city' => 'required',
-                    'manager_province' => 'required',
-                    'manager_zipcode' => 'required',
-                    'manager_card_image' => 'required',
-                    'manager_id_card' => 'required',
-                    'salary' => 'required',
+            'email' => 'required|email|unique:users',
         ]);
 
         if ($validator->fails()) {
@@ -391,57 +380,11 @@ class FarmController extends Controller
                         'status' => false,
                         'message' => 'The given data was invalid.',
                         'data' => $validator->errors()
-                            ], 422);
+                    ], 422);
         }
-        try {
-            DB::beginTransaction();
-            $newPassword = Str::random();
-            $saveManager = new User([
-                'prefix' => (isset($request->manager_prefix) && $request->manager_prefix != '' && $request->manager_prefix != null) ? $request->manager_prefix : null,
-                'first_name' => $request->manager_first_name,
-                'last_name' => $request->manager_last_name,
-                'email' => $request->email,
-                'phone' => $request->manager_phone,
-                'address' => $request->manager_address,
-                'city' => $request->manager_city,
-                'state' => $request->manager_province,
-                'zip_code' => $request->manager_zipcode,
-                'user_image' => (isset($request->manager_image) && $request->manager_image != '' && $request->manager_image != null) ? $request->manager_image : null,
-                'role_id' => config('constant.roles.Customer_Manager'),
-                'created_from_id' => $request->user()->id,
-                'is_confirmed' => 1,
-                'is_active' => 1,
-                'created_by' => $request->customer_id,
-                'farm_id' => $request->farm_id,
-                'password' => bcrypt($newPassword)
-            ]);
-
-            if ($saveManager->save()) {
-                $managerDetails = new ManagerDetail([
-                    'user_id' => $saveManager->id,
-                    'identification_number' => $request->manager_id_card,
-                    'document' => $request->manager_card_image,
-                    'salary' => $request->salary,
-                    'joining_date' => date('Y/m/d'),
-                ]);
-                if ($managerDetails->save()) {
-                    $this->_confirmPassword($saveManager, $newPassword);
-                    DB::commit();
-                    return response()->json([
-                                'status' => true,
-                                'message' => 'Customer created successfully.',
-                                'data' => []
-                                    ], 200);
-                }
-            }
-        } catch (\Exception $e) {
-            DB::rollBack();
-            Log::error(json_encode($e->getMessage()));
-            return response()->json([
-                        'status' => false,
-                        'message' => $e->getMessage(),
-                        'data' => []
-                            ], 500);
-        }
+        return response()->json([
+            'status' => true,
+        ], 200);
     }
+   
 }
