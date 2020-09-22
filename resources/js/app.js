@@ -7,12 +7,17 @@ import VueSweetalert2 from "vue-sweetalert2";
 import VueToast from "vue-toast-notification";
 // Import one of available themes
 import "vue-toast-notification/dist/theme-default.css";
+import "vuetify/dist/vuetify.min.css";
 
 import VueMapbox from "vue-mapbox";
 import Mapbox from "mapbox-gl";
+import Vuelidate from "vuelidate";
+import Vuetify from "vuetify";
 
 window.Vue = require("vue");
 
+Vue.use(Vuelidate);
+Vue.use(Vuetify);
 /** Vue Form Generator */
 Vue.use(VueFormGenerator);
 
@@ -37,5 +42,7 @@ Vue.use(VueToast);
 const app = new Vue({
   el: "#app",
   components: { App },
-  router
+  router,
+  vuetify: new Vuetify(),
+  render: h => h(App)
 });

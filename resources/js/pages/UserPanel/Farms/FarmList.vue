@@ -38,6 +38,9 @@
               class="btn btn-info btn-sm"
               >Edit</router-link
             >
+            <button @click="deleteFarm(farm.id)" class="btn btn-danger btn-sm">
+              Delete
+            </button>
           </td>
         </tr>
       </tbody>
@@ -62,6 +65,43 @@ export default {
     FarmService.list().then(response => {
       this.farmList = response.data.farms;
     });
+  },
+  methods: {
+    deleteFarm: async function(farmId) {
+      this.$swal({
+        title: "Are you sure?",
+        text: "You won't be able to revert this!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#1ec285",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Yes, delete it!"
+      }).then(async result => {
+        if (result.isConfirmed) {
+          try {
+            const response = await FarmService.delete(farmId);
+            this.$toast.open({
+              message: response.data.message,
+              type: "success",
+              position: "top-right",
+              dismissible: false
+            });
+            const farmIndex = this.farmList.findIndex(
+              farm => farm.id === farmId
+            );
+            this.farmList.splice(farmIndex, 1);
+          } catch (error) {
+            console.log(error);
+            this.$toast.open({
+              message: error.response.data.message,
+              type: "error",
+              position: "bottom-right",
+              dismissible: false
+            });
+          }
+        }
+      });
+    }
   }
 };
 </script>

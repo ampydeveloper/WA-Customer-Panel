@@ -2228,3 +2228,15 @@ p.already-account {
 .radio-list label input {
   margin-right: 5px;
 }
+
+.v-radio input[role="radio"] {
+  opacity: unset !important;
+}
+
+.v-select.v-text-field input {
+  border: none;
+}
+
+.v-input {
+  margin-bottom: 5px;
+}

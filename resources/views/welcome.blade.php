@@ -39,6 +39,7 @@
         function closeNav() {
             document.getElementById("mySidenav").style.width = "0";
         }
+
     </script>
 
     <script>
@@ -87,6 +88,7 @@
 
 
         });
+
     </script>
 
     <script>
@@ -99,12 +101,14 @@
                 $(".site-header").removeClass("stickyHeader");
             }
         });
+
     </script>
 
     <script>
         AOS.init({
             duration: 1200,
         })
+
     </script>
 
 </body>
