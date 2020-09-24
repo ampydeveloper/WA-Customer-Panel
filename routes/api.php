@@ -58,13 +58,12 @@ Route::group(['middleware' => 'auth:api', 'prefix' => 'customer', 'as' => 'custo
         });
     });
 
-     // Job related apis
-     Route::group(['prefix' => 'job', 'as' => 'job'], function () {
+    // Job related apis
+    Route::group(['prefix' => 'job', 'as' => 'job'], function () {
         Route::put('', 'JobController@create')->name('create');
         Route::get('{job}/cancel', 'JobController@cancelJob')->name('cancel');
         Route::get('{job}', 'JobController@get')->name('get');
-     });
-
+    });
 });
 
 Route::group(['middleware' => 'auth:api', 'prefix' => 'payment', 'as' => 'payment'], function () {

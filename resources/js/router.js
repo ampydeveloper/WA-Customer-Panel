@@ -10,6 +10,7 @@ import SignIn from "./pages/SignIn.vue";
 import ForgotPassword from "./pages/ForgotPassword.vue";
 import ChangePassword from "./pages/ChangePassword.vue";
 import MapBox from "./pages/UserPanel/MapBox.vue";
+import ChatBox from "./pages/UserPanel/ChatBox.vue";
 
 /** Farm Imports */
 import Farms from "./pages/UserPanel/Farms";
@@ -23,6 +24,7 @@ import CreateManager from "./pages/UserPanel/Farms/Managers/CreateManager.vue";
 import Jobs from "./pages/UserPanel/Jobs";
 import JobList from "./pages/UserPanel/Jobs/JobList.vue";
 import CreateJob from "./pages/UserPanel/Jobs/CreateJob.vue";
+import EditJob from "./pages/UserPanel/Jobs/EditJob.vue";
 
 Vue.use(VueRouter);
 
@@ -89,6 +91,11 @@ const router = new VueRouter({
       component: MapBox
     },
     {
+      path: "/chat",
+      name: "ChatBox",
+      component: ChatBox
+    },
+    {
       path: "/farms",
       component: Farms,
       beforeEnter: checkAuthentication,
@@ -117,6 +124,16 @@ const router = new VueRouter({
           path: ":farmId/edit",
           name: "editFarm",
           component: EditFarm
+        },
+        {
+          path: ":farmId/jobs",
+          name: "jobsList",
+          component: JobList
+        },
+        {
+          path: ":farmId/jobs/upcoming",
+          name: "upcomingJobsList",
+          component: JobList
         }
       ]
     },
@@ -126,14 +143,14 @@ const router = new VueRouter({
       beforeEnter: checkAuthentication,
       children: [
         {
-          path: "",
-          name: "jobsList",
-          component: JobList
-        },
-        {
           path: "create",
           name: "createJob",
           component: CreateJob
+        },
+        {
+          path: ":jobId/edit",
+          name: "editJob",
+          component: EditJob
         }
       ]
     }

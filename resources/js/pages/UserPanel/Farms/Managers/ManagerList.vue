@@ -82,7 +82,6 @@ export default {
             );
             this.managerList.splice(managerIndex, 1);
           } catch (error) {
-            console.log(error);
             this.$toast.open({
               message: error.response.data.message,
               type: "error",
