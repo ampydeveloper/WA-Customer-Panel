@@ -18,8 +18,10 @@ use App\Models\CustomerFarm;
 use App\Http\Requests\Job\{
     CreateJobRequest
 };
-class JobController extends Controller {
-  
+
+class JobController extends Controller
+{
+
     /**
      * @method createJob : Function to Create job.
      */
@@ -28,9 +30,9 @@ class JobController extends Controller {
         $farm = CustomerFarm::find($createJobRequest->farm_id);
         if (!$farm->isOwner()) {
             return response()->json([
-                    'status' => false,
-                    'message' => 'Unauthorized access.',
-                ], 421);
+                'status' => false,
+                'message' => 'Unauthorized access.',
+            ], 421);
         }
         $checkService = Service::where('id', $createJobRequest->service_id)->first();
         DB::beginTransaction();
@@ -59,28 +61,28 @@ class JobController extends Controller {
                     'manager_id' => isset($job->manager_id) ? $job->manager_id : null
                 ];
                 $this->_sendPaymentEmail($mailData);
+                DB::commit();
                 return response()->json([
-                            'status' => true,
-                            'message' => 'Job created successfully.',
-                            'data' => $job
-                        ], 200);
+                    'status' => true,
+                    'message' => 'Job created successfully.',
+                    'data' => $job
+                ], 200);
             }
-            DB::commit();
-
         } catch (\Exception $e) {
             DB::rollBack();
             return response()->json([
-                        'status' => false,
-                        'message' => $e->getMessage(),
-                        'data' => []
-                    ], 500);
+                'status' => false,
+                'message' => $e->getMessage(),
+                'data' => []
+            ], 500);
         }
     }
 
     /**
-    * @method _sendPaymentEmail : Function to send job booking email.
-    */
-    public function _sendPaymentEmail($mailData) {
+     * @method _sendPaymentEmail : Function to send job booking email.
+     */
+    public function _sendPaymentEmail($mailData)
+    {
         $customerDetails = User::whereId($mailData['customer_id'])->first();
         $customerName = $customerDetails->first_name . ' ' . $customerDetails->last_name;
         $data = array(
@@ -110,7 +112,8 @@ class JobController extends Controller {
     /**
      * get farms
      */
-    public function getJobsOfFram(CustomerFarm $customerFarm) {
+    public function getJobsOfFram(CustomerFarm $customerFarm)
+    {
         if (!Auth::user()->canAccessFarm($customerFarm)) {
             return response()->json([
                 'status' => false,
@@ -120,77 +123,80 @@ class JobController extends Controller {
         }
 
         return response()->json([
-                    'status' => true,
-                    'message' => 'Customer Details',
-                    'data' => $customerFarm->jobs
-                ], 200);
+            'status' => true,
+            'message' => 'Job List',
+            'data' => $customerFarm->jobs
+        ], 200);
     }
     /**
      * get service time slots
      */
-    public function getServiceSlots(Request $request) {
+    public function getServiceSlots(Request $request)
+    {
         $service = Service::whereId($request->service_id)->first();
         if ($service != null) {
             $timeSlots = TimeSlots::whereIn('id', json_decode($service->slot_time))->get();
             return response()->json([
-                        'status' => true,
-                        'message' => 'Service Slot Details.',
-                        'data' => $timeSlots
-                    ], 200);
+                'status' => true,
+                'message' => 'Service Slot Details.',
+                'data' => $timeSlots
+            ], 200);
         } else {
             return response()->json([
-                        'status' => true,
-                        'message' => 'No time slot available.',
-                        'data' => []
-                    ], 500);
+                'status' => true,
+                'message' => 'No time slot available.',
+                'data' => []
+            ], 500);
         }
     }
     /**
      * @method get: Function to get single jobs.
-     * 
+     *
      * @param Job $job : Job which need to be fetched.
      */
-    public function get(Job $job) {
+    public function get(Job $job)
+    {
         return response()->json([
-                    'status' => true,
-                    'message' => 'Job Details.',
-                    'data' => $job
-                ], 200);
+            'status' => true,
+            'message' => 'Job Details.',
+            'data' => $job
+        ], 200);
     }
-    
+
     /**
      * @method cancelJob: Function to cancel a job. A job can not be canceled after 24 hours.
-     * 
+     *
      * @param Job $job : Job which need to be canceled.
      */
-    public function cancelJob(Job $job) {
+    public function cancelJob(Job $job)
+    {
         if (round((strtotime($job->job_providing_date) - strtotime(date('Y/m/d'))) / 3600, 1) >= 24) {
             try {
                 $job->update(['job_status' => config('constant.job_status.cancelled')]);
                 return response()->json([
-                            'status' => true,
-                            'message' => 'Job cancelled successfully.',
-                            'data' => $job
-                        ], 200);
+                    'status' => true,
+                    'message' => 'Job cancelled successfully.',
+                    'data' => $job
+                ], 200);
             } catch (\Exception $e) {
                 Log::error(json_encode($e->getMessage()));
                 return response()->json([
-                            'status' => false,
-                            'message' => $e->getMessage(),
-                            'data' => []
-                        ], 500);
+                    'status' => false,
+                    'message' => $e->getMessage(),
+                    'data' => []
+                ], 500);
             }
         }
         return response()->json([
-                    'status' => false,
-                    'message' => 'You cannot cancel the job.',
-                    'data' => []
-                ], 500);
+            'status' => false,
+            'message' => 'You cannot cancel the job.',
+            'data' => []
+        ], 500);
     }
 
     /**
      * @method upcomingJobs: Function to get upcoming jobs.
-     * 
+     *
      * @param CustomerFarm $customerFarm : Farm whose jobs need to be fetched.
      */
     public function upcomingJobs(CustomerFarm $customerFarm)
@@ -204,11 +210,10 @@ class JobController extends Controller {
         }
 
         return response()->json([
-                    'status' => true,
-                    'message' => 'Customer Details',
-                    'now' => Carbon::now()->format('Y-m-d'),
-                    'data' => Job::Where('farm_id', $customerFarm->id)->where('job_providing_date', '>', Carbon::now())->with('truck_driver', 'truck')->get()
-                ], 200);
+            'status' => true,
+            'message' => 'Customer Details',
+            'now' => Carbon::now()->format('Y-m-d'),
+            'data' => Job::Where('farm_id', $customerFarm->id)->where('job_providing_date', '>', Carbon::now())->with('truck_driver', 'truck')->get()
+        ], 200);
     }
-
 }

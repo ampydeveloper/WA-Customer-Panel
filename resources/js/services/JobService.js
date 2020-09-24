@@ -10,9 +10,18 @@ class JobService {
     });
   }
 
-  static list() {
+  static list(farmId) {
     const token = window.localStorage.getItem("token");
-    return Axios.get("/api/my/jobs", {
+    return Axios.get(`/api/customer/farm/${farmId}/jobs`, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
+  }
+
+  static upcomingJobsList(farmId) {
+    const token = window.localStorage.getItem("token");
+    return Axios.get(`/api/customer/farm/${farmId}/jobs/upcoming`, {
       headers: {
         Authorization: `Bearer ${token}`
       }
@@ -22,6 +31,15 @@ class JobService {
   static get(jobId) {
     const token = window.localStorage.getItem("token");
     return Axios.get(`/api/customer/job/${jobId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
+  }
+
+  static cancel(jobId) {
+    const token = window.localStorage.getItem("token");
+    return Axios.get(`/api/customer/job/${jobId}/cancel`, {
       headers: {
         Authorization: `Bearer ${token}`
       }

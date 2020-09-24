@@ -25,11 +25,13 @@
         </tr>
       </thead>
       <tbody>
-        <!-- <tr v-for="job in jobList" :key="job.id">
-          <td>{{ job.farm_address }}</td>
-          <td>{{ job.farm_city }}</td>
-          <td>{{ job.farm_province }}</td>
-          <td>{{ job.farm_zipcode }}</td>
+        <tr v-for="job in jobList" :key="job.id">
+          <td></td>
+          <td>{{ job.notes }}</td>
+          <td></td>
+          <td>{{ job.weight }} Ton</td>
+          <td>${{ job.amount }}</td>
+          <td>{{ jobStatusList[job.job_status] }}</td>
           <td>
             <router-link
               :to="{
@@ -39,8 +41,11 @@
               class="btn btn-info btn-sm"
               >Edit</router-link
             >
+            <button class="btn btn-sm btn-danger" @click="cancelJob(job.id)">
+              Cancel Job
+            </button>
           </td>
-        </tr> -->
+        </tr>
       </tbody>
     </table>
   </div>
@@ -56,13 +61,39 @@ export default {
   },
   data() {
     return {
-      jobList: []
+      jobList: [],
+      jobStatusList: ["Yet to Start", "In Progress"]
     };
   },
   created() {
-    JobService.list().then(response => {
-      //   this.jobList = response.data.jobs;
+    const { name: routeName } = this.$route;
+    JobService[routeName === "jobsList" ? "list" : "upcomingJobsList"](
+      this.$route.params.farmId
+    ).then(response => {
+      this.jobList = response.data.data;
     });
+  },
+  methods: {
+    cancelJob: async function(jobId) {
+      try {
+        const response = await JobService.cancel(jobId);
+        this.$toast.open({
+          message: response.data.message,
+          type: "success",
+          position: "top-right",
+          dismissible: false
+        });
+        const jobIndex = this.jobList.findIndex(job => job.id === managerId);
+        this.jobList.splice(jobIndex, 1);
+      } catch (error) {
+        this.$toast.open({
+          message: error.response.data.message,
+          type: "error",
+          position: "bottom-right",
+          dismissible: false
+        });
+      }
+    }
   }
 };
 </script>

@@ -14,6 +14,7 @@
           <th scope="col">Province</th>
           <th scope="col">Zipcode</th>
           <th scope="col">Managers</th>
+          <th scope="col">Jobs</th>
           <th scope="col">Actions</th>
         </tr>
       </thead>
@@ -27,6 +28,16 @@
             <router-link
               :to="{ name: 'managerList', params: { farmId: farm.id } }"
               >Managers</router-link
+            >
+          </td>
+          <td>
+            <router-link :to="{ name: 'jobsList', params: { farmId: farm.id } }"
+              >Jobs</router-link
+            >
+            |
+            <router-link
+              :to="{ name: 'upcomingJobsList', params: { farmId: farm.id } }"
+              >Upcoming Jobs</router-link
             >
           </td>
           <td>
@@ -91,7 +102,6 @@ export default {
             );
             this.farmList.splice(farmIndex, 1);
           } catch (error) {
-            console.log(error);
             this.$toast.open({
               message: error.response.data.message,
               type: "error",

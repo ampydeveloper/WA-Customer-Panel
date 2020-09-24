@@ -13,9 +13,11 @@ import VueMapbox from "vue-mapbox";
 import Mapbox from "mapbox-gl";
 import Vuelidate from "vuelidate";
 import Vuetify from "vuetify";
+import Chat from "vue-beautiful-chat";
 
 window.Vue = require("vue");
 
+Vue.use(Chat);
 Vue.use(Vuelidate);
 Vue.use(Vuetify);
 /** Vue Form Generator */
