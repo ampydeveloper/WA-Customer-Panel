@@ -52,12 +52,16 @@ Route::group(['middleware' => 'auth:api', 'prefix' => 'customer', 'as' => 'custo
             Route::patch('manager', 'FarmController@updateFarmManager')->name('update');
             Route::delete('manager/{user}', 'FarmController@deleteFarmManager')->name('delete');
         });
+        Route::group(['prefix' => '{customer_farm}', 'as' => 'jobs'], function () {
+            Route::get('jobs', 'JobController@getJobsOfFram')->name('list');
+        });
     });
 
      // Job related apis
      Route::group(['prefix' => 'job', 'as' => 'job'], function () {
-        Route::get('{job}', 'JobController@get')->name('get');
         Route::put('', 'JobController@create')->name('create');
+        Route::get('{job}/cancel', 'JobController@cancelJob')->name('cancel');
+        Route::get('{job}', 'JobController@get')->name('get');
      });
 
 });

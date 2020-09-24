@@ -30,6 +30,11 @@ class CustomerFarm extends Model
         return $this->belongsTo('App\Models\User', 'customer_id');
     }
 
+    public function jobs()
+    {
+        return $this->hasMany('App\Models\Job', 'farm_id');
+    }
+
     /**
      * @method isOwner:  Function to check if user is owner of map.
      * 

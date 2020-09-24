@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Carbon;
 use Validator;
 use Mail;
+use Auth;
 use App\Models\User;
 use App\Models\Service;
 use App\Models\TimeSlots;
@@ -61,7 +62,7 @@ class JobController extends Controller {
                 return response()->json([
                             'status' => true,
                             'message' => 'Job created successfully.',
-                            'data' => []
+                            'data' => $job
                         ], 200);
             }
             DB::commit();
@@ -109,12 +110,20 @@ class JobController extends Controller {
     /**
      * get farms
      */
-    public function getJobFrams(Request $request) {
+    public function getJobsOfFram(CustomerFarm $customerFarm) {
+        if (!Auth::user()->canAccessFarm($customerFarm)) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Unauthorized access.',
+                'data' => []
+            ], 421);
+        }
+
         return response()->json([
                     'status' => true,
                     'message' => 'Customer Details',
-                    'data' => CustomerFarm::where('customer_id', $request->customer_id)->where('farm_active', '1')->with('farmManager')->get()
-                        ], 200);
+                    'data' => $customerFarm->jobs
+                ], 200);
     }
     /**
      * get service time slots
@@ -125,65 +134,58 @@ class JobController extends Controller {
             $timeSlots = TimeSlots::whereIn('id', json_decode($service->slot_time))->get();
             return response()->json([
                         'status' => true,
-                        'message' => 'Service Slot Details',
+                        'message' => 'Service Slot Details.',
                         'data' => $timeSlots
-                            ], 200);
+                    ], 200);
         } else {
             return response()->json([
                         'status' => true,
-                        'message' => 'No time slot available',
+                        'message' => 'No time slot available.',
                         'data' => []
-                            ], 500);
+                    ], 500);
         }
     }
     /**
-     * get single jobs
+     * @method get: Function to get single jobs.
+     * 
+     * @param Job $job : Job which need to be fetched.
      */
-    public function getSingleJob(Request $request) {
-        $getSingleJobs = Job::whereId($request->job_id)->with("customer", "manager", "farm", "service", "timeslots", "truck", "skidsteer", "truck_driver", "skidsteer_driver")->first();
+    public function get(Job $job) {
         return response()->json([
                     'status' => true,
-                    'message' => 'single job Details',
-                    'data' => $getSingleJobs
-                        ], 200);
+                    'message' => 'Job Details.',
+                    'data' => $job
+                ], 200);
     }
     
-    
-    public function cancelJob(Request $request) {
-        $validator = Validator::make($request->all(), [
-                    'job_id' => 'required',
-        ]);
-        if ($validator->fails()) {
-            return response()->json([
-                        'status' => false,
-                        'message' => 'The given data was invalid.',
-                        'data' => $validator->errors()
-                            ], 422);
-        }
-        $bookedService = Job::where('id', $request->job_id)->first();
-        if (round((strtotime($bookedService->job_providing_date) - strtotime(date('Y/m/d'))) / 3600, 1) >= 24) {
+    /**
+     * @method cancelJob: Function to cancel a job. A job can not be canceled after 24 hours.
+     * 
+     * @param Job $job : Job which need to be canceled.
+     */
+    public function cancelJob(Job $job) {
+        if (round((strtotime($job->job_providing_date) - strtotime(date('Y/m/d'))) / 3600, 1) >= 24) {
             try {
-                Job::whereId($request->job_id)->update(['job_status' => config('constant.job_status.cancelled')]);
-                Job::whereId($request->job_id)->delete();
+                $job->update(['job_status' => config('constant.job_status.cancelled')]);
                 return response()->json([
                             'status' => true,
-                            'message' => 'Job deleted successfully',
-                            'data' => []
-                                ], 200);
+                            'message' => 'Job cancelled successfully.',
+                            'data' => $job
+                        ], 200);
             } catch (\Exception $e) {
                 Log::error(json_encode($e->getMessage()));
                 return response()->json([
                             'status' => false,
                             'message' => $e->getMessage(),
                             'data' => []
-                                ], 500);
+                        ], 500);
             }
         }
         return response()->json([
                     'status' => false,
                     'message' => 'You cannot cancel the job.',
                     'data' => []
-                        ], 500);
+                ], 500);
     }
 
 }
