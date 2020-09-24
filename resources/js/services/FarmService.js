@@ -41,6 +41,24 @@ class FarmService {
     );
   }
 
+  static deleteManager(farmId, managerId) {
+    const token = window.localStorage.getItem("token");
+    return Axios.delete(`api/customer/farm/${farmId}/manager/${managerId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
+  }
+
+  static delete(farmId) {
+    const token = window.localStorage.getItem("token");
+    return Axios.delete(`api/customer/farm/${farmId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
+  }
+
   static isEmailUnique(email) {
     const token = window.localStorage.getItem("token");
     return Axios.get(`/api/customer/farm/manager/is-unique/${email}`, {

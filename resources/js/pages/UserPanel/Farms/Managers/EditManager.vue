@@ -34,15 +34,15 @@ export default {
   props: ["newManager"],
   data() {
     return {
-      model: this.newManager !== undefined ? this.newManager : emptyManager,
+      model: emptyManager,
       schema: {
         fields: [
           ...managerFormSchema.fields,
           {
             type: "submit",
             styleClasses: "submit-button",
-            label: "Create Manager",
-            caption: "Create Manager form",
+            label: "Create Farm",
+            caption: "Create Farm form",
             validateBeforeSubmit: true,
             onSubmit: (model, schema) => {
               const { farmId } = this.$route.params;
