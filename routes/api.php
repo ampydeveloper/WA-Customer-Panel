@@ -54,6 +54,7 @@ Route::group(['middleware' => 'auth:api', 'prefix' => 'customer', 'as' => 'custo
         });
         Route::group(['prefix' => '{customer_farm}', 'as' => 'jobs'], function () {
             Route::get('jobs', 'JobController@getJobsOfFram')->name('list');
+            Route::get('jobs/upcoming', 'JobController@upcomingJobs')->name('list');
         });
     });
 

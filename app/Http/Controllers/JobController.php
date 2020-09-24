@@ -188,4 +188,27 @@ class JobController extends Controller {
                 ], 500);
     }
 
+    /**
+     * @method upcomingJobs: Function to get upcoming jobs.
+     * 
+     * @param CustomerFarm $customerFarm : Farm whose jobs need to be fetched.
+     */
+    public function upcomingJobs(CustomerFarm $customerFarm)
+    {
+        if (!Auth::user()->canAccessFarm($customerFarm)) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Unauthorized access.',
+                'data' => []
+            ], 421);
+        }
+
+        return response()->json([
+                    'status' => true,
+                    'message' => 'Customer Details',
+                    'now' => Carbon::now()->format('Y-m-d'),
+                    'data' => Job::Where('farm_id', $customerFarm->id)->where('job_providing_date', '>', Carbon::now())->with('truck_driver', 'truck')->get()
+                ], 200);
+    }
+
 }
