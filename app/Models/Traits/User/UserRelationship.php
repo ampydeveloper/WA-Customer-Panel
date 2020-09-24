@@ -6,7 +6,11 @@ trait UserRelationship
 {
     public function farms()
     {
-        return $this->hasMany('App\Models\CustomerFarm', 'customer_id');
+        if ($this->role_id == config('constant.roles.Customer_Manager')) {
+            return $this->hasMany('App\Models\CustomerFarm', 'id', 'farm_id');
+        } else {
+            return $this->hasMany('App\Models\CustomerFarm', 'customer_id');
+        }
     }
 
     public function messages()
