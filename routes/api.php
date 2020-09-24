@@ -66,3 +66,7 @@ Route::group(['middleware' => 'auth:api', 'prefix' => 'customer', 'as' => 'custo
      });
 
 });
+
+Route::group(['middleware' => 'auth:api', 'prefix' => 'payment', 'as' => 'payment'], function () {
+    Route::post('charge', 'PaymentController@charge')->name('charge');
+});
