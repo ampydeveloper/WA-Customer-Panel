@@ -34,23 +34,6 @@
             <a class="dropdown-item" href="/farms/create">Create</a>
           </div>
         </li>
-
-        <li class="nav-item dropdown">
-          <a
-            class="nav-link dropdown-toggle"
-            href="#"
-            id="navbarDropdownMenuLink"
-            data-toggle="dropdown"
-            aria-haspopup="true"
-            aria-expanded="false"
-          >
-            Jobs
-          </a>
-          <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-            <a class="dropdown-item" href="/jobs">List</a>
-            <a class="dropdown-item" href="/jobs/create">Create</a>
-          </div>
-        </li>
       </ul>
       <ul class="navbar-nav">
         <li class="nav-item active">

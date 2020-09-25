@@ -148,6 +148,7 @@ import JobService from "../../../services/JobService";
 import FarmService from "../../../services/FarmService";
 import router from "../../../router";
 import _ from "lodash";
+import moment from "moment";
 
 export default {
   data() {
@@ -157,7 +158,7 @@ export default {
         farm_id: "",
         service_id: "",
         time_slots_id: "",
-        job_providing_date: "2020-01-01",
+        job_providing_date: moment().format("YYYY-MM-DD"),
         weight: 1,
         amount: 0,
         notes: "",
@@ -255,8 +256,11 @@ export default {
             dismissible: false
           });
           setTimeout(() => {
-            router.push({ name: "jobsList" });
-          }, 3000);
+            router.push({
+              name: "jobsList",
+              params: { farmId: this.jobRequest.farm_id }
+            });
+          }, 2000);
         } catch (error) {
           this.$toast.open({
             message: error.response.data.message,
