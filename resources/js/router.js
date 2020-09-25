@@ -7,6 +7,8 @@ import Services from "./pages/Services.vue";
 import FAQ from "./pages/FAQ.vue";
 import SignUp from "./pages/SignUp.vue";
 import SignIn from "./pages/SignIn.vue";
+import { Role } from "./role";
+import PageNotFound from "./pages/PageNotFound.vue";
 import ForgotPassword from "./pages/ForgotPassword.vue";
 import ChangePassword from "./pages/ChangePassword.vue";
 import MapBox from "./pages/UserPanel/MapBox.vue";
@@ -90,7 +92,7 @@ const router = new VueRouter({
       name: "changePassword",
       component: ChangePassword
     },
-     {
+    {
       path: "/jobcreate",
       name: "jobcreate",
       component: JobCreate
@@ -116,6 +118,11 @@ const router = new VueRouter({
       component: JobDashboard
     },
     {
+      path: "/page-not-found",
+      name: "pageNotFound",
+      component: PageNotFound
+    },
+    {
       path: "/mapbox",
       name: "MapBox",
       component: MapBox
@@ -138,22 +145,26 @@ const router = new VueRouter({
         {
           path: "create",
           name: "createFarm",
-          component: CreateFarm
+          component: CreateFarm,
+          meta: { requiresAuth: [Role.Customer, Role.Hauler] }
         },
         {
           path: ":farmId/managers",
           name: "managerList",
-          component: ManagerList
+          component: ManagerList,
+          meta: { requiresAuth: [Role.Customer, Role.Hauler] }
         },
         {
           path: ":farmId/managers/create",
           name: "createManager",
-          component: CreateManager
+          component: CreateManager,
+          meta: { requiresAuth: [Role.Customer, Role.Hauler] }
         },
         {
           path: ":farmId/edit",
           name: "editFarm",
-          component: EditFarm
+          component: EditFarm,
+          meta: { requiresAuth: [Role.Customer, Role.Hauler] }
         },
         {
           path: ":farmId/jobs",
@@ -185,6 +196,27 @@ const router = new VueRouter({
       ]
     }
   ]
+});
+
+router.beforeEach((to, from, next) => {
+  // redirect to login page if not logged in and trying to access a restricted page
+  const { requiresAuth } = to.meta;
+  const currentUser = JSON.parse(window.localStorage.getItem("user"));
+
+  if (requiresAuth) {
+    if (!currentUser) {
+      // not logged in so redirect to login page with the return url
+      return next({ path: "/page-not-found", query: { returnUrl: to.path } });
+    }
+
+    // check if route is restricted by role
+    if (requiresAuth.length && !requiresAuth.includes(currentUser.role_id)) {
+      localStorage.removeItem("currentUser");
+      // role not authorised so redirect to home page
+      return next({ path: "/page-not-found" });
+    }
+  }
+  next();
 });
 
 export default router;

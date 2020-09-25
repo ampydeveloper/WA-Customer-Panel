@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="panel-heading">
-      <div class="btn-group pull-right">
+      <div class="btn-group pull-right" v-if="isCustomer || isHauler">
         <a href="/farms/create" class="btn btn-success btn-sm">Create Farm</a>
       </div>
       <h4>Farms</h4>
@@ -13,7 +13,7 @@
           <th scope="col">City</th>
           <th scope="col">Province</th>
           <th scope="col">Zipcode</th>
-          <th scope="col">Managers</th>
+          <th scope="col" v-if="isCustomer || isHauler">Managers</th>
           <th scope="col">Jobs</th>
           <th scope="col">Actions</th>
         </tr>
@@ -24,7 +24,7 @@
           <td>{{ farm.farm_city }}</td>
           <td>{{ farm.farm_province }}</td>
           <td>{{ farm.farm_zipcode }}</td>
-          <td>
+          <td v-if="isCustomer || isHauler">
             <router-link
               :to="{ name: 'managerList', params: { farmId: farm.id } }"
               >Managers</router-link

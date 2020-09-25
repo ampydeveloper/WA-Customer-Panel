@@ -23,44 +23,37 @@
 </template>
 
 <script>
-// import CloseIcon from "vue-beautiful-chat/src/assets/close-icon.png";
-// import OpenIcon from "vue-beautiful-chat/src/assets/logo-no-bg.svg";
-// import FileIcon from "vue-beautiful-chat/src/assets/file.svg";
-// import CloseIconSvg from "vue-beautiful-chat/src/assets/close.svg";
+import CloseIcon from "../../images/close-icon.png";
+import OpenIcon from "../../images/logo-no-bg.svg";
+import FileIcon from "../../images/file.svg";
+import CloseIconSvg from "../../images/close.svg";
 
 export default {
   name: "app",
   data() {
     return {
-      //   icons: {
-      //     open: {
-      //       img: OpenIcon,
-      //       name: "default"
-      //     },
-      //     close: {
-      //       img: CloseIcon,
-      //       name: "default"
-      //     },
-      //     file: {
-      //       img: FileIcon,
-      //       name: "default"
-      //     },
-      //     closeSvg: {
-      //       img: CloseIconSvg,
-      //       name: "default"
-      //     }
-      //   },
+      icons: {
+        open: {
+          img: OpenIcon,
+          name: "default"
+        },
+        close: {
+          img: CloseIcon,
+          name: "default"
+        },
+        file: {
+          img: FileIcon,
+          name: "default"
+        },
+        closeSvg: {
+          img: CloseIconSvg,
+          name: "default"
+        }
+      },
       participants: [
         {
           id: "user1",
-          name: "Matteo",
-          imageUrl: "https://avatars3.githubusercontent.com/u/1915989?s=230&v=4"
-        },
-        {
-          id: "user2",
-          name: "Support",
-          imageUrl:
-            "https://avatars3.githubusercontent.com/u/37018832?s=200&v=4"
+          name: "Matteo"
         }
       ], // the list of all the participant of the conversation. `name` is the user name, `id` is used to establish the author of a message, `imageUrl` is supposed to be the user avatar.
       titleImageUrl:
@@ -111,6 +104,17 @@ export default {
           type: "text",
           data: { text }
         });
+
+        console.log("Send Chat Message", {
+          author: "support",
+          type: "text",
+          data: { text }
+        });
+        this.$socket.emit("send-chat-message", {
+          author: "support",
+          type: "text",
+          data: { text }
+        });
       }
     },
     onMessageWasSent(message) {
@@ -137,6 +141,21 @@ export default {
       const m = this.messageList.find(m => m.id === message.id);
       m.isEdited = true;
       m.data.text = message.data.text;
+    }
+  },
+  sockets: {
+    connect: function() {
+      console.log("socket connected");
+      this.$socket.emit("new-user", "wellington");
+    },
+    "chat-message": function(data) {
+      console.log(
+        data,
+        'this method was fired by the socket server. eg: io.emit("chat-message", data)'
+      );
+    },
+    "user-connected": function(userName) {
+      console.log("User Connected: " + userName);
     }
   }
 };

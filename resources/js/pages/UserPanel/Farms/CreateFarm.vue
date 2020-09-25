@@ -57,6 +57,7 @@
 import farmFormSchema from "../../../forms/farmFormSchema";
 import FarmService from "../../../services/FarmService";
 import CreateManager from "./Managers/CreateManager";
+import router from "../../../router";
 
 const emptyManager = {
   manager_first_name: "",
@@ -138,6 +139,7 @@ export default {
             });
             this.model = emptyFarmRequest;
             this.addManagers = false;
+            router.push({ name: "farmsList" });
           },
           error => {
             this.$toast.open({

@@ -31,7 +31,12 @@
           </a>
           <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
             <a class="dropdown-item" href="/farms">List</a>
-            <a class="dropdown-item" href="/farms/create">Create</a>
+            <a
+              v-if="isCustomer || isHauler"
+              class="dropdown-item"
+              href="/farms/create"
+              >Create</a
+            >
           </div>
         </li>
       </ul>

@@ -14,6 +14,8 @@ import Mapbox from "mapbox-gl";
 import Vuelidate from "vuelidate";
 import Vuetify from "vuetify";
 import Chat from "vue-beautiful-chat";
+import VueSocketIO from "vue-socket.io";
+import { authorizationMixin } from "./role";
 
 window.Vue = require("vue");
 
@@ -35,6 +37,15 @@ Vue.use(VueSweetalert2, sweetAlertOptions);
 
 /** Vue Tost */
 Vue.use(VueToast);
+
+Vue.mixin(authorizationMixin);
+
+Vue.use(
+  new VueSocketIO({
+    debug: true,
+    connection: `http://${process.env.MIX_SOCKET_SERVER_IP}:${process.env.MIX_SOCKET_SERVER_PORT}`
+  })
+);
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to

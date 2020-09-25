@@ -55,9 +55,6 @@
                   v-model="selectedTimePeriod"
                   :rules="requiredRules"
                   label="Time Period"
-                  :value="selectedTimePeriod"
-                  name="selectedTimePeriod"
-                  id="selectedTimePeriod"
                 >
                   <v-radio
                     v-for="(n, i) in Object.keys(serviceTimeSlotMap)"
@@ -262,6 +259,7 @@ export default {
         time_slots_id: job.time_slots_id
       }
     };
+    this.selectedTimePeriod = 1;
   },
   methods: {
     formSubmit: async function() {

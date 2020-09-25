@@ -26,10 +26,12 @@
     "dependencies": {
         "mapbox-gl": "^1.12.0",
         "moment": "^2.29.0",
+        "socket.io-client": "^2.3.0",
         "vue-beautiful-chat": "^2.5.0",
         "vue-form-generator": "^2.3.4",
         "vue-mapbox": "^0.4.1",
         "vue-router": "^3.4.3",
+        "vue-socket.io": "^3.0.10",
         "vue-sweetalert2": "^3.0.8",
         "vue-toast-notification": "^0.5.0",
         "vuelidate": "^0.7.5",
