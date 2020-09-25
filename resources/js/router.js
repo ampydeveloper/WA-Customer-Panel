@@ -11,6 +11,11 @@ import ForgotPassword from "./pages/ForgotPassword.vue";
 import ChangePassword from "./pages/ChangePassword.vue";
 import MapBox from "./pages/UserPanel/MapBox.vue";
 import ChatBox from "./pages/UserPanel/ChatBox.vue";
+import JobCreate from "./pages/JobCreate.vue";
+import JobDashboard from "./pages/JobDashboard.vue";
+import Profile from "./pages/Profile.vue";
+import TrackJob from "./pages/TrackJob.vue";
+import ViewHistory from "./pages/ViewHistory.vue";
 
 /** Farm Imports */
 import Farms from "./pages/UserPanel/Farms";
@@ -84,6 +89,31 @@ const router = new VueRouter({
       path: "/change-password/:token",
       name: "changePassword",
       component: ChangePassword
+    },
+     {
+      path: "/jobcreate",
+      name: "jobcreate",
+      component: JobCreate
+    },
+    {
+      path: "/view-history",
+      name: "viewHistory",
+      component: ViewHistory
+    },
+    {
+      path: "/track-job",
+      name: "trackJob",
+      component: TrackJob
+    },
+    {
+      path: "/profile",
+      name: "profile",
+      component: Profile
+    },
+    {
+      path: "/job-dashboard",
+      name: "jobDashboard",
+      component: JobDashboard
     },
     {
       path: "/mapbox",
