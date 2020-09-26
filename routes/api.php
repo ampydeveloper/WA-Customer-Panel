@@ -22,7 +22,10 @@ Route::group(['prefix' => 'auth'], function () {
     Route::post('forgot-password', 'AuthController@forgotPassword')->name('forgot.password');
     Route::post('change-password', 'AuthController@changePassword')->name('change.password');
     Route::get('logout', 'AuthController@logout')->middleware('auth:api')->name('logout');
-    Route::get('profile', 'AuthController@profile')->middleware('auth:api')->name('profile');
+    Route::group(['prefix' => 'profile', 'as' => 'profile'], function () {
+        Route::get('', 'AuthController@profile')->middleware('auth:api')->name('get');
+        Route::post('', 'AuthController@updateProfile')->middleware('auth:api')->name('update');
+    });
 });
 
 Route::group(['middleware' => 'auth:api', 'prefix' => 'my', 'as' => 'my'], function () {
@@ -69,4 +72,8 @@ Route::group(['middleware' => 'auth:api', 'prefix' => 'customer', 'as' => 'custo
 
 Route::group(['middleware' => 'auth:api', 'prefix' => 'payment', 'as' => 'payment'], function () {
     Route::post('charge', 'PaymentController@charge')->name('charge');
+    Route::group(['prefix' => 'customer', 'as' => 'customer'], function () {
+        Route::put('add-card', 'PaymentController@addCard')->name('create');
+        Route::get('cards', 'PaymentController@getCustomerPaymentProfileList')->name('cards');
+    });
 });

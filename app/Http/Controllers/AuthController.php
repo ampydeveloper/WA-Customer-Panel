@@ -20,6 +20,7 @@ use App\Http\Requests\Auth\{
     LoginRequest,
     ForgotPasswordRequest,
     ChangePasswordRequest,
+    UpdateProfileRequest
 };
 
 class AuthController extends Controller
@@ -174,7 +175,7 @@ class AuthController extends Controller
         $data = array(
             'name' => $name,
             'email' => $user->email,
-            'verificationLink' => env('APP_URL') . 'auth/confirm-email/' . base64_encode($user->email)
+            'verificationLink' => env('APP_URL') . '/auth/confirm-email/' . base64_encode($user->email)
         );
 
         Mail::send('email_templates.welcome_email', $data, function ($message) use ($user, $name) {
@@ -321,7 +322,7 @@ class AuthController extends Controller
             $data = [
                 'name' => $name,
                 'email' => $user->email,
-                'verificationLink' => env('APP_URL') . 'change-password/' . base64_encode($user->email)
+                'verificationLink' => env('APP_URL') . "/change-password/" . base64_encode($user->email)
             ];
 
             $sendForGotEmail = Mail::send('email_templates.forgot_password', $data, function ($message) use ($user, $name) {
@@ -384,7 +385,7 @@ class AuthController extends Controller
     }
 
     /**
-     * recover password
+     * @method recoverPassword : Function to recover password.
      */
     public function recoverPassword(Request $request)
     {
@@ -430,17 +431,17 @@ class AuthController extends Controller
         $getUser = User::where('email', $userEmail)->first();
 
         if (!$getUser) {
-            return redirect(env('APP_URL').'sign-in?emailConfirmed=0');
+            return redirect(env('APP_URL').'/sign-in?emailConfirmed=0');
         }
 
         if ($getUser->is_confirmed == 0) {
             $getUser->is_confirmed = 1;
             if ($getUser->save()) {
-                return redirect(env('APP_URL').'sign-in?emailConfirmed=1');
+                return redirect(env('APP_URL').'/sign-in?emailConfirmed=1');
             }
-            return redirect(env('APP_URL').'sign-in?emailConfirmed=0');
+            return redirect(env('APP_URL').'/sign-in?emailConfirmed=0');
         } else {
-            return redirect(env('APP_URL').'sign-in?emailConfirmed=2');
+            return redirect(env('APP_URL').'/sign-in?emailConfirmed=2');
         }
     }
 
@@ -456,6 +457,46 @@ class AuthController extends Controller
             'message' => 'User details.',
             'data' => $request->user()
         ]);
+    }
+
+    /**
+     * @method updateProfile: Function to update user profile.
+     *
+     * @return JSON
+     */
+    public function updateProfile(UpdateProfileRequest $request)
+    {
+        $user = Auth::user();
+        if ($user->role_id == config('constant.roles.Customer') || $user->role_id == config('constant.roles.Haulers')) {
+            try {
+                
+                
+                $imageName = $user->putImage($request->user_image);
+                $user->update([
+                    'first_name' => $request->first_name,
+                    'last_name' => $request->last_name,
+                    'email' => $request->email,
+                    'phone' => $request->phone,
+                    'address' => $request->address,
+                    'city' => $request->city,
+                    'state' => $request->province,
+                    'zip_code' => $request->zipcode,
+                    'user_image' => $imageName
+                ]);
+
+                return response()->json([
+                    'status' => true,
+                    'message' => 'Your is successfully updated.',
+                    'data' => $user
+                ], 200);
+            } catch (\Exception $e) {
+                return response()->json([
+                    'status' => false,
+                    'message' => json_encode($e->getMessage()),
+                    'data' => []
+                ], 500);
+            }
+        }
     }
     /**
      * Logout user (Revoke the token)

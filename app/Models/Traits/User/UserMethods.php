@@ -2,6 +2,8 @@
 
 namespace App\Models\Traits\User;
 
+use Storage;
+
 trait UserMethods
 {
     public function isCustomer()
@@ -30,5 +32,17 @@ trait UserMethods
      */
     public function getAllFarms()
     {
+    }
+
+    public function defaultImageUrl()
+    {
+        return Storage::disk('public')->url('default-user.jpg');
+    }
+
+    public function putImage($image, $imageName = null)
+    {
+        $imageName = ($imageName) ? $imageName : time().'.'.$image->extension();
+
+        return (Storage::disk('user_images')->put($this->id.'/'.$imageName, file_get_contents($image))) ? $imageName : false;
     }
 }

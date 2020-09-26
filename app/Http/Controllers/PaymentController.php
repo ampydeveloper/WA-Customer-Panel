@@ -6,11 +6,12 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
 use Stripe;
-use App\Job;
-use App\Payment;
-use App\CustomerCardDetail;
+use App\Models\Job;
+use App\Models\Payment;
+use App\Models\CustomerCardDetail;
 use net\authorize\api\contract\v1 as AnetAPI;
 use net\authorize\api\controller as AnetController;
+use Auth;
 
 class PaymentController extends Controller
 {
@@ -29,7 +30,6 @@ class PaymentController extends Controller
      */
     public function stripeCharge(Request $request)
     {
-
         try {
             DB::beginTransaction();
             $loggedUser = $request->user();
@@ -37,11 +37,11 @@ class PaymentController extends Controller
             Stripe\Stripe::setApiKey(env('STRIPE_SECRET'));
             //stripe charge
             $getPreviousPayment = Payment::whereUserId($loggedUser->id)->first();
-            //check if customer exist    
-            if($getPreviousPayment == null) {
+            //check if customer exist
+            if ($getPreviousPayment == null) {
                 //create customer
-                $createCustomer = Stripe\Customer::create ([
-                    "email" => $loggedUser->email 
+                $createCustomer = Stripe\Customer::create([
+                    "email" => $loggedUser->email
                 ]);
                 $custId = $createCustomer->id;
             } else {
@@ -49,16 +49,16 @@ class PaymentController extends Controller
             }
 
             //fetch customer first from stripe
-            $stripeCustomer = Stripe\Customer::retrieve ($custId);
+            $stripeCustomer = Stripe\Customer::retrieve($custId);
             //check if used card is new card
-            if($request->newCard == 1) {
+            if ($request->newCard == 1) {
                 //add customer card
                 $addCard = Stripe\Customer::createSource(
                     $custId,
                     ['source' => $request->stripeToken]
                 );
-                //remove previous cards from default 
-                if(CustomerCardDetail::whereCustomerId($loggedUser->id)->get()->count() > 0){
+                //remove previous cards from default
+                if (CustomerCardDetail::whereCustomerId($loggedUser->id)->get()->count() > 0) {
                     // CustomerCardDetail::whereCustomerId($loggedUser->id)->update(['card_primary' => 0]);
                     $defaultCard = 0;
                 } else {
@@ -72,20 +72,20 @@ class PaymentController extends Controller
                     'card_exp_month' => $addCard->exp_month,
                     'card_exp_year' => $addCard->exp_year,
                     'card_status' => 1,
-                    'card_primary' => $defaultCard 
+                    'card_primary' => $defaultCard
                 ]);
                 $storeCardDetails->save();
-            } 
+            }
 
             //make charge
-            $checkStatus = Stripe\Charge::create ([
+            $checkStatus = Stripe\Charge::create([
                 "amount" => $request->amount*100,
                 "currency" => env('STRIPE_CURRENCY'),
                 "customer" => $stripeCustomer,
-                "description" => "Payment for Job." 
+                "description" => "Payment for Job."
             ]);
 
-            if($checkStatus) {
+            if ($checkStatus) {
                 $jobPayment = new Payment([
                     'job_id' => $request->job_id,
                     'user_id' => $loggedUser->id,
@@ -95,12 +95,12 @@ class PaymentController extends Controller
                     'payment_method' => config('constant.payment_methods.stripe'),
                     'currency' => $checkStatus->currency,
                     'amount' => $checkStatus->amount/100,
-                    'payment_status' => $checkStatus->status 
+                    'payment_status' => $checkStatus->status
                 ]);
 
                 $jobPayment->save();
 
-                if($checkStatus->status == config('constant.payment_status.succeeded')) {
+                if ($checkStatus->status == config('constant.payment_status.succeeded')) {
                     Job::whereId($request->job_id)->update(['payment_status' => config('constant.payment_status_reverse.succeeded')]);
                 }
             }
@@ -128,11 +128,10 @@ class PaymentController extends Controller
 
     /**
      * @method charge : Function to make charge using authorize.net.
-     * 
+     *
      */
     public function charge(Request $request)
     {
-
         try {
             DB::beginTransaction();
 
@@ -158,5 +157,206 @@ class PaymentController extends Controller
                 'data' => []
             ], 500);
         }
+    }
+
+    public function addCard(Request $request)
+    {
+        $user = Auth::user();
+        if(!$user->authorize_net_id && $user->authorize_net_id != '') {
+            return $this->createCustomerProfile($request, $user);
+        } else {
+            return $this->createCustomerPaymentProfile($request, $user);
+        }
+    }
+
+    /**
+     * @method createCustomerProfile: function to create customer and add card on authorize.net
+     *
+     */
+    public function createCustomerProfile(Request $request, $user)
+    {
+        // Set credit card information for payment profile
+        $creditCard = new AnetAPI\CreditCardType();
+        $creditCard->setCardNumber($request->card_number);
+        $creditCard->setExpirationDate($request->card_exp_year.'-'.$request->card_exp_month);
+        $creditCard->setCardCode($request->cvv);
+        $paymentCreditCard = new AnetAPI\PaymentType();
+        $paymentCreditCard->setCreditCard($creditCard);
+
+        // Create the Bill To info for new payment type
+        $billTo = new AnetAPI\CustomerAddressType();
+        $billTo->setFirstName($request->name);
+        // $billTo->setLastName($user->last_name);
+        // $billTo->setCompany("Souveniropolis");
+        $billTo->setAddress($user->address);
+        $billTo->setCity($user->city);
+        $billTo->setState($user->state);
+        $billTo->setZip($user->zip_code);
+        $billTo->setCountry($user->country);
+        $billTo->setPhoneNumber($user->phone);
+        // $billTo->setfaxNumber("999-999-9999");
+
+        // Create a customer shipping address
+        $customerShippingAddress = new AnetAPI\CustomerAddressType();
+        $customerShippingAddress->setFirstName($request->name);
+        // $customerShippingAddress->setLastName($user->last_name);
+        // $customerShippingAddress->setCompany("Addresses R Us");
+        $customerShippingAddress->setAddress($user->address);
+        $customerShippingAddress->setCity($user->city);
+        $customerShippingAddress->setState($user->state);
+        $customerShippingAddress->setZip($user->zip_code);
+        $customerShippingAddress->setCountry($user->country);
+        $customerShippingAddress->setPhoneNumber($user->phone);
+        // $customerShippingAddress->setFaxNumber("999-999-9999");
+
+        // Create an array of any shipping addresses
+        $shippingProfiles[] = $customerShippingAddress;
+
+
+        // Create a new CustomerPaymentProfile object
+        $paymentProfile = new AnetAPI\CustomerPaymentProfileType();
+        $paymentProfile->setCustomerType('individual');
+        $paymentProfile->setBillTo($billTo);
+        $paymentProfile->setPayment($paymentCreditCard);
+        $paymentProfiles[] = $paymentProfile;
+
+
+        // Create a new CustomerProfileType and add the payment profile object
+        $customerProfile = new AnetAPI\CustomerProfileType();
+        $customerProfile->setDescription("This is a farm customer.");
+        $customerProfile->setMerchantCustomerId($user->id);
+        $customerProfile->setEmail($user->email);
+        $customerProfile->setpaymentProfiles($paymentProfiles);
+        $customerProfile->setShipToList($shippingProfiles);
+
+
+        // Assemble the complete transaction profileRequest
+        $profileRequest = new AnetAPI\CreateCustomerProfileRequest();
+        $profileRequest->setMerchantAuthentication($this->gateway);
+        $profileRequest->setRefId($user->id);
+        $profileRequest->setProfile($customerProfile);
+
+        // Create the controller and get the response
+        $controller = new AnetController\CreateCustomerProfileController($profileRequest);
+        $response = $controller->executeWithApiResponse(\net\authorize\api\constants\ANetEnvironment::SANDBOX);
+    
+        if (($response != null) && ($response->getMessages()->getResultCode() == "Ok")) {
+            $user->authorize_net_id = $response->getCustomerProfileId();
+            $user->save();
+            
+            $paymentProfiles = $response->getCustomerPaymentProfileIdList();
+            CustomerCardDetail::create([
+                'customer_id' => $user->id,
+                'card_id' => $paymentProfiles[0],
+                'card_number' => $request->card_number,
+                'card_exp_month' => $request->card_exp_month,
+                'card_exp_year' => $request->card_exp_year,
+                'card_status' => 1,
+                'card_primary' => 1,
+            ]);
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Payment successful',
+                'data' => $user
+            ], 200);
+        }
+        $errorMessages = $response->getMessages()->getMessage();
+
+        return response()->json([
+            'status' => false,
+            'message' => 'Please try again later.',
+            'error' => $errorMessages,
+        ], 421);
+    }
+
+    /**
+     * @method createCustomerPaymentProfile: Function to createadd card to exsiting customer on authorize.net
+     *
+     */
+    public function createCustomerPaymentProfile(Request $request, $user)
+    {
+        if (!$user->authorize_net_id) {
+            return response()->json([
+                'status' => false,
+                'message' => 'User is not a customer on authorize.net. Please contact admin.',
+            ], 421);
+        }
+        // Set credit card information for payment profile
+        $creditCard = new AnetAPI\CreditCardType();
+        $creditCard->setCardNumber($request->card_number);
+        $creditCard->setExpirationDate($request->card_exp_year.'-'.$request->card_exp_month);
+        $creditCard->setCardCode($request->cvv);
+        $paymentCreditCard = new AnetAPI\PaymentType();
+        $paymentCreditCard->setCreditCard($creditCard);
+
+        // Create the Bill To info for new payment type
+        $billTo = new AnetAPI\CustomerAddressType();
+        $billTo->setFirstName($request->name);
+        $billTo->setAddress($user->address);
+        $billTo->setCity($user->city);
+        $billTo->setState($user->state);
+        $billTo->setZip($user->zip_code);
+        $billTo->setCountry($user->country);
+        $billTo->setPhoneNumber($user->phone);
+
+        // Create a new Customer Payment Profile object
+        $paymentprofile = new AnetAPI\CustomerPaymentProfileType();
+        $paymentprofile->setCustomerType('individual');
+        $paymentprofile->setBillTo($billTo);
+        $paymentprofile->setPayment($paymentCreditCard);
+        $paymentprofile->setDefaultPaymentProfile(true);
+
+        $paymentprofiles[] = $paymentprofile;
+
+        // Assemble the complete transaction request
+        $paymentprofilerequest = new AnetAPI\CreateCustomerPaymentProfileRequest();
+        $paymentprofilerequest->setMerchantAuthentication($this->gateway);
+
+        // Add an existing profile id to the request
+        $paymentprofilerequest->setCustomerProfileId($user->authorize_net_id);
+        $paymentprofilerequest->setPaymentProfile($paymentprofile);
+        // $paymentprofilerequest->setValidationMode("liveMode");
+
+        // Create the controller and get the response
+        $controller = new AnetController\CreateCustomerPaymentProfileController($paymentprofilerequest);
+        $response = $controller->executeWithApiResponse(\net\authorize\api\constants\ANetEnvironment::SANDBOX);
+
+        if (($response != null) && ($response->getMessages()->getResultCode() == "Ok")) {
+            $paymentProfileId = $response->getCustomerPaymentProfileId();
+            CustomerCardDetail::create([
+                'customer_id' => $user->id,
+                'card_id' => $paymentProfileId,
+                'card_number' => $request->card_number,
+                'card_exp_month' => $request->card_exp_month,
+                'card_exp_year' => $request->card_exp_year,
+                'card_status' => 1,
+                'card_primary' => 1,
+            ]);
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Payment successful',
+                'data' => $user
+            ], 200);
+
+        } else {
+            $errorMessages = $response->getMessages()->getMessage();
+            return response()->json([
+                'status' => false,
+                'message' => 'Please try again later.',
+                'error' => $errorMessages
+            ], 421);
+        }
+    }
+
+    function getCustomerPaymentProfileList()
+    {
+        $cards = CustomerCardDetail::where('customer_id', Auth::user()->id)->get();
+
+        return response()->json([
+            'status' => true,
+            'data' => $cards
+        ], 200);
     }
 }

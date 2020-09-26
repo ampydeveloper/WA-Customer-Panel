@@ -10908,16 +10908,88 @@ body {
 .btn-full-green {
   color: #fff;
   text-transform: capitalize !important;
-  padding: 0 25px !important;
+  padding: 0px 45px !important;
   background: #11b276 !important;
-  font-weight: 400 !important;
-  height: 38px !important;
-  font-size: 15px !important;
+  font-weight: 700 !important;
+  height: 58px !important;
+  font-size: 18px !important;
+  border-radius: 6px !important;
+  font-family: "Gilroy-Bold";
 }
 
 .form-input v-input {
   margin: 0;
   padding: 0;
+}
+
+.heading2 {
+  font-size: 40px;
+  margin-bottom: 30px;
+}
+
+.green-sm-box {
+  background-color: #dff7ea;
+  border-color: #53bf7b;
+  color: #53bf7b;
+  padding: 4px 8px 3px 8px;
+  text-transform: capitalize;
+  font-size: 15px;
+  border-radius: 5px;
+  display: inline-block;
+}
+
+.center-content-outer .basic-table {
+  border: 0 !important;
+}
+
+.center-content-outer .basic-table thead th {
+  color: #000;
+  font-size: 20px;
+  border: 0 !important;
+  line-height: 27px;
+}
+
+.center-content-outer .basic-table tbody tr {
+  background: #fafafb !important;
+}
+
+.center-content-outer .basic-table tbody tr td {
+  border: 0;
+}
+
+.center-content-outer .basic-table tbody tr:first-child td:first-child {
+  border-top-left-radius: 10px;
+}
+
+.center-content-outer .basic-table tbody tr:first-child td:last-child {
+  border-top-right-radius: 10px;
+}
+
+.center-content-outer .basic-table tbody tr:last-child td:first-child {
+  border-bottom-left-radius: 10px;
+}
+
+.center-content-outer .basic-table tbody tr:last-child td:last-child {
+  border-bottom-right-radius: 10px;
+}
+
+.center-content-outer .basic-table .basic-big {
+  font-weight: 600;
+  display: block;
+}
+
+.center-content-outer .basic-table .basic-info {
+  display: block;
+}
+
+.center-content-outer .dataTables_wrapper .dataTables_length {
+  display: none;
+}
+
+.center-content-outer .dataTables_wrapper .dataTables_filter {
+  float: left !important;
+  position: relative;
+  margin: 10px 0 35px 0;
 }
 
 .logged-in-page .site-header nav .navbar-nav .nav-link {
@@ -10990,7 +11062,12 @@ body {
 }
 
 .logged-in-page .page-section-top {
-  padding: 25px 0 50px 0;
+  padding: 25px 0 20px 0;
+}
+
+.logged-in-page .page-section-top h2 {
+  margin-bottom: 0px;
+  font-size: 4.4vw;
 }
 
 .logged-in-page .estimate-price {
@@ -11041,5 +11118,38 @@ body {
 .logged-in-page .credit-cards-list li {
   display: inline-block;
   margin-right: 5px;
+}
+
+.logged-in-page .send-payment {
+  padding: 35px 40px;
+  margin-bottom: 25px;
+  border: 2px solid #11b276;
+}
+
+.logged-in-page .send-payment .create-job {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.job-summary-outer h6 {
+  font-size: 23px;
+  margin-bottom: 10px;
+}
+
+.job-summary-outer .images-list .each-image img {
+  border-radius: 6px;
+}
+
+.job-summary-outer .details-list-outer .head-item {
+  margin: 0;
+  font-weight: 600;
+  font-size: 17px;
+  color: #11b276;
+}
+
+.job-summary-outer .details-list-outer .detail-item {
+  margin: 0;
+  font-size: 17px;
+  line-height: 20px;
 }
 

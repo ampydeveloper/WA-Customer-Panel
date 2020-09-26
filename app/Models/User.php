@@ -13,7 +13,7 @@ use App\Models\Traits\User\{
     UserMethods
 };
 use App\Models\CustomerFarm;
-
+use Storage;
 class User extends Authenticatable
 {
     use Notifiable, HasApiTokens, UserRelationship, UserAttributes, UserMethods;
@@ -37,7 +37,7 @@ class User extends Authenticatable
         'password', 'remember_token', 'deleted_at', 'updated_at'
     ];
 
-    protected $appends = ['full_name'];
+    protected $appends = ['full_name', 'image_url'];
 
     /**
      * The attributes that should be cast to native types.

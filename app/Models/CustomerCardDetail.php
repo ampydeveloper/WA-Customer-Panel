@@ -17,4 +17,13 @@ class CustomerCardDetail extends Model
     protected $fillable = [
         'customer_id', 'card_id', 'card_number', 'card_exp_month', 'card_exp_year', 'card_status', 'card_primary'
     ];
+
+    protected  $hidden = ['card_number'];
+
+    protected $appends = ['last_four'];
+
+    public function getLastFourAttribute()
+    {
+       return ($this->card_number) ? substr($this->card_number, -4) : null;
+    }
 }

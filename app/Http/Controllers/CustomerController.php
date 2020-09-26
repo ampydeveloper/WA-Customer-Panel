@@ -600,7 +600,7 @@ class CustomerController extends Controller {
         $data = array(
             'name' => $name,
             'email' => $email,
-            'verificationLink' => env('APP_URL') . 'confirm-update-email/' . base64_encode($email) . '/' . base64_encode($user->id)
+            'verificationLink' => env('APP_URL') . '/confirm-update-email/' . base64_encode($email) . '/' . base64_encode($user->id)
         );
 
         Mail::send('email_templates.welcome_email', $data, function ($message) use ($name, $email) {
