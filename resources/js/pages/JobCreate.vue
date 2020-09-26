@@ -116,8 +116,6 @@
                     <div class="pt-0">Upload Images</div>
                   </div>
                 </v-col>
-
-                
               </div>
             </div>
 
@@ -152,45 +150,31 @@
               </div>
 
               <div class="send-payment">
-                <h5>Send Payment</h5>
+                <h5 class="heading2">Initiate Payment</h5>
                 <ul class="credit-cards-list list-unstyled">
                   <li>
-                    <img
-                      src="https://staging.discountesp.com/wp-content/uploads/2020/08/visa.png"
-                      alt=""
-                    />
+                    <img src="img/visa.png" alt="" />
                   </li>
                   <li>
-                    <img
-                      src="https://staging.discountesp.com/wp-content/uploads/2020/08/card2.png"
-                      alt=""
-                    />
+                    <img src="img/card2.png" alt="" />
                   </li>
                   <li>
-                    <img
-                      src="https://staging.discountesp.com/wp-content/uploads/2020/08/card3.png"
-                      alt=""
-                    />
+                    <img src="img/card3.png" alt="" />
                   </li>
                   <li>
-                    <img
-                      src="https://staging.discountesp.com/wp-content/uploads/2020/08/card4.png"
-                      alt=""
-                    />
+                    <img src="img/card4.png" alt="" />
                   </li>
                 </ul>
 
                 <div class="row">
                   <div class="col-md-12 form-input">
-                   
-                     <v-text-field
+                    <v-text-field
                       required
                       :rules="[(v) => !!v || 'Name on card is required.']"
                       placeholder="Name on Card"
                     ></v-text-field>
                   </div>
                   <div class="col-md-12 form-input">
-                   
                     <v-text-field
                       required
                       size="20"
@@ -233,9 +217,8 @@
                     </select>
                   </div>
                   <div class="col-md-4 form-input">
-                   
                     <v-text-field
-                    size="4"
+                      size="4"
                       required
                       :rules="[(v) => !!v || 'CVV is required.']"
                       placeholder="CVV"
@@ -244,16 +227,16 @@
                 </div>
               </div>
 
-              <v-col class="pt-0 pb-0" cols="12" md="12">
-                  <v-btn
-                    type="submit"
-                    :loading="loading"
-                    :disabled="loading"
-                    color="success"
-                    class="btn-full-green mt-4"
-                    >Save Job</v-btn
-                  >
-                </v-col>
+              <v-col class="pt-0 pb-0 create-job" cols="12" md="12">
+                <v-btn
+                  type="submit"
+                  :loading="loading"
+                  :disabled="loading"
+                  color="success"
+                  class="btn-full-green"
+                  >Create Job</v-btn
+                >
+              </v-col>
 
               <div class="reach-out">
                 <span
