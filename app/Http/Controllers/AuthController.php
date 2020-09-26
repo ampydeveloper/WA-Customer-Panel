@@ -469,10 +469,7 @@ class AuthController extends Controller
         $user = Auth::user();
         if ($user->role_id == config('constant.roles.Customer') || $user->role_id == config('constant.roles.Haulers')) {
             try {
-                
-                
-                $imageName = $user->putImage($request->user_image);
-                $user->update([
+                $data = [
                     'first_name' => $request->first_name,
                     'last_name' => $request->last_name,
                     'email' => $request->email,
@@ -481,8 +478,14 @@ class AuthController extends Controller
                     'city' => $request->city,
                     'state' => $request->province,
                     'zip_code' => $request->zipcode,
-                    'user_image' => $imageName
-                ]);
+                ];
+
+                if($request->user_image) {
+                    $imageName = $user->putImage($request->user_image);
+                    $data['user_image'] = $imageName;
+                }
+
+                $user->update($data);
 
                 return response()->json([
                     'status' => true,
