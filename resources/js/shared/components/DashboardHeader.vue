@@ -39,6 +39,27 @@
             >
           </div>
         </li>
+        <li class="nav-item dropdown" v-if="isCustomer || isHauler">
+          <a
+            class="nav-link dropdown-toggle"
+            href="#"
+            id="navbarDropdownMenuLink"
+            data-toggle="dropdown"
+            aria-haspopup="true"
+            aria-expanded="false"
+          >
+            Cards
+          </a>
+          <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+            <a class="dropdown-item" href="/cards">List</a>
+            <a
+              v-if="isCustomer || isHauler"
+              class="dropdown-item"
+              href="/cards/create"
+              >Create</a
+            >
+          </div>
+        </li>
       </ul>
       <ul class="navbar-nav">
         <li class="nav-item dropdown">

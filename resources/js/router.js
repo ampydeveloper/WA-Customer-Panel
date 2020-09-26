@@ -36,6 +36,10 @@ import EditJob from "./pages/UserPanel/Jobs/EditJob.vue";
 import ProfileSettings from "./pages/UserPanel/ProfileSettings";
 import EditProfile from "./pages/UserPanel/ProfileSettings/EditProfile.vue";
 
+import Cards from "./pages/UserPanel/Cards";
+import CardList from "./pages/UserPanel/Cards/CardList.vue";
+import CreateCard from "./pages/UserPanel/Cards/CreateCard.vue";
+
 Vue.use(VueRouter);
 
 const checkAuthentication = (to, from, next) => {
@@ -207,6 +211,26 @@ const router = new VueRouter({
           path: "",
           name: "profileSettings",
           component: EditProfile
+        }
+      ]
+    },
+    {
+      path: "/cards",
+      component: Cards,
+      beforeEnter: checkAuthentication,
+      meta: { requiresAuth: [Role.Customer, Role.Hauler] },
+      children: [
+        {
+          path: "",
+          name: "cardList",
+          component: CardList,
+          meta: { requiresAuth: [Role.Customer, Role.Hauler] }
+        },
+        {
+          path: "create",
+          name: "createCard",
+          component: CreateCard,
+          meta: { requiresAuth: [Role.Customer, Role.Hauler] }
         }
       ]
     }

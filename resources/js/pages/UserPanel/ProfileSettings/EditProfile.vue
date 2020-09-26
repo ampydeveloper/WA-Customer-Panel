@@ -259,7 +259,10 @@ export default {
           /**
            * If user image is uploaded then add it to form data
            */
-          if (this.userProfile.user_image !== null) {
+          if (
+            this.userProfile.user_image !== null &&
+            this.userProfile.user_image instanceof FormData
+          ) {
             userProfileRequest.append(
               "user_image",
               this.userProfile.user_image.get("user_image")
@@ -267,16 +270,23 @@ export default {
           }
 
           const response = await UserService.updateProfile(userProfileRequest);
-          this.$toast.open({
-            message: response.data.message,
-            type: "success",
-            position: "top-right",
-            dismissible: false
-          });
-          this.userProfile = {
-            ...this.userProfile,
-            ...response.data.data
-          };
+          if (response !== undefined && response.data !== undefined) {
+            this.$toast.open({
+              message: response.data.message,
+              type: "success",
+              position: "top-right",
+              dismissible: false
+            });
+            this.userProfile = {
+              ...this.userProfile,
+              ...response.data.data
+            };
+            window.localStorage.removeItem("user");
+            window.localStorage.setItem(
+              "user",
+              JSON.stringify(response.data.data)
+            );
+          }
         } catch (error) {
           this.$toast.open({
             message: error.response.data.message,
