@@ -33,6 +33,9 @@ import JobList from "./pages/UserPanel/Jobs/JobList.vue";
 import CreateJob from "./pages/UserPanel/Jobs/CreateJob.vue";
 import EditJob from "./pages/UserPanel/Jobs/EditJob.vue";
 
+import ProfileSettings from "./pages/UserPanel/ProfileSettings";
+import EditProfile from "./pages/UserPanel/ProfileSettings/EditProfile.vue";
+
 Vue.use(VueRouter);
 
 const checkAuthentication = (to, from, next) => {
@@ -192,6 +195,18 @@ const router = new VueRouter({
           path: ":jobId/edit",
           name: "editJob",
           component: EditJob
+        }
+      ]
+    },
+    {
+      path: "/profile-settings",
+      component: ProfileSettings,
+      beforeEnter: checkAuthentication,
+      children: [
+        {
+          path: "",
+          name: "profileSettings",
+          component: EditProfile
         }
       ]
     }

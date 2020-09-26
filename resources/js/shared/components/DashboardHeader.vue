@@ -41,11 +41,25 @@
         </li>
       </ul>
       <ul class="navbar-nav">
-        <li class="nav-item active">
-          <a class="nav-link" href="javascript:void()" @click="logout">
-            Logout
-            <span class="sr-only">(current)</span>
+        <li class="nav-item dropdown">
+          <a
+            class="nav-link dropdown-toggle"
+            href="#"
+            id="navbarDropdownMenuLink"
+            data-toggle="dropdown"
+            aria-haspopup="true"
+            aria-expanded="false"
+          >
+            {{ currentUser.full_name }}
           </a>
+          <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+            <router-link :to="{ name: 'profileSettings' }" class="dropdown-item"
+              >Profile</router-link
+            >
+            <a class="dropdown-item" href="javascript:void()" @click="logout"
+              >Logout</a
+            >
+          </div>
         </li>
       </ul>
     </div>

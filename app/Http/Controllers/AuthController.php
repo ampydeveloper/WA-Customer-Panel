@@ -431,17 +431,17 @@ class AuthController extends Controller
         $getUser = User::where('email', $userEmail)->first();
 
         if (!$getUser) {
-            return redirect(env('APP_URL').'/sign-in?emailConfirmed=0');
+            return redirect(env('APP_URL') . '/sign-in?emailConfirmed=0');
         }
 
         if ($getUser->is_confirmed == 0) {
             $getUser->is_confirmed = 1;
             if ($getUser->save()) {
-                return redirect(env('APP_URL').'/sign-in?emailConfirmed=1');
+                return redirect(env('APP_URL') . '/sign-in?emailConfirmed=1');
             }
-            return redirect(env('APP_URL').'/sign-in?emailConfirmed=0');
+            return redirect(env('APP_URL') . '/sign-in?emailConfirmed=0');
         } else {
-            return redirect(env('APP_URL').'/sign-in?emailConfirmed=2');
+            return redirect(env('APP_URL') . '/sign-in?emailConfirmed=2');
         }
     }
 
@@ -476,11 +476,12 @@ class AuthController extends Controller
                     'phone' => $request->phone,
                     'address' => $request->address,
                     'city' => $request->city,
-                    'state' => $request->province,
-                    'zip_code' => $request->zipcode,
+                    'state' => $request->state,
+                    'zip_code' => $request->zip_code,
+                    'country' => $request->country,
                 ];
 
-                if($request->user_image) {
+                if ($request->user_image) {
                     $imageName = $user->putImage($request->user_image);
                     $data['user_image'] = $imageName;
                 }
@@ -489,7 +490,7 @@ class AuthController extends Controller
 
                 return response()->json([
                     'status' => true,
-                    'message' => 'Your is successfully updated.',
+                    'message' => 'Your profile is successfully updated.',
                     'data' => $user
                 ], 200);
             } catch (\Exception $e) {

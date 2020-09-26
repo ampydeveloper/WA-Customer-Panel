@@ -29,12 +29,13 @@ class UpdateProfileRequest extends FormRequest
         return [
             'first_name' => 'required|string',
             'last_name' => 'required|string',
-            'email' => 'required|string|email|unique:users,email,'.Auth::user()->id,
+            'email' => 'required|string|email|unique:users,email,' . Auth::user()->id,
             'phone' => 'required',
             'address' => 'required',
             'city' => 'required',
-            'province' => 'required',
-            'zipcode' => 'required',
+            'state' => 'required',
+            'country' => 'required',
+            'zip_code' => 'required',
             'user_image' => 'sometimes|required|image|mimes:jpeg,png,jpg,gif,svg|max:5120'
         ];
     }
