@@ -36,9 +36,34 @@
                 Jobs
               </a>
               <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                <a class="dropdown-item" href="#">Job Dashboard</a>
-                <a class="dropdown-item" href="#">Create Job</a>
+                <a class="dropdown-item" href="#"> <i data-feather="grid"></i> Job Dashboard</a>
+                <a class="dropdown-item" href="#"> <i data-feather="briefcase"></i> Create Job</a>
               </div>
+            </li>
+            <li class="nav-item active">
+              <a class="nav-link all-noti-link" href="#">
+                <span class="bell-outer"> <i data-feather="bell"></i></span>
+                <div class="all-noti-div">
+                  <div class="each-noti clearfix">
+                    <div class="details-one">
+                      <p class="title-item">New Message</p>
+                      <p class="desc-item">You got new order of goods</p>
+                    </div>
+                    <div class="details-two">
+                      <p class="date-item">10 min ago</p>
+                    </div>
+                  </div>
+                  <div class="each-noti clearfix">
+                    <div class="details-one">
+                      <p class="title-item">New Message</p>
+                      <p class="desc-item">You got new order of goods</p>
+                    </div>
+                    <div class="details-two">
+                      <p class="date-item">10 min ago</p>
+                    </div>
+                  </div>
+                </div>
+              </a>
             </li>
             <li class="nav-item dropdown user-name-link">
               <a
@@ -57,10 +82,10 @@
                 John Dane
               </a>
               <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                <a class="dropdown-item" href="#">Profile</a>
-                <a class="dropdown-item" href="#">Payments</a>
-                <a class="dropdown-item" href="#">Notifications</a>
-                <a class="dropdown-item" href="#">Logout</a>
+                <a class="dropdown-item" href="#"> <i data-feather="user"></i> Profile</a>
+                <a class="dropdown-item" href="#"> <i data-feather="credit-card"></i> Payments</a>
+                <a class="dropdown-item" href="#"> <i data-feather="bell"></i> Notifications</a>
+                <a class="dropdown-item" href="#"> <i data-feather="log-out"></i> Logout</a>
               </div>
             </li>
           </ul>
