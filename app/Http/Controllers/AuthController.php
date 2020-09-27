@@ -175,7 +175,7 @@ class AuthController extends Controller
         $data = array(
             'name' => $name,
             'email' => $user->email,
-            'verificationLink' => env('APP_URL') . '/auth/confirm-email/' . base64_encode($user->email)
+            'verificationLink' => env('APP_URL') . '/api/auth/confirm-email/' . base64_encode($user->email)
         );
 
         Mail::send('email_templates.welcome_email', $data, function ($message) use ($user, $name) {
