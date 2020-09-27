@@ -31,6 +31,7 @@
         "moment": "^2.29.0",
         "socket.io-client": "^2.3.0",
         "vue-beautiful-chat": "^2.5.0",
+        "vue-feather-icons": "^5.1.0",
         "vue-filepond": "^6.0.3",
         "vue-form-generator": "^2.3.4",
         "vue-mapbox": "^0.4.1",
