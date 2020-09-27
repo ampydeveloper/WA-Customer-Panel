@@ -10,7 +10,10 @@
           >Create Card</router-link
         >
       </div>
-      <h4>Cards</h4>
+      <h4>
+        <credit-card-icon size="1.5x" class="custom-class"></credit-card-icon>
+        Cards
+      </h4>
     </div>
     <table class="table table-bordered">
       <thead>
@@ -41,8 +44,10 @@
 
 <script>
 import CardService from "../../../services/CardService";
+import { CreditCardIcon } from "vue-feather-icons";
 
 export default {
+  components: { CreditCardIcon },
   data() {
     return {
       cardList: []
