@@ -36,8 +36,12 @@
                 Jobs
               </a>
               <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                <a class="dropdown-item" href="#"> <i data-feather="grid"></i> Job Dashboard</a>
-                <a class="dropdown-item" href="#"> <i data-feather="briefcase"></i> Create Job</a>
+                <a class="dropdown-item" href="#">
+                  <i data-feather="grid"></i> Job Dashboard</a
+                >
+                <a class="dropdown-item" href="#">
+                  <i data-feather="briefcase"></i> Create Job</a
+                >
               </div>
             </li>
             <li class="nav-item active">
@@ -82,10 +86,27 @@
                 John Dane
               </a>
               <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                <a class="dropdown-item" href="#"> <i data-feather="user"></i> Profile</a>
-                <a class="dropdown-item" href="#"> <i data-feather="credit-card"></i> Payments</a>
-                <a class="dropdown-item" href="#"> <i data-feather="bell"></i> Notifications</a>
-                <a class="dropdown-item" href="#"> <i data-feather="log-out"></i> Logout</a>
+                <!-- <a class="dropdown-item" href="#"> <i data-feather="user"></i> Profile</a> -->
+                <router-link
+                  :to="{ name: 'profileSettings' }"
+                  class="dropdown-item"
+                  ><i data-feather="user"></i> Profile</router-link
+                >
+
+                <a class="dropdown-item" href="#">
+                  <i data-feather="credit-card"></i> Payments</a
+                >
+                <a class="dropdown-item" href="#">
+                  <i data-feather="bell"></i> Notifications</a
+                >
+
+                <!-- <a class="dropdown-item" href="#"> <i data-feather="log-out"></i> Logout</a> -->
+                <a
+                  class="dropdown-item"
+                  href="javascript:void()"
+                  @click="logout"
+                  ><i data-feather="log-out"></i> Logout</a
+                >
               </div>
             </li>
           </ul>
@@ -100,12 +121,11 @@ export default {
   data: () => {
     return {};
   },
-  methods: {},
-  computed: {
-    // a computed getter
-    isLoggedIn: function () {
-      const token = window.localStorage.getItem("token");
-      return token !== undefined && token !== null;
+  methods: {
+    logout: () => {
+      window.localStorage.removeItem("token");
+      window.localStorage.removeItem("user");
+      window.location.href = "/";
     },
   },
 };

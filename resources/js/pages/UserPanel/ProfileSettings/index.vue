@@ -1,21 +1,22 @@
 <template>
   <div>
-    <dashboard-header />
-    <div class="main-wrapper" style="padding: 20px;">
+    <div class="loc-page logged-in-page">
+      <app-small-header />
+
       <router-view></router-view>
+      <app-small-footer />
     </div>
-    <app-small-footer />
   </div>
 </template>
 
 <script>
-import DashboardHeader from "../../../shared/components/DashboardHeader";
+import AppSmallHeader from "../../../shared/components/AppSmallHeader";
 import AppSmallFooter from "../../../shared/components/AppSmallFooter";
 
 export default {
   components: {
-    DashboardHeader,
-    AppSmallFooter
-  }
+    AppSmallHeader,
+    AppSmallFooter,
+  },
 };
 </script>
