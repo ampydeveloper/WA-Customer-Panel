@@ -226,7 +226,7 @@ class PaymentController extends Controller
         $paymentProfile->setCustomerType('individual');
         $paymentProfile->setBillTo($billTo);
         $paymentProfile->setPayment($paymentCreditCard);
-        $paymentprofile->setDefaultPaymentProfile(true);
+        $paymentProfile->setDefaultPaymentProfile(true);
         $paymentProfiles[] = $paymentProfile;
 
         // Create a new CustomerProfileType and add the payment profile object
@@ -357,6 +357,10 @@ class PaymentController extends Controller
         }
     }
 
+    /**
+     * @method getCustomerPaymentProfileList : Function to get all cards.
+     * 
+     */
     function getCustomerPaymentProfileList()
     {
         $cards = CustomerCardDetail::where('customer_id', Auth::user()->id)->get();
@@ -367,6 +371,10 @@ class PaymentController extends Controller
         ], 200);
     }
 
+    /**
+     * @method deleteCustomerPaymentProfile : Function to delete a card.
+     * 
+     */
     function deleteCustomerPaymentProfile(CustomerCardDetail $customerCardDetails) 
     {
         if ($customerCardDetails->card_primary == 1) {
@@ -417,6 +425,11 @@ class PaymentController extends Controller
         }
     }
 
+
+    /**
+     * @method updateCustomerPaymentProfile : Function to make card default.
+     * 
+     */
     function updateCustomerPaymentProfile(CustomerCardDetail $customerCardDetails) 
     {
         $user = Auth::user();
@@ -479,6 +492,89 @@ class PaymentController extends Controller
             'message' => 'Failed to set card as default card.',
             'error' => $response->getMessages()->getMessage()
         ], 421);
+    }
+
+
+    /**
+     * @method chargeCustomerProfile : Function to charge a customer.
+     * 
+     */
+    function chargeCustomerProfile($profileid, $paymentprofileid, $amount)
+    {
+        /* Create a merchantAuthenticationType object with authentication details
+        retrieved from the constants file */
+        $merchantAuthentication = new AnetAPI\MerchantAuthenticationType();
+        $merchantAuthentication->setName(\SampleCodeConstants::MERCHANT_LOGIN_ID);
+        $merchantAuthentication->setTransactionKey(\SampleCodeConstants::MERCHANT_TRANSACTION_KEY);
+        
+        // Set the transaction's refId
+        $refId = 'ref' . time();
+
+        $profileToCharge = new AnetAPI\CustomerProfilePaymentType();
+        $profileToCharge->setCustomerProfileId($profileid);
+        $paymentProfile = new AnetAPI\PaymentProfileType();
+        $paymentProfile->setPaymentProfileId($paymentprofileid);
+        $profileToCharge->setPaymentProfile($paymentProfile);
+
+        $transactionRequestType = new AnetAPI\TransactionRequestType();
+        $transactionRequestType->setTransactionType( "authCaptureTransaction"); 
+        $transactionRequestType->setAmount($amount);
+        $transactionRequestType->setProfile($profileToCharge);
+
+        $request = new AnetAPI\CreateTransactionRequest();
+        $request->setMerchantAuthentication($merchantAuthentication);
+        $request->setRefId( $refId);
+        $request->setTransactionRequest( $transactionRequestType);
+        $controller = new AnetController\CreateTransactionController($request);
+        $response = $controller->executeWithApiResponse( \net\authorize\api\constants\ANetEnvironment::SANDBOX);
+
+        if ($response != null)
+        {
+        if($response->getMessages()->getResultCode() == "Ok")
+        {
+            $tresponse = $response->getTransactionResponse();
+            
+            if ($tresponse != null && $tresponse->getMessages() != null)   
+            {
+            echo " Transaction Response code : " . $tresponse->getResponseCode() . "\n";
+            echo  "Charge Customer Profile APPROVED  :" . "\n";
+            echo " Charge Customer Profile AUTH CODE : " . $tresponse->getAuthCode() . "\n";
+            echo " Charge Customer Profile TRANS ID  : " . $tresponse->getTransId() . "\n";
+            echo " Code : " . $tresponse->getMessages()[0]->getCode() . "\n"; 
+                echo " Description : " . $tresponse->getMessages()[0]->getDescription() . "\n";
+            }
+            else
+            {
+            echo "Transaction Failed \n";
+            if($tresponse->getErrors() != null)
+            {
+                echo " Error code  : " . $tresponse->getErrors()[0]->getErrorCode() . "\n";
+                echo " Error message : " . $tresponse->getErrors()[0]->getErrorText() . "\n";            
+            }
+            }
+        }
+        else
+        {
+            echo "Transaction Failed \n";
+            $tresponse = $response->getTransactionResponse();
+            if($tresponse != null && $tresponse->getErrors() != null)
+            {
+            echo " Error code  : " . $tresponse->getErrors()[0]->getErrorCode() . "\n";
+            echo " Error message : " . $tresponse->getErrors()[0]->getErrorText() . "\n";                      
+            }
+            else
+            {
+            echo " Error code  : " . $response->getMessages()->getMessage()[0]->getCode() . "\n";
+            echo " Error message : " . $response->getMessages()->getMessage()[0]->getText() . "\n";
+            }
+        }
+        }
+        else
+        {
+        echo  "No response returned \n";
+        }
+
+        return $response;
     }
 
 }
