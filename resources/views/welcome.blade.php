@@ -31,7 +31,7 @@
     <!--<script src="assets/js/bootstrap.min.js"></script>-->
     <script src="assets/js/owl.carousel.js" defer></script>
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-
+    <script src="https://unpkg.com/feather-icons"></script>
     <script>
         function openNav() {
             document.getElementById("mySidenav").style.width = "100%";
@@ -41,6 +41,7 @@
             document.getElementById("mySidenav").style.width = "0";
         }
         $(document).ready(function() {
+            feather.replace();
             $('#service-slide-home').owlCarousel({
                 loop: true,
                 pagination: false,

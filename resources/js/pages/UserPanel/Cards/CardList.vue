@@ -29,8 +29,8 @@
         <tr v-for="(card, index) in cardList" :key="card.id">
           <td>{{ index + 1 }}</td>
           <td>{{ card.name }}</td>
-          <td>{{ card.card_number }}</td>
-          <td>{{ card.card_exp_month }} {{ card.card_exp_year }}</td>
+          <td>{{ card.last_four }}</td>
+          <td>{{ card.card_exp_month }} / {{ card.card_exp_year }}</td>
           <td>
             <button class="btn btn-sm btn-danger">
               Delete
