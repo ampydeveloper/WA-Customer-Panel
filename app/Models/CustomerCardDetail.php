@@ -26,4 +26,9 @@ class CustomerCardDetail extends Model
     {
        return ($this->card_number) ? substr($this->card_number, -4) : null;
     }
+
+    public function customer()
+    {
+        return $this->belongsTo('App\Models\User', 'customer_id', 'id');
+    }
 }
