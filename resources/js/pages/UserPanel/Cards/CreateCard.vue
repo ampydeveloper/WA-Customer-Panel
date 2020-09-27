@@ -173,6 +173,11 @@ export default {
         }
       }
     }
+  },
+  created() {
+    this.expiryMonths = [...this.expiryMonths].map(month => {
+      return month < 10 ? `0${month}` : month;
+    });
   }
 };
 </script>
