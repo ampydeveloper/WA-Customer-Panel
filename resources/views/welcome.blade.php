@@ -130,6 +130,10 @@
                 $(".basic-table").css({
                     opacity: 1
                 });
+                $("#all-farms-table_filter input").attr(
+                    "placeholder",
+                    "Search Farms by Farm Location / Manager"
+                );
             });
         }, 1000);
         AOS.init({

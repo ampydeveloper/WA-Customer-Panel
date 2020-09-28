@@ -184,6 +184,13 @@ body {
             }
         }
     }
+
+    .basic-grey-box {
+        background: #fafafb;
+        padding: 35px 40px;
+        border-radius: 6px;
+        margin-bottom: 25px;
+    }
 }
 
 // header
@@ -515,7 +522,7 @@ body {
         }
     }
 
-    .add-new-card-form {
+    .each-profile-block {
 
         .dataTables_filter,
         .dataTables_paginate,

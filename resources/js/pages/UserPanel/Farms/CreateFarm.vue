@@ -1,18 +1,28 @@
 <template>
-  <div>
-    <div class="sign-up-form-outer">
-      <div class="sign-up-form-inner">
+  <div class="main-wrapper">
+    <section class="page-section-top" data-aos="">
+      <div class="container">
         <div class="row">
           <div class="col-md-12">
-            <div class="new-user-signup">
+            <h2>Create Farm</h2>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="create-farm-outer center-content-outer" data-aos="">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-12">
+            <div class="basic-grey-box">
               <div v-if="addManagers">
                 <create-manager
                   v-on:updatemanager="updateManager"
                   v-bind:new-manager="newManager"
                 />
               </div>
+
               <form action novalidate v-if="!addManagers">
-                <h1>New Farm</h1>
                 <vue-form-generator
                   tag="div"
                   :schema="schema"
@@ -20,6 +30,7 @@
                   :model="model"
                 />
               </form>
+
               <div class="form-group" v-if="hasManager && !addManagers">
                 <ul class="list-group">
                   <li
@@ -49,7 +60,7 @@
           </div>
         </div>
       </div>
-    </div>
+    </section>
   </div>
 </template>
 
@@ -70,7 +81,7 @@ const emptyManager = {
   manager_zipcode: "",
   manager_card_image: "",
   manager_id_card: "",
-  salary: ""
+  salary: "",
 };
 
 const emptyFarmRequest = {
@@ -81,17 +92,17 @@ const emptyFarmRequest = {
   farm_active: 1,
   latitude: "",
   longitude: "",
-  manager_details: []
+  manager_details: [],
 };
 
 export default {
   components: {
-    CreateManager
+    CreateManager,
   },
   computed: {
-    hasManager: function() {
+    hasManager: function () {
       return this.model.manager_details.length > 0;
-    }
+    },
   },
   data() {
     return {
@@ -111,53 +122,53 @@ export default {
               this.isCreatingFarm = true;
               this.addManagers = true;
               this.newManager = { ...emptyManager };
-            }
-          }
-        ]
+            },
+          },
+        ],
       },
       formOptions: {
-        validateAfterChanged: true
+        validateAfterChanged: true,
       },
       isCreatingFarm: false,
-      addManagers: false
+      addManagers: false,
     };
   },
   methods: {
-    updateManager: function(manager) {
+    updateManager: function (manager) {
       this.model.manager_details.push(manager);
       this.addManagers = false;
     },
-    createFarm: function() {
+    createFarm: function () {
       FarmService.create(this.model)
         .then(
-          response => {
+          (response) => {
             this.$toast.open({
               message: response.data.message,
               type: "success",
               position: "top-right",
-              dismissible: false
+              dismissible: false,
             });
             this.model = emptyFarmRequest;
             this.addManagers = false;
             router.push({ name: "farmsList" });
           },
-          error => {
+          (error) => {
             this.$toast.open({
               message: error.response.data.message,
               type: "error",
               position: "bottom-right",
-              dismissible: false
+              dismissible: false,
             });
           }
         )
-        .finally(_ => {
+        .finally((_) => {
           this.isCreatingFarm = false;
         });
     },
-    addNewManager: function() {
+    addNewManager: function () {
       this.newManager = { ...emptyManager };
       this.addManagers = true;
-    }
-  }
+    },
+  },
 };
 </script>
