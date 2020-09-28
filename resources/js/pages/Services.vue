@@ -27,7 +27,10 @@
       <div class="services-main">
         <div class="container">
           <div class="row">
-            <div class="col-md-6 service-block-custom" data-aos="fade-down">
+            <div class="col-md-6 service-block-custom" data-aos="">
+              <div class="service-block-img">
+              <img src="/img/signup-bg-im.jpg" alt />
+            </div>
               <div class="service-block-custom-inner">
                 <h4>20 YARD SERVICE</h4>
                 <p>This service is most commonly used by our customers. It includes 20 yard service of your farm including manure pickup and taking it to our dumping station.</p>
@@ -47,7 +50,10 @@
             </div>
             <!-------col-end-------->
 
-            <div class="col-md-6 service-block-custom" data-aos="fade-up">
+            <div class="col-md-6 service-block-custom" data-aos="">
+              <div class="service-block-img">
+              <img src="/img/signup-bg-im.jpg" alt />
+            </div>
               <div class="service-block-custom-inner">
                 <h4>STANDARD LOAD</h4>
                 <p>This service is most commonly used by our customers. It includes 20 yard service of your farm including manure pickup and taking it to our dumping station.</p>
@@ -67,7 +73,10 @@
             </div>
             <!-------col-end-------->
 
-            <div class="col-md-6 service-block-custom" data-aos="fade-up">
+            <div class="col-md-6 service-block-custom" data-aos="">
+              <div class="service-block-img">
+              <img src="/img/signup-bg-im.jpg" alt />
+            </div>
               <div class="service-block-custom-inner">
                 <h4>20 YARD SERVICE</h4>
                 <p>This service is most commonly used by our customers. It includes 20 yard service of your farm including manure pickup and taking it to our dumping station.</p>
@@ -87,7 +96,10 @@
             </div>
             <!-------col-end-------->
 
-            <div class="col-md-6 service-block-custom" data-aos="fade-down">
+            <div class="col-md-6 service-block-custom" data-aos="">
+              <div class="service-block-img">
+              <img src="/img/signup-bg-im.jpg" alt />
+            </div>
               <div class="service-block-custom-inner">
                 <h4>STANDARD LOAD</h4>
                 <p>This service is most commonly used by our customers. It includes 20 yard service of your farm including manure pickup and taking it to our dumping station.</p>

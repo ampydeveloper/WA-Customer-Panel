@@ -532,3 +532,28 @@ body {
     }
 
 }
+
+// server 
+.service-block-img {
+    padding: 0;
+    border-top: 2px solid #000;
+    border-left: 2px solid #000;
+    margin: 0px 15px;
+    border-right: 2px solid #000;
+}
+
+.service-block-custom {
+    .service-block-img {
+        border-top: 2px solid #000;
+        border-left: 2px solid #000;
+        border-right: 2px solid #000;
+        margin: 0;
+    }
+
+    .service-block-custom-inner {
+        border: 2px solid #000;
+        padding: 35px;
+        width: 100%;
+        border-top: 0;
+    }
+}

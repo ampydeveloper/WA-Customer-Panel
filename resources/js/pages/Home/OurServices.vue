@@ -9,12 +9,14 @@
       <div class="services-slider">
         <div class="owl-carousel owl-theme" id="service-slide-home">
           <div class="item">
+            <div class="service-block-img">
+              <img src="/img/signup-bg-im.jpg" alt />
+            </div>
             <div class="service-block-custom-inner">
               <h4>20 YARD SERVICE</h4>
               <p>
-                This service is most commonly used by our
-                customers. It includes 20 yard service of
-                your farm including manure pickup and taking
+                This service is most commonly used by our customers. It includes
+                20 yard service of your farm including manure pickup and taking
                 it to our dumping station.
               </p>
 
@@ -34,12 +36,14 @@
           </div>
 
           <div class="item">
+            <div class="service-block-img">
+              <img src="/img/signup-bg-im.jpg" alt />
+            </div>
             <div class="service-block-custom-inner">
               <h4>STANDARD LOAD</h4>
               <p>
-                This service is most commonly used by our
-                customers. It includes 20 yard service of
-                your farm including manure pickup and taking
+                This service is most commonly used by our customers. It includes
+                20 yard service of your farm including manure pickup and taking
                 it to our dumping station.
               </p>
 
@@ -58,12 +62,14 @@
             </div>
           </div>
           <div class="item">
+            <div class="service-block-img">
+              <img src="/img/signup-bg-im.jpg" alt />
+            </div>
             <div class="service-block-custom-inner">
               <h4>20 YARD SERVICE</h4>
               <p>
-                This service is most commonly used by our
-                customers. It includes 20 yard service of
-                your farm including manure pickup and taking
+                This service is most commonly used by our customers. It includes
+                20 yard service of your farm including manure pickup and taking
                 it to our dumping station.
               </p>
 
@@ -83,12 +89,14 @@
           </div>
 
           <div class="item">
+            <div class="service-block-img">
+              <img src="/img/signup-bg-im.jpg" alt />
+            </div>
             <div class="service-block-custom-inner">
               <h4>STANDARD LOAD</h4>
               <p>
-                This service is most commonly used by our
-                customers. It includes 20 yard service of
-                your farm including manure pickup and taking
+                This service is most commonly used by our customers. It includes
+                20 yard service of your farm including manure pickup and taking
                 it to our dumping station.
               </p>
 

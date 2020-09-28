@@ -6,7 +6,9 @@
           <img src="img/main-logo.png" alt />
         </a>
       </div>
-      <span class="menu-toggle" onclick="openNav()">&#9776;</span>
+      <span class="menu-toggle" onclick="openNav()">
+        <i data-feather="menu"></i>
+      </span>
     </div>
     <div id="mySidenav" class="sidenav">
       <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>

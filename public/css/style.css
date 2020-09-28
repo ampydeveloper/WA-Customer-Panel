@@ -724,12 +724,12 @@ ul.footer-links li a {
   margin-right: 5px;
 }
 
-.service-block-custom:hover {
+/*.service-block-custom:hover {
   box-shadow: 0 5px 10px rgba(0, 0, 0, 0.15);
   transform: translateY(-5px);
   -webkit-transform: translateY(-5px);
   -moz-transform: translateY(-5px);
-}
+}*/
 
 .col-md-6.service-block-custom {
   transition: all 0.5s ease-in-out;
@@ -1087,9 +1087,10 @@ span.lets-str-icon {
 }
 
 .services-slider .service-block-custom-inner {
-  padding: 35px;
-  border: 2px solid #000;
-  margin: 20px 15px;
+padding: 35px;
+    border: 2px solid #000;
+    margin: 0px 15px 20px 15px;
+    border-top: 0;
 }
 
 .our-services-home {
@@ -1567,12 +1568,12 @@ p.already-account {
 }
 
 @media only screen and (min-width: 768px) {
-  .col-md-6.service-block-custom {
+/*  .col-md-6.service-block-custom {
     border: 2px solid #000;
     max-width: calc(50% - 32px);
     margin: 20px 15px;
     padding: 35px;
-  }
+  }*/
 }
 
 @media only screen and (max-width: 1199px) {
