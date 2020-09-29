@@ -27,6 +27,16 @@ class CardService {
       }
     });
   }
+
+  static makeDefault(cardId) {
+    const token = window.localStorage.getItem("token");
+    return Axios.get("/api/payment/customer/card/make-default/"+cardId, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
+  }
+
 }
 
 export default CardService;

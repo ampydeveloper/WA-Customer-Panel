@@ -256,10 +256,13 @@
                       <td>
                         {{ card.card_exp_month }} / {{ card.card_exp_year }}
                       </td>
-                      <td><span class="primary-tag">Primary</span></td>
+                      <td><span class="primary-tag">{{ card.card_primary ? 'Primary' : 'Not Primary' }}</span></td>
                       <td>
                         <button class="btn btn-sm btn-danger delete-item" @click="deleteCard(card.id)">
-                          <i data-feather="x"></i>
+                          <i data-feather="x">Delete</i>
+                        </button>
+                        <button class="btn btn-sm btn-danger delete-item" @click="makeCardDefault(card.id)">
+                          <i data-feather="x">Make primary</i>
                         </button>
                       </td>
                     </tr>
@@ -577,8 +580,34 @@ export default {
     
     showAddCard: function() {
       this.addNewCard = true;
+    },
+
+    makeCardDefault: async function(id) {
+      try {
+        const response = await CardService.makeDefault(id);
+        if (response !== undefined && response.data !== undefined) {
+          this.$toast.open({
+            message: response.data.message,
+            type: "success",
+            position: "top-right",
+            dismissible: false,
+          });
+          CardService.list().then((response) => {
+            this.cardList = response.data.data;
+          });
+        }
+      } catch (error) {
+        this.$toast.open({
+          message: error.response.data.message,
+          type: "error",
+          position: "bottom-right",
+          dismissible: false,
+        });
+      }
     }
+
   },
+
   created: async function () {
     try {
       const response = await UserService.getProfile();

@@ -338,6 +338,7 @@ class PaymentController extends Controller
 
         if (($response != null) && ($response->getMessages()->getResultCode() == "Ok")) {
             $paymentProfileId = $response->getCustomerPaymentProfileId();
+            
             CustomerCardDetail::create([
                 'name' => $request->name,
                 'customer_id' => $customer->id,
@@ -433,7 +434,6 @@ class PaymentController extends Controller
         }
     }
 
-
     /**
      * @method updateCustomerPaymentProfile : Function to make card default.
      *
@@ -501,7 +501,6 @@ class PaymentController extends Controller
             'error' => $response->getMessages()->getMessage()
         ], 421);
     }
-
 
     /**
      * @method chargeCustomerProfile : Function to charge a customer.

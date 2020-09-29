@@ -27,4 +27,9 @@ trait UserRelationship
     {
         return $this->hasOne('App\Models\ManagerDetail', 'user_id', 'id');
     }
+
+    public function cards()
+    {
+        return $this->hasMany('App\Models\CustomerCardDetail', 'customer_id', 'id');
+    }
 }
