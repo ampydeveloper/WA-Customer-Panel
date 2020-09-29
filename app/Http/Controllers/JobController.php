@@ -27,6 +27,8 @@ class JobController extends Controller
      */
     public function create(CreateJobRequest $createJobRequest)
     {
+        return $createJobRequest->all();
+        dd($createJobRequest->all());
         $farm = CustomerFarm::find($createJobRequest->farm_id);
         if (!$farm->isOwner()) {
             return response()->json([
@@ -54,6 +56,8 @@ class JobController extends Controller
                 'amount' => $createJobRequest->amount,
             ]);
             if ($job->save()) {
+                // Attach card
+                // CustomerCard::create()
                 $mailData = [
                     'job_id' => $job->id,
                     'customer_id' => $job->customer_id,

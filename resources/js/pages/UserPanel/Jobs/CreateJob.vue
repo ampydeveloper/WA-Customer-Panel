@@ -245,6 +245,7 @@
                     <div class="col-md-12 form-input">
                       <v-text-field
                         required
+                        v-model="jobRequest.card.name"
                         :rules="[(v) => !!v || 'Name on card is required.']"
                         placeholder="Name on Card"
                       ></v-text-field>
@@ -252,6 +253,7 @@
                     <div class="col-md-12 form-input">
                       <v-text-field
                         required
+                        v-model="jobRequest.card.card_number"
                         size="20"
                         :rules="[(v) => !!v || 'Card Number is required.']"
                         placeholder="Card Number"
@@ -261,19 +263,21 @@
                       <select
                         id="exp_month"
                         data-stripe="exp_month"
+                        v-model="jobRequest.card.card_exp_month"
                         name="exp_month"
                         class="form-control required"
+                        required
                       >
                         <option value="">Exp. Month</option>
-                        <option value="1">1</option>
-                        <option value="2">2</option>
-                        <option value="3">3</option>
-                        <option value="4">4</option>
-                        <option value="5">5</option>
-                        <option value="6">6</option>
-                        <option value="7">7</option>
-                        <option value="8">8</option>
-                        <option value="9">9</option>
+                        <option value="01">01</option>
+                        <option value="02">02</option>
+                        <option value="03">03</option>
+                        <option value="04">04</option>
+                        <option value="05">05</option>
+                        <option value="06">06</option>
+                        <option value="07">07</option>
+                        <option value="8">08</option>
+                        <option value="09">09</option>
                         <option value="10">10</option>
                         <option value="11">11</option>
                         <option value="12">12</option>
@@ -282,19 +286,23 @@
                     <div class="col-md-4 form-input">
                       <select
                         id="exp_year"
+                        v-model="jobRequest.card.card_exp_year"
                         data-stripe="exp_year"
                         name="exp_year"
                         class="form-control required"
+                        required
                       >
                         <option value="">Exp. Year</option>
-                        <option value="2020">2020</option>
-                        <option value="2019">2019</option>
+                        <option v-for="year in expiryYears" v-bind:value="year">
+                          {{ year }}
+                        </option>
                       </select>
                     </div>
                     <div class="col-md-4 form-input">
                       <v-text-field
                         size="4"
                         required
+                        v-model="jobRequest.card.cvv"
                         :rules="[(v) => !!v || 'CVV is required.']"
                         placeholder="CVV"
                       ></v-text-field>
@@ -304,7 +312,7 @@
 
                 <v-col class="pt-0 pb-0 create-job-but" cols="12" md="12">
                   <v-btn
-                    type="submit"
+                    type="button"
                     :loading="loading"
                     :disabled="loading"
                     color="success"
@@ -347,6 +355,7 @@ import "filepond/dist/filepond.min.css";
 import "filepond-plugin-image-preview/dist/filepond-plugin-image-preview.min.css";
 import FilePondPluginFileValidateType from "filepond-plugin-file-validate-type";
 import FilePondPluginImagePreview from "filepond-plugin-image-preview";
+
 const FilePond = vueFilePond(
   FilePondPluginFileValidateType,
   FilePondPluginImagePreview
@@ -359,6 +368,11 @@ export default {
   data() {
     return {
       valid: true,
+      expiryMonths: _.range(1, 13),
+      expiryYears: _.range(
+        moment().format("YYYY"),
+        moment().add(21, "year").format("YYYY")
+      ),
       jobRequest: {
         farm_id: "",
         service_id: "",
@@ -369,6 +383,13 @@ export default {
         notes: "",
         is_repeating_job: false,
         repeating_days: 0,
+        card : {
+          name: "",
+          card_number: "",
+          card_exp_month: "",
+          card_exp_year: "",
+          cvv: "",
+        }
       },
       requiredRules: [(v) => !!v || "This field is required."],
       submitted: false,
@@ -431,6 +452,10 @@ export default {
     },
   },
   created: async function () {
+    this.expiryMonths = [...this.expiryMonths].map((month) => {
+        return month < 10 ? `0${month}` : month;
+    });
+
     const {
       data: { data: serviceList },
     } = await JobService.listServices();
@@ -469,6 +494,7 @@ export default {
             position: "top-right",
             dismissible: false,
           });
+
           setTimeout(() => {
             router.push({
               name: "jobsList",
@@ -476,6 +502,7 @@ export default {
             });
           }, 2000);
         } catch (error) {
+        return false;
           this.$toast.open({
             message: error.response.data.message,
             type: "error",

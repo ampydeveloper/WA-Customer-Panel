@@ -167,6 +167,16 @@ class PaymentController extends Controller
 
     public function addCard(Request $request)
     {
+       $status = $this->processAddCard($request->all());
+       if ($status['status']) {
+        return response()->json($status, 200);
+       } else {
+        return response()->json($status, 200);
+       }
+    }
+
+    public function processAddCard($cardData)
+    {
         $user = Auth::user();
 
         if ($user->role_id == config('constant.roles.Customer') || $user->role_id == config('constant.roles.Haulers')) {
@@ -177,9 +187,9 @@ class PaymentController extends Controller
         }
 
         if(!isset($customer->authorize_net_id) || $customer->authorize_net_id == '') {
-            return $this->createCustomerProfile($request, $user, $customer);
+            return $this->createCustomerProfile($cardData, $user, $customer);
         } else {
-            return $this->createCustomerPaymentProfile($request, $user, $customer);
+            return $this->createCustomerPaymentProfile($cardData, $user, $customer);
         }
     }
 
@@ -187,19 +197,20 @@ class PaymentController extends Controller
      * @method createCustomerProfile: function to create customer and add card on authorize.net
      *
      */
-    public function createCustomerProfile(Request $request, $user, $customer)
+    public function createCustomerProfile(array $cardData, $user, $customer)
     {
+        $cardData = (object) $cardData;
         // Set credit card information for payment profile
         $creditCard = new AnetAPI\CreditCardType();
-        $creditCard->setCardNumber($request->card_number);
-        $creditCard->setExpirationDate($request->card_exp_year.'-'.$request->card_exp_month);
-        $creditCard->setCardCode($request->cvv);
+        $creditCard->setCardNumber($cardData->card_number);
+        $creditCard->setExpirationDate($cardData->card_exp_year.'-'.$cardData->card_exp_month);
+        $creditCard->setCardCode($cardData->cvv);
         $paymentCreditCard = new AnetAPI\PaymentType();
         $paymentCreditCard->setCreditCard($creditCard);
 
         // Create the Bill To info for new payment type
         $billTo = new AnetAPI\CustomerAddressType();
-        $billTo->setFirstName($request->name);
+        $billTo->setFirstName($cardData->name);
         // $billTo->setLastName($customer->last_name);
         // $billTo->setCompany("Souveniropolis");
         $billTo->setAddress($customer->address);
@@ -212,7 +223,7 @@ class PaymentController extends Controller
 
         // Create a customer shipping address
         $customerShippingAddress = new AnetAPI\CustomerAddressType();
-        $customerShippingAddress->setFirstName($request->name);
+        $customerShippingAddress->setFirstName($cardData->name);
         // $customerShippingAddress->setLastName($customer->last_name);
         // $customerShippingAddress->setCompany("Addresses R Us");
         $customerShippingAddress->setAddress($customer->address);
@@ -259,37 +270,38 @@ class PaymentController extends Controller
 
             $paymentProfiles = $response->getCustomerPaymentProfileIdList();
             CustomerCardDetail::create([
-                'name' => $request->name,
+                'name' => $cardData->name,
                 'customer_id' => $customer->id,
                 'card_id' => $paymentProfiles[0],
-                'card_number' => $request->card_number,
-                'card_exp_month' => $request->card_exp_month,
-                'card_exp_year' => $request->card_exp_year,
+                'card_number' => $cardData->card_number,
+                'card_exp_month' => $cardData->card_exp_month,
+                'card_exp_year' => $cardData->card_exp_year,
                 'card_status' => 1,
                 'card_primary' => 1,
             ]);
 
-            return response()->json([
+            return [
                 'status' => true,
-                'message' => 'Payment successful',
+                'message' => 'Card added successfully.',
                 'data' => $user
-            ], 200);
+            ];
         }
         $errorMessages = $response->getMessages()->getMessage();
 
-        return response()->json([
+        return [
             'status' => false,
             'message' => 'Please try again later.',
-            'error' => $errorMessages,
-        ], 421);
+            'error' => $errorMessages
+        ];
     }
 
     /**
      * @method createCustomerPaymentProfile: Function to createadd card to exsiting customer on authorize.net
      *
      */
-    public function createCustomerPaymentProfile(Request $request, $user, $customer)
+    public function createCustomerPaymentProfile(array $cardData, $user, $customer)
     {
+        $cardData = (object) $cardData;
         if (!$customer->authorize_net_id) {
             return response()->json([
                 'status' => false,
@@ -298,15 +310,15 @@ class PaymentController extends Controller
         }
         // Set credit card information for payment profile
         $creditCard = new AnetAPI\CreditCardType();
-        $creditCard->setCardNumber($request->card_number);
-        $creditCard->setExpirationDate($request->card_exp_year.'-'.$request->card_exp_month);
-        $creditCard->setCardCode($request->cvv);
+        $creditCard->setCardNumber($cardData->card_number);
+        $creditCard->setExpirationDate($cardData->card_exp_year.'-'.$cardData->card_exp_month);
+        $creditCard->setCardCode($cardData->cvv);
         $paymentCreditCard = new AnetAPI\PaymentType();
         $paymentCreditCard->setCreditCard($creditCard);
 
         // Create the Bill To info for new payment type
         $billTo = new AnetAPI\CustomerAddressType();
-        $billTo->setFirstName($request->name);
+        $billTo->setFirstName($cardData->name);
         $billTo->setAddress($customer->address);
         $billTo->setCity($customer->city);
         $billTo->setState($customer->state);
@@ -340,29 +352,29 @@ class PaymentController extends Controller
             $paymentProfileId = $response->getCustomerPaymentProfileId();
             
             CustomerCardDetail::create([
-                'name' => $request->name,
+                'name' => $cardData->name,
                 'customer_id' => $customer->id,
                 'card_id' => $paymentProfileId,
-                'card_number' => $request->card_number,
-                'card_exp_month' => $request->card_exp_month,
-                'card_exp_year' => $request->card_exp_year,
+                'card_number' => $cardData->card_number,
+                'card_exp_month' => $cardData->card_exp_month,
+                'card_exp_year' => $cardData->card_exp_year,
                 'card_status' => 1,
                 'card_primary' => 0,
             ]);
 
-            return response()->json([
+            return [
                 'status' => true,
-                'message' => 'Payment successful',
+                'message' => 'Card added successfully.',
                 'data' => $user
-            ], 200);
+            ];
 
         } else {
             $errorMessages = $response->getMessages()->getMessage();
-            return response()->json([
+            return [
                 'status' => false,
                 'message' => 'Please try again later.',
                 'error' => $errorMessages
-            ], 421);
+            ];
         }
     }
 
