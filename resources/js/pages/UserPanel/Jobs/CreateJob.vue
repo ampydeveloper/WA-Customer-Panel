@@ -199,13 +199,23 @@
                     <div class="label-align pt-0">
                       <label>Farms</label>
                     </div>
-                    <div class="pt-0 pb-0">
+                    <div class="pt-0 pb-0 farm-conatiner">
                       <v-select
                         v-model="jobRequest.farm_id"
                         :items="farmList"
                         placeholder="Select Farm"
                         :rules="[v => !!v || 'Farms is required.']"
                       ></v-select>
+                      <MglMap
+                        :accessToken="accessToken"
+                        :mapStyle.sync="mapStyle"
+                        :zoom="zoom"
+                        :center="coordinates"
+                      >
+                        <!-- Adding navigation control -->
+                        <MglNavigationControl position="top-right" />
+                        <!-- <MglMarker :coordinates="coordinates" color="blue" /> -->
+                      </MglMap>
                     </div>
                   </v-col>
                 </div>
@@ -358,6 +368,8 @@ import "filepond/dist/filepond.min.css";
 import "filepond-plugin-image-preview/dist/filepond-plugin-image-preview.min.css";
 import FilePondPluginFileValidateType from "filepond-plugin-file-validate-type";
 import FilePondPluginImagePreview from "filepond-plugin-image-preview";
+import Mapbox from "mapbox-gl";
+import { MglMap, MglNavigationControl, MglMarker } from "vue-mapbox";
 
 const FilePond = vueFilePond(
   FilePondPluginFileValidateType,
@@ -366,7 +378,10 @@ const FilePond = vueFilePond(
 
 export default {
   components: {
-    FilePond
+    FilePond,
+    MglMap,
+    MglNavigationControl,
+    MglMarker
   },
   data() {
     return {
@@ -408,6 +423,11 @@ export default {
       weightShow: false,
       servicePrice: 0,
       fileContainer: [],
+      accessToken:
+        "pk.eyJ1IjoibGFyYXZlbGNoZCIsImEiOiJja2ZiNTVraWkwdWdsMnBweGFubnBxMWZtIn0.xY-ky0EqYfVZJmNI5Io4ew", // your access token. Needed if you using Mapbox maps
+      mapStyle: "mapbox://styles/mapbox/streets-v11",
+      zoom: 15,
+      coordinates: [-77.0214, 38.897],
 
       timePeriod: { 1: "Morning", 2: "Afternoon", 3: "Evening" },
       serviceTimeSlotMap: { 1: [{ id: 1, time: "12AM - 12AM" }] },
@@ -452,6 +472,18 @@ export default {
     },
     "jobRequest.weight": function(weight) {
       this.jobRequest.amount = this.servicePrice * weight;
+    },
+    "jobRequest.farm_id": function(farmId) {
+      const selectedFarm = _.filter(
+        this.farmList,
+        farm => farm.value === farmId
+      );
+      if (selectedFarm !== undefined && selectedFarm.length > 0) {
+        this.coordinates = [
+          selectedFarm[0].longitude,
+          selectedFarm[0].latitude
+        ];
+      }
     }
   },
   created: async function() {
@@ -481,7 +513,9 @@ export default {
     this.farmList = [...farms].map(farm => {
       return {
         text: farm.farm_address,
-        value: farm.id
+        value: farm.id,
+        latitude: farm.latitude,
+        longitude: farm.longitude
       };
     });
   },
