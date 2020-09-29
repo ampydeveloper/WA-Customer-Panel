@@ -31,7 +31,7 @@
                     <div class="col-sm-12">
                       <div class="profile-image">
                         <img
-                          src="https://pixinvent.com/demo/vuexy-vuejs-admin-dashboard-template/demo-1/img/avatar-s-5.99691e54.jpg"
+                          v-bind:src="userProfile.image_url"
                           alt="name"
                         />
                         <div class="image-edit">
