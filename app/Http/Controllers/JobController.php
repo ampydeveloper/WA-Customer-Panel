@@ -38,7 +38,7 @@ class JobController extends Controller
         try {
             $job = new Job([
                 'job_created_by' => $createJobRequest->user()->id,
-                'customer_id' => $createJobRequest->user()->id,
+                'customer_id' => $farm->cstomer_id,
                 'manager_id' => (isset($createJobRequest->manager_id) && $createJobRequest->manager_id != '' && $createJobRequest->manager_id != null) ? $createJobRequest->manager_id : null,
                 'farm_id' => (isset($createJobRequest->farm_id) && $createJobRequest->farm_id != '' && $createJobRequest->farm_id != null) ? $createJobRequest->farm_id : null,
                 'service_id' => $createJobRequest->service_id,
@@ -260,5 +260,29 @@ class JobController extends Controller
                     'message' => 'You cannot cancel the job.',
                     'data' => []
                 ], 500);
+    }
+
+    /**
+     * @method myJobs: Functin to get jobs.
+     */
+    public function myJobs()
+    {
+        return response()->json([
+            'status' => true,
+            'message' => 'Job List',
+            'data' => Auth::user()->myJobs()
+        ], 200);
+    }
+
+     /**
+     * @method myUpcomingJobs: FunctiOn to get upcoming jobs.
+     */
+    public function myUpcomingJobs()
+    {
+        return response()->json([
+            'status' => true,
+            'message' => 'Job List',
+            'data' => Auth::user()->myUpcomingJobs()
+        ], 200);
     }
 }

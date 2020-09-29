@@ -46,12 +46,24 @@ class FarmController extends Controller
                 'farm_province' => $request->farm_province,
                 'farm_zipcode' => $request->farm_zipcode,
                 'farm_image' => (isset($request->farm_images) && $request->farm_images != '' && $request->farm_images != null) ? json_encode($request->farm_images) : null,
-                'farm_active' => $request->farm_active,
+                'farm_active' => ($request->farm_active) ? $request->farm_active : 1,
                 'latitude' => $request->latitude,
                 'longitude' => $request->longitude,
                 'created_by' => $request->user()->id,
             ]);
             if ($farmDetails->save()) {
+                if ($request->farm_image && count($request->farm_image) > 0) {  
+                    $farmImages = [];
+                    foreach($request->farm_image as $image)
+                    {
+                        $imageName = $farmDetails->putImage($image);
+                        if ($imageName) {
+                            $farmImages[] = $imageName;
+                        }
+                    }
+                    $farmDetails->update(['farm_image' => json_encode($farmImages)]);
+                }
+
                 foreach ($request->manager_details as $manager) {
                     $newPassword = Str::random();
                     $saveManger = new User([

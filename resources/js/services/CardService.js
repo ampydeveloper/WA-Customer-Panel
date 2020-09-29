@@ -18,6 +18,15 @@ class CardService {
       }
     });
   }
+
+  static delete(cardId) {
+    const token = window.localStorage.getItem("token");
+    return Axios.delete("/api/payment/customer/card/"+cardId, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
+  }
 }
 
 export default CardService;

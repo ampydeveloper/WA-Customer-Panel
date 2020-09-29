@@ -40,12 +40,12 @@ Vue.use(VueToast);
 
 Vue.mixin(authorizationMixin);
 
-Vue.use(
-  new VueSocketIO({
-    debug: true,
-    connection: `http://${process.env.MIX_SOCKET_SERVER_IP}:${process.env.MIX_SOCKET_SERVER_PORT}`
-  })
-);
+// Vue.use(
+//   new VueSocketIO({
+//     debug: true,
+//     connection: `http://${process.env.MIX_SOCKET_SERVER_IP}:${process.env.MIX_SOCKET_SERVER_PORT}`
+//   })
+// );
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to

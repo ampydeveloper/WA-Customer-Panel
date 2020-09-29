@@ -15,7 +15,7 @@ class CustomerCardDetail extends Model
      * @var array
      */
     protected $fillable = [
-        'customer_id', 'card_id', 'card_number', 'card_exp_month', 'card_exp_year', 'card_status', 'card_primary'
+        'name', 'customer_id', 'card_id', 'card_number', 'card_exp_month', 'card_exp_year', 'card_status', 'card_primary'
     ];
 
     protected  $hidden = ['card_number'];

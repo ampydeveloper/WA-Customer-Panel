@@ -105,7 +105,7 @@
                     "bSort" : false,
                     oLanguage: {
                         sSearch: "",
-                        "sEmptyTable": "No job till now."
+                        "sEmptyTable": "No data available."
                     },
                     drawCallback: function(settings) {
                         $(".dataTables_paginate .paginate_button.previous").html(

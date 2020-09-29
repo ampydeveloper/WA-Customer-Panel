@@ -30,6 +30,9 @@ Route::group(['prefix' => 'auth'], function () {
 
 Route::group(['middleware' => 'auth:api', 'prefix' => 'my', 'as' => 'my'], function () {
     Route::get('farms', 'CustomerController@myFarms')->name('farms');
+    Route::get('jobs', 'JobController@myJobs')->name('jobs');
+    Route::get('jobs/upcoming', 'JobController@myUpcomingJobs')->name('upcoming.jobs');
+
 });
 Route::group(['middleware' => 'auth:api', 'prefix' => 'customer', 'as' => 'customer'], function () {
 
@@ -41,7 +44,7 @@ Route::group(['middleware' => 'auth:api', 'prefix' => 'customer', 'as' => 'custo
 
     // Farm related apis
     Route::group(['prefix' => 'farm', 'as' => 'farm'], function () {
-        Route::put('', 'FarmController@create')->name('create');
+        Route::post('', 'FarmController@create')->name('create');
         Route::patch('{customer_farm}', 'FarmController@update')->name('create');
         Route::get('{customer_farm}', 'FarmController@get')->name('get');
         Route::delete('{customer_farm}', 'FarmController@deleteFarm')->name('delete');
@@ -71,7 +74,7 @@ Route::group(['middleware' => 'auth:api', 'prefix' => 'customer', 'as' => 'custo
 });
 
 Route::group(['middleware' => 'auth:api', 'prefix' => 'payment', 'as' => 'payment'], function () {
-    Route::post('charge', 'PaymentController@charge')->name('charge');
+    Route::post('charge', 'PaymentController@chargeCustomerProfile')->name('charge');
     Route::group(['prefix' => 'customer', 'as' => 'customer'], function () {
         Route::put('add-card', 'PaymentController@addCard')->name('create');
         Route::get('cards', 'PaymentController@getCustomerPaymentProfileList')->name('cards');

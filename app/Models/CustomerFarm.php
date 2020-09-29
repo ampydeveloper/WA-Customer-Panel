@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Storage;
 
 class CustomerFarm extends Model
 {
@@ -44,6 +45,14 @@ class CustomerFarm extends Model
         $userId = ($userId) ? $userId : (\Auth::user()) ? \Auth::user()->id : null;
         
         return ($userId && $this->customer_id == $userId);
+    }
+
+    public function putImage($image, $imageName = null)
+    {
+        $imageName = ($imageName) ? $imageName : rand().time().'.'.$image->extension();
+        $path = $this->customer_id.'/farms/'.$this->id.'/'.$imageName;
+        
+        return (Storage::disk('user_images')->put($path, file_get_contents($image))) ? Storage::disk('user_images')->url($path) : false;
     }
 
 }

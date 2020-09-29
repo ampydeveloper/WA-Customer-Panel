@@ -31,6 +31,15 @@
                 />
               </form>
 
+              <button
+                  class="btn btn-success btn-lg btn-block"
+                  style="width : 200px;"
+                  @click="addNewManager"
+                  v-if="!addManagers"
+                >
+                  Add New Manager
+                </button>
+
               <div class="form-group" v-if="hasManager && !addManagers">
                 <ul class="list-group">
                   <li
@@ -41,13 +50,7 @@
                     {{ manager.manager_first_name }} / {{ manager.email }}
                   </li>
                 </ul>
-                <button
-                  class="btn btn-success btn-lg btn-block"
-                  style="display: inline; margin-top: 20px"
-                  @click="addNewManager"
-                >
-                  Add New Manager
-                </button>
+                
                 <button
                   class="btn btn-success btn-lg btn-block"
                   style="display: inline; margin-top: 20px"

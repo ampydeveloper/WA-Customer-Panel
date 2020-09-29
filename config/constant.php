@@ -22,7 +22,8 @@ return [
         'unavailable' => 2
     ],
     'payment_methods' => [
-        'stripe' => 1
+        'stripe' => 1,
+        'authorizenet' => 2
     ],
     'payment_status_reverse' => [
         'succeeded' => 1

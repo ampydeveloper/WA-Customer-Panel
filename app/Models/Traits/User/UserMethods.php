@@ -1,7 +1,9 @@
 <?php
 
 namespace App\Models\Traits\User;
-
+use App\Models\CustomerCardDetail;
+use App\Models\Job;
+use Carbon\Carbon;
 use Storage;
 
 trait UserMethods
@@ -41,8 +43,50 @@ trait UserMethods
 
     public function putImage($image, $imageName = null)
     {
-        $imageName = ($imageName) ? $imageName : time().'.'.$image->extension();
+        $imageName = ($imageName) ? $imageName : rand().time().'.'.$image->extension();
 
         return (Storage::disk('user_images')->put($this->id.'/'.$imageName, file_get_contents($image))) ? $imageName : false;
+    }
+
+    public function defaultCard()
+    {
+        return CustomerCardDetail::where('customer_id', $this->id)->where('card_primary', 1)->first();
+    }
+
+    public function myJobs()
+    {
+        if ($this->isCustomer()) {
+            return Job::where('customer_id', $this->id)->with('farm')->get();
+        } else {
+            $farm = $this->managerOf;
+            if (!$farm) {
+                return [];
+            }
+
+            return Job::where('farm_id', $farm->id)->with('farm')->get();
+        }
+    }
+    
+    public function myUpcomingJobs()
+    {
+        if ($this->isCustomer()) {
+            return Job::where([
+                'customer_id' => $this->id
+            ])->where('job_providing_date', '>', Carbon::now())
+            ->with('farm')
+            ->get();
+        } else {
+            $farm = $this->managerOf;
+            if (!$farm) {
+                return [];
+            }
+
+            return Job::where([
+                'farm_id' => $farm->id
+            ])->where('job_providing_date', '>', Carbon::now())
+            ->with('farm')
+            ->get();
+        }
+        
     }
 }
