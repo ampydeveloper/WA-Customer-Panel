@@ -32,13 +32,13 @@
               </form>
 
               <button
-                  class="btn btn-success btn-lg btn-block"
-                  style="width : 200px;"
-                  @click="addNewManager"
-                  v-if="!addManagers"
-                >
-                  Add New Manager
-                </button>
+                class="btn btn-success btn-lg btn-block"
+                style="width : 200px;"
+                @click="addNewManager"
+                v-if="!addManagers"
+              >
+                Add New Manager
+              </button>
 
               <div class="form-group" v-if="hasManager && !addManagers">
                 <ul class="list-group">
@@ -47,10 +47,28 @@
                     v-for="(manager, index) in model.manager_details"
                     :key="index"
                   >
-                    {{ manager.manager_first_name }} / {{ manager.email }}
+                    {{ manager.manager_first_name }}
+                    {{ manager.manager_last_name }} / {{ manager.email }}
+
+                    <div style="display: inline; float: right;">
+                      <button
+                        type="button"
+                        class="btn btn-sm btn-info"
+                        @click="onManagerEdit(manager)"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        type="button"
+                        class="btn btn-sm btn-danger"
+                        @click="onManagerDelete(manager)"
+                      >
+                        Delete
+                      </button>
+                    </div>
                   </li>
                 </ul>
-                
+
                 <button
                   class="btn btn-success btn-lg btn-block"
                   style="display: inline; margin-top: 20px"
@@ -72,11 +90,12 @@ import farmFormSchema from "../../../forms/farmFormSchema";
 import FarmService from "../../../services/FarmService";
 import CreateManager from "./Managers/CreateManager";
 import router from "../../../router";
+import _ from "lodash";
 
 const emptyManager = {
   manager_first_name: "",
   manager_last_name: "",
-  email: ``,
+  email: "",
   manager_phone: "",
   manager_address: "",
   manager_city: "",
@@ -84,7 +103,7 @@ const emptyManager = {
   manager_zipcode: "",
   manager_card_image: "",
   manager_id_card: "",
-  salary: "",
+  salary: ""
 };
 
 const emptyFarmRequest = {
@@ -95,25 +114,33 @@ const emptyFarmRequest = {
   farm_active: 1,
   latitude: "",
   longitude: "",
-  manager_details: [],
+  manager_details: []
 };
 
 export default {
   components: {
-    CreateManager,
+    CreateManager
   },
   computed: {
-    hasManager: function () {
+    hasManager: function() {
       return this.model.manager_details.length > 0;
-    },
+    }
   },
   data() {
     return {
       newManager: { ...emptyManager },
       model: emptyFarmRequest,
+      fileContainer: [],
       schema: {
         fields: [
           ...farmFormSchema.fields,
+          {
+            type: "filepond",
+            onFilePondDrop: (fieldName, file, metadata, load) => {
+              this.fileContainer.push(file);
+              load(Date.now());
+            }
+          },
           {
             type: "submit",
             styleClasses: "submit-button",
@@ -125,53 +152,109 @@ export default {
               this.isCreatingFarm = true;
               this.addManagers = true;
               this.newManager = { ...emptyManager };
-            },
-          },
-        ],
+            }
+          }
+        ]
       },
       formOptions: {
-        validateAfterChanged: true,
+        validateAfterChanged: true
       },
       isCreatingFarm: false,
-      addManagers: false,
+      addManagers: false
     };
   },
   methods: {
-    updateManager: function (manager) {
+    updateManager: function(manager) {
+      const existingManager = _.find(
+        this.model.manager_details,
+        emanager => emanager.email === manager.email
+      );
+
+      if (existingManager !== undefined) {
+        this.model.manager_details = _.filter(
+          this.model.manager_details,
+          emanager => emanager.email !== manager.email
+        );
+      }
+
       this.model.manager_details.push(manager);
       this.addManagers = false;
     },
-    createFarm: function () {
-      FarmService.create(this.model)
+    createFarm: function() {
+      var createFarmRequest = new FormData();
+
+      /**
+       * Adding form values to Request
+       * except of user_image
+       */
+      for (var key in this.model) {
+        if (key !== "manager_details") {
+          createFarmRequest.append(key, this.model[key]);
+        } else {
+          if (this.model.manager_details.length > 0) {
+            this.model.manager_details.forEach((manager, ind) => {
+              Object.keys(manager).forEach(k => {
+                createFarmRequest.append(
+                  `manager_details[${ind}][${k}]`,
+                  manager[k]
+                );
+              });
+            });
+          }
+        }
+      }
+
+      /**
+       * If user image is uploaded then add it to form data
+       */
+      if (this.fileContainer.length > 0) {
+        this.fileContainer.forEach((file, ind) => {
+          createFarmRequest.append(`farm_image[${ind}]`, file, file.name);
+        });
+      }
+
+      FarmService.create(createFarmRequest)
         .then(
-          (response) => {
+          response => {
             this.$toast.open({
               message: response.data.message,
               type: "success",
               position: "top-right",
-              dismissible: false,
+              dismissible: false
             });
             this.model = emptyFarmRequest;
             this.addManagers = false;
             router.push({ name: "farmsList" });
           },
-          (error) => {
+          error => {
             this.$toast.open({
               message: error.response.data.message,
               type: "error",
               position: "bottom-right",
-              dismissible: false,
+              dismissible: false
             });
           }
         )
-        .finally((_) => {
+        .finally(_ => {
           this.isCreatingFarm = false;
         });
     },
-    addNewManager: function () {
+    addNewManager: function() {
       this.newManager = { ...emptyManager };
       this.addManagers = true;
     },
-  },
+    onManagerDelete: function(manager) {
+      this.model.manager_details = _.filter(
+        this.model.manager_details,
+        function(man) {
+          return man.email !== manager.email;
+        }
+      );
+    },
+    onManagerEdit: function(manager) {
+      this.newManager = { ...manager };
+      this.addManagers = true;
+    }
+  }
 };
 </script>

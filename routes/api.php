@@ -32,7 +32,6 @@ Route::group(['middleware' => 'auth:api', 'prefix' => 'my', 'as' => 'my'], funct
     Route::get('farms', 'CustomerController@myFarms')->name('farms');
     Route::get('jobs', 'JobController@myJobs')->name('jobs');
     Route::get('jobs/upcoming', 'JobController@myUpcomingJobs')->name('upcoming.jobs');
-
 });
 Route::group(['middleware' => 'auth:api', 'prefix' => 'customer', 'as' => 'customer'], function () {
 
@@ -66,7 +65,7 @@ Route::group(['middleware' => 'auth:api', 'prefix' => 'customer', 'as' => 'custo
 
     // Job related apis
     Route::group(['prefix' => 'job', 'as' => 'job'], function () {
-        Route::put('', 'JobController@create')->name('create');
+        Route::post('', 'JobController@create')->name('create');
         Route::patch('', 'JobController@update')->name('create');
         Route::get('{job}/cancel', 'JobController@cancelJob')->name('cancel');
         Route::get('{job}', 'JobController@get')->name('get');

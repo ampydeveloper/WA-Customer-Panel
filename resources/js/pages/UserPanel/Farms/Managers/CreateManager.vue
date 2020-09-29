@@ -15,6 +15,7 @@
 <script>
 import managerFormSchema from "../../../../forms/managerFormSchema";
 import FarmService from "../../../../services/FarmService";
+import router from "../../../../router";
 
 const emptyManager = {
   manager_first_name: "",
@@ -68,6 +69,14 @@ export default {
                     }
                   );
                 });
+              }
+            }
+          },
+          {
+            type: "cancel",
+            onCancel: (model, schema, ev) => {
+              if (this.$route.name === "createManager") {
+                window.history.back();
               }
             }
           }

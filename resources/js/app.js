@@ -16,13 +16,18 @@ import Vuetify from "vuetify";
 import Chat from "vue-beautiful-chat";
 import VueSocketIO from "vue-socket.io";
 import { authorizationMixin } from "./role";
+import fieldCancel from "./forms/custom-fields/fieldCancel.vue";
+import fieldFilepond from "./forms/custom-fields/fieldFilepond.vue";
 
 window.Vue = require("vue");
 
 Vue.use(Chat);
 Vue.use(Vuelidate);
 Vue.use(Vuetify);
+
 /** Vue Form Generator */
+Vue.component("fieldCancel", fieldCancel);
+Vue.component("fieldFilepond", fieldFilepond);
 Vue.use(VueFormGenerator);
 
 Vue.use(VueMapbox, { mapboxgl: Mapbox });

@@ -32,7 +32,7 @@
                         v-model="jobRequest.service_id"
                         :items="serviceList"
                         label="Select Service"
-                        :rules="[(v) => !!v || 'Service is required.']"
+                        :rules="[v => !!v || 'Service is required.']"
                       ></v-select>
                     </div>
                   </v-col>
@@ -83,7 +83,7 @@
                             required
                             placeholder="Enter Weight"
                             type="number"
-                            :rules="[(v) => !!v || 'Weight is required.']"
+                            :rules="[v => !!v || 'Weight is required.']"
                           ></v-text-field>
                         </div>
                       </v-col>
@@ -134,9 +134,11 @@
                     <div class="pt-0 pb-0">
                       <v-switch
                         v-model="jobRequest.is_repeating_job"
-                        :label="`${
-                          jobRequest.is_repeating_job === true ? 'Yes' : 'No'
-                        }`"
+                        :label="
+                          `${
+                            jobRequest.is_repeating_job === true ? 'Yes' : 'No'
+                          }`
+                        "
                       ></v-switch>
 
                       <v-text-field
@@ -157,7 +159,7 @@
                     <div class="pt-0 pb-0">
                       <v-text-field
                         required
-                        :rules="[(v) => !!v || 'Gate Number is required.']"
+                        :rules="[v => !!v || 'Gate Number is required.']"
                         placeholder="Enter Gate Number"
                       ></v-text-field>
                     </div>
@@ -173,14 +175,15 @@
                         placeholder="Enter Notes"
                         v-model="jobRequest.notes"
                         rows="3"
-                        :rules="[(v) => !!v || 'Notes is required.']"
+                        :rules="[v => !!v || 'Notes is required.']"
                       ></v-textarea>
                     </div>
                   </v-col>
 
                   <v-col cols="12" md="12" class="t-s-inner pt-0 pb-0">
                     <file-pond
-                      name="userProfile.user_image"
+                      name="jobImage"
+                      v-bind:allow-multiple="true"
                       ref="pond"
                       label-idle="Drop files here or <span class='filepond--label-action'>Browse</span>"
                       accepted-file-types="image/jpg,image/jpeg, image/png"
@@ -201,7 +204,7 @@
                         v-model="jobRequest.farm_id"
                         :items="farmList"
                         placeholder="Select Farm"
-                        :rules="[(v) => !!v || 'Farms is required.']"
+                        :rules="[v => !!v || 'Farms is required.']"
                       ></v-select>
                     </div>
                   </v-col>
@@ -246,7 +249,7 @@
                       <v-text-field
                         required
                         v-model="jobRequest.card.name"
-                        :rules="[(v) => !!v || 'Name on card is required.']"
+                        :rules="[v => !!v || 'Name on card is required.']"
                         placeholder="Name on Card"
                       ></v-text-field>
                     </div>
@@ -255,7 +258,7 @@
                         required
                         v-model="jobRequest.card.card_number"
                         size="20"
-                        :rules="[(v) => !!v || 'Card Number is required.']"
+                        :rules="[v => !!v || 'Card Number is required.']"
                         placeholder="Card Number"
                       ></v-text-field>
                     </div>
@@ -303,7 +306,7 @@
                         size="4"
                         required
                         v-model="jobRequest.card.cvv"
-                        :rules="[(v) => !!v || 'CVV is required.']"
+                        :rules="[v => !!v || 'CVV is required.']"
                         placeholder="CVV"
                       ></v-text-field>
                     </div>
@@ -363,7 +366,7 @@ const FilePond = vueFilePond(
 
 export default {
   components: {
-    FilePond,
+    FilePond
   },
   data() {
     return {
@@ -371,7 +374,9 @@ export default {
       expiryMonths: _.range(1, 13),
       expiryYears: _.range(
         moment().format("YYYY"),
-        moment().add(21, "year").format("YYYY")
+        moment()
+          .add(21, "year")
+          .format("YYYY")
       ),
       jobRequest: {
         farm_id: "",
@@ -383,15 +388,15 @@ export default {
         notes: "",
         is_repeating_job: false,
         repeating_days: 0,
-        card : {
+        card: {
           name: "",
           card_number: "",
           card_exp_month: "",
           card_exp_year: "",
-          cvv: "",
+          cvv: ""
         }
       },
-      requiredRules: [(v) => !!v || "This field is required."],
+      requiredRules: [v => !!v || "This field is required."],
       submitted: false,
       loading: false,
       selectedTimePeriod: 0,
@@ -402,25 +407,23 @@ export default {
       menu2: false,
       weightShow: false,
       servicePrice: 0,
+      fileContainer: [],
 
       timePeriod: { 1: "Morning", 2: "Afternoon", 3: "Evening" },
       serviceTimeSlotMap: { 1: [{ id: 1, time: "12AM - 12AM" }] },
       slotsForPeriod: [{ id: 1, time: "12AM - 12AM" }],
       filePondServer: {
         process: (fieldName, file, metadata, load) => {
-          // set data
-          const formData = new FormData();
-          formData.append("user_image", file, file.name);
-          this.userProfile.user_image = formData;
+          this.fileContainer.push(file);
           load(Date.now());
-        },
-      },
+        }
+      }
     };
   },
   watch: {
-    "jobRequest.service_id": function (serviceId) {
+    "jobRequest.service_id": function(serviceId) {
       const { timeSlots, service_type, price } = _.find(this.allServices, {
-        id: serviceId,
+        id: serviceId
       });
       /** Clear any existing slots */
       this.serviceTimeSlotMap = {};
@@ -430,13 +433,13 @@ export default {
       this.selectedTimePeriod = null;
 
       if (timeSlots !== undefined && timeSlots.length > 0) {
-        timeSlots.forEach((timeSlot) => {
+        timeSlots.forEach(timeSlot => {
           this.serviceTimeSlotMap[timeSlot.slot_type] = [
             ...(this.serviceTimeSlotMap[timeSlot.slot_type] || []),
             {
               id: timeSlot.id,
-              time: `${timeSlot.slot_start} - ${timeSlot.slot_end}`,
-            },
+              time: `${timeSlot.slot_start} - ${timeSlot.slot_end}`
+            }
           ];
         });
       }
@@ -444,74 +447,103 @@ export default {
       this.jobRequest.amount = price;
       this.servicePrice = price;
     },
-    selectedTimePeriod: function (timePeriod) {
+    selectedTimePeriod: function(timePeriod) {
       this.slotsForPeriod = this.serviceTimeSlotMap[timePeriod];
     },
-    "jobRequest.weight": function (weight) {
+    "jobRequest.weight": function(weight) {
       this.jobRequest.amount = this.servicePrice * weight;
-    },
+    }
   },
-  created: async function () {
-    this.expiryMonths = [...this.expiryMonths].map((month) => {
-        return month < 10 ? `0${month}` : month;
+  created: async function() {
+    this.expiryMonths = [...this.expiryMonths].map(month => {
+      return month < 10 ? `0${month}` : month;
     });
 
     const {
-      data: { data: serviceList },
+      data: { data: serviceList }
     } = await JobService.listServices();
 
     /** Collection of all services */
     this.allServices = [...serviceList];
 
     /** Select Box Values */
-    this.serviceList = [...serviceList].map((service) => {
+    this.serviceList = [...serviceList].map(service => {
       return {
         text: service.service_name,
-        value: service.id,
+        value: service.id
       };
     });
 
     /** Collection of farms */
     const {
-      data: { farms },
+      data: { farms }
     } = await FarmService.list();
-    this.farmList = [...farms].map((farm) => {
+    this.farmList = [...farms].map(farm => {
       return {
         text: farm.farm_address,
-        value: farm.id,
+        value: farm.id
       };
     });
   },
   methods: {
-    formSubmit: async function () {
+    formSubmit: async function() {
       const isValidated = this.$refs.form.validate();
       if (isValidated === true) {
         try {
-          const response = await JobService.create(this.jobRequest);
+          var createJobRequest = new FormData();
+
+          /**
+           * Adding form values to Request
+           * except of user_image
+           */
+          for (var key in this.jobRequest) {
+            if (key !== "card") {
+              createJobRequest.append(key, this.jobRequest[key]);
+            } else {
+              if (this.jobRequest.card !== undefined) {
+                Object.keys(this.jobRequest.card).forEach(k => {
+                  createJobRequest.append(
+                    `card[${k}]`,
+                    this.jobRequest.card[k]
+                  );
+                });
+              }
+            }
+          }
+
+          /**
+           * If user image is uploaded then add it to form data
+           */
+          if (this.fileContainer.length > 0) {
+            this.fileContainer.forEach((file, ind) => {
+              createJobRequest.append(`images[${ind}]`, file, file.name);
+            });
+          }
+
+          const response = await JobService.create(createJobRequest);
           this.$toast.open({
             message: response.data.message,
             type: "success",
             position: "top-right",
-            dismissible: false,
+            dismissible: false
           });
 
           setTimeout(() => {
             router.push({
               name: "jobsList",
-              params: { farmId: this.jobRequest.farm_id },
+              params: { farmId: this.jobRequest.farm_id }
             });
           }, 2000);
         } catch (error) {
-        return false;
           this.$toast.open({
             message: error.response.data.message,
             type: "error",
             position: "bottom-right",
-            dismissible: false,
+            dismissible: false
           });
         }
       }
-    },
-  },
+    }
+  }
 };
 </script>

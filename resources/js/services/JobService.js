@@ -3,7 +3,7 @@ import Axios from "axios";
 class JobService {
   static create(jobRequest) {
     const token = window.localStorage.getItem("token");
-    return Axios.put("/api/customer/job", jobRequest, {
+    return Axios.post("/api/customer/job", jobRequest, {
       headers: {
         Authorization: `Bearer ${token}`
       }

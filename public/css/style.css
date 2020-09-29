@@ -1087,10 +1087,10 @@ span.lets-str-icon {
 }
 
 .services-slider .service-block-custom-inner {
-padding: 35px;
-    border: 2px solid #000;
-    margin: 0px 15px 20px 15px;
-    border-top: 0;
+  padding: 35px;
+  border: 2px solid #000;
+  margin: 0px 15px 20px 15px;
+  border-top: 0;
 }
 
 .our-services-home {
@@ -1568,7 +1568,7 @@ p.already-account {
 }
 
 @media only screen and (min-width: 768px) {
-/*  .col-md-6.service-block-custom {
+  /*  .col-md-6.service-block-custom {
     border: 2px solid #000;
     max-width: calc(50% - 32px);
     margin: 20px 15px;
@@ -2189,7 +2189,8 @@ p.already-account {
   display: block;
 }
 
-.submit-button input[type="submit"] {
+.submit-button input[type="submit"],
+.field-wrap button {
   background: #1ec285;
   border: none;
   border-radius: 0;
@@ -2202,7 +2203,7 @@ p.already-account {
   font-size: 1.25rem;
   line-height: 1.5;
   font-weight: 400;
-  ext-align: center;
+  text-align: center;
   vertical-align: middle;
   user-select: none;
   transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out,
