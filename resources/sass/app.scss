@@ -8,7 +8,8 @@
 @import '~bootstrap/scss/bootstrap';
 
 // Common 
-body {
+body , .v-application{
+    font-family: "SFProDisplay-Regular" !important;
     background: #fff;
 }
 
@@ -18,16 +19,38 @@ body {
     padding: 0px 35px !important;
     background: #11b276 !important;
     font-weight: 700 !important;
-    height: 49px !important;
-    font-size: 18px !important;
+    height: 46px !important;
+    font-size: 16px !important;
     border-radius: 6px !important;
     font-family: "Gilroy-Bold";
     display: inline-block;
     line-height: 49px;
+    width: 100%;
+    text-align: center;
 
     &:hover,
     &:focus {
         color: #fff !important;
+    }
+    svg{
+        width: 19px;
+    height: 19px;
+    margin-left: 10px;
+    }
+}
+
+.btn-outline-green {
+    background: transparent !important;
+    color: #11b276 !important;
+    border: 2px solid #11b276 !important;
+    line-height: 37px !important;
+    width: auto;
+    height: 40px !important;
+    font-size: 14px !important;
+
+    &:hover,
+    &:focus {
+        color: #11b276 !important;
     }
 }
 
@@ -397,7 +420,8 @@ body {
     }
 
     .credit-cards-list {
-        margin: 0;
+        margin-bottom: 20px;
+        padding: 0;
 
         li {
             display: inline-block;
@@ -413,6 +437,11 @@ body {
         .create-job {
             text-align: center;
             margin-bottom: 40px;
+        }
+    }
+    .farm-conatiner{
+        .mgl-map-wrapper{
+            height: 300px;
         }
     }
 
@@ -462,7 +491,7 @@ body {
 
         .profile-image {
             width: 120px;
-            margin-bottom: 30px;
+            margin-bottom: 20px;
             position: relative;
 
             img {
@@ -532,6 +561,20 @@ body {
     }
 
 }
+.add-new-card{
+    .add-n-c-outer{
+        a{
+            float: right;
+        }
+    }
+}
+.add-new-card-form{
+    border-top: 1px solid #000;
+    margin-top: 30px;
+    .heading3{
+        margin-bottom: 20px;
+    }
+}
 
 // server 
 .service-block-img {
@@ -555,5 +598,27 @@ body {
         padding: 35px;
         width: 100%;
         border-top: 0;
+    }
+}
+
+.v-input {
+    margin: 0 !important;
+    padding: 0 !important;
+
+    .v-input__slot {
+        margin-bottom: 5px !important;
+    }
+}
+
+.label-align {
+    line-height: 20px;
+
+    label {
+        margin: 0;
+        line-height: 13px;
+        font-size: 14px;
+        font-weight: 600;
+        font-family: "Gilroy-Bold";
+        color: #19191a;
     }
 }

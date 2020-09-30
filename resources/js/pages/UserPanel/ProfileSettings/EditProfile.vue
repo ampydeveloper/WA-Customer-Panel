@@ -1,6 +1,5 @@
 <template>
   <v-app>
-
     <div class="main-wrapper">
       <section class="page-section-top" data-aos="">
         <div class="container">
@@ -15,28 +14,34 @@
       <section class="profile-outer center-content-outer" data-aos="">
         <div class="container">
           <div class="row">
-
             <!-- Profile -->
             <div class="col-sm-6 content-left-outer">
-              <div class="each-profile-block">
+              <div class="each-profile-block clearfix">
                 <h5 class="heading2">Edit Profile</h5>
                 <v-form
-                    ref="form"
-                    v-model="valid"
-                    lazy-validation
-                    class="slide-right"
-                    autocomplete="off"
-                  >
+                  ref="form"
+                  v-model="valid"
+                  lazy-validation
+                  class="slide-right"
+                  autocomplete="off"
+                >
                   <div class="row">
-                    <div class="col-sm-12">
-                      <div class="profile-image">
-                        <img
-                          v-bind:src="userProfile.image_url"
-                          alt="name"
-                        />
-                        <div class="image-edit">
+                    <div class="col-sm-12 pt-0 pb-0">
+                      <div class="profile-image" v-if="!profileUpload">
+                        <img v-bind:src="userProfile.image_url" alt="name" />
+                        <div class="image-edit" @click="showProfileUpload">
                           <i data-feather="edit-3"></i>
                         </div>
+                      </div>
+
+                      <div class="col-sm-6 p-0 profie-upload-outer" v-if="profileUpload">
+                        <file-pond
+                          name="userProfile.user_image"
+                          ref="pond"
+                          label-idle="Drop files here or <span class='filepond--label-action'>Browse</span>"
+                          accepted-file-types="image/jpg, image/gif,image/svg,image/jpeg, image/png"
+                          v-bind:server="filePondServer"
+                        />
                       </div>
                     </div>
                     <v-col cols="6" md="6" class="pt-0 pb-0">
@@ -108,6 +113,7 @@
                           v-model="userProfile.address"
                           placeholder="Address"
                           required
+                          rows="3"
                           :rules="[(v) => !!v || 'Address is required.']"
                         ></v-textarea>
                       </div>
@@ -138,7 +144,7 @@
                         ></v-text-field>
                       </div>
                     </v-col>
-                    <v-col cols="6" md="6" class="pt-0 pb-0">
+                    <!-- <v-col cols="6" md="6" class="pt-0 pb-0">
                       <div class="label-align pt-0">
                         <label>Country</label>
                       </div>
@@ -150,7 +156,7 @@
                           placeholder="Country"
                         ></v-text-field>
                       </div>
-                    </v-col>
+                    </v-col> -->
                     <v-col cols="6" md="6" class="pt-0 pb-0">
                       <div class="label-align pt-0">
                         <label>Zipcode</label>
@@ -164,20 +170,6 @@
                         ></v-text-field>
                       </div>
                     </v-col>
-                    <v-col cols="6" md="6" class="pt-0 pb-0">
-                      <div class="label-align pt-0">
-                        <label>Profile Photo</label>
-                      </div>
-                      <div class="pt-0 pb-0">
-                        <file-pond
-                          name="userProfile.user_image"
-                          ref="pond"
-                          label-idle="Drop files here or <span class='filepond--label-action'>Browse</span>"
-                          accepted-file-types="image/jpg, image/gif,image/svg,image/jpeg, image/png"
-                          v-bind:server="filePondServer"
-                        />
-                      </div>
-                    </v-col>
                   </div>
                 </v-form>
 
@@ -186,10 +178,11 @@
                     type="submit"
                     :loading="loading"
                     :disabled="loading"
-                    color="success"
                     class="btn-full-green"
                     @click="formSubmit"
-                    >Save Profile Info</v-btn
+                    >Save Profile Info
+                        <i data-feather="arrow-right"></i>
+                    </v-btn
                   >
                 </div>
               </div>
@@ -237,7 +230,7 @@
             <div class="col-sm-6 content-right-outer">
               <div class="each-profile-block">
                 <h5 class="heading2">Payment Info</h5>
-                
+
                 <!-- Card Listing -->
                 <table class="table payment-info-table basic-table">
                   <thead>
@@ -256,12 +249,22 @@
                       <td>
                         {{ card.card_exp_month }} / {{ card.card_exp_year }}
                       </td>
-                      <td><span class="primary-tag">{{ card.card_primary ? 'Primary' : 'Not Primary' }}</span></td>
                       <td>
-                        <button class="btn btn-sm btn-danger delete-item" @click="deleteCard(card.id)">
+                        <span class="primary-tag">{{
+                          card.card_primary ? "Primary" : "Not Primary"
+                        }}</span>
+                      </td>
+                      <td>
+                        <button
+                          class="btn btn-sm btn-danger delete-item"
+                          @click="deleteCard(card.id)"
+                        >
                           <i data-feather="x">Delete</i>
                         </button>
-                        <button class="btn btn-sm btn-danger delete-item" @click="makeCardDefault(card.id)">
+                        <button
+                          class="btn btn-sm btn-danger delete-item"
+                          @click="makeCardDefault(card.id)"
+                        >
                           <i data-feather="x">Make primary</i>
                         </button>
                       </td>
@@ -269,11 +272,19 @@
                   </tbody>
                 </table>
                 <!-- /Card Listing -->
-              
+
                 <!-- Add Card -->
                 <div class="add-new-card">
-                  <a href="javascript:void(0);" @click="showAddCard" id="add-card-link" class="btn-full-green">Add New Card</a>
-
+                  <div class="add-n-c-outer clearfix">
+                    <a
+                      href="javascript:void(0);"
+                      @click="showAddCard"
+                      id="add-card-link"
+                      class="btn-full-green btn-outline-green"
+                      v-if="!addNewCard"
+                      >Add New Card <i data-feather="arrow-right"></i></a
+                    >
+                  </div>
                   <div class="add-new-card-form" v-if="addNewCard">
                     <h6 class="heading3">Add New Card</h6>
 
@@ -293,100 +304,125 @@
                     </ul>
 
                     <v-form
-                        ref="card_add_form"
-                        v-model="card_add_valid"
-                        lazy-validation
-                        class="slide-right"
-                        autocomplete="off"
-                      >
+                      ref="card_add_form"
+                      v-model="card_add_valid"
+                      lazy-validation
+                      class="slide-right"
+                      autocomplete="off"
+                    >
                       <div class="row">
-
-                        <div class="col-md-12 form-input">
-                          <v-text-field
-                            v-model="cardDetails.name"
-                            required
-                            :rules="[(v) => !!v || 'Name on card is required.']"
-                            placeholder="Name on Card"
-                          ></v-text-field>
+                        <div class="col-md-12 form-input pt-0 pb-0">
+                          <div class="label-align pt-0">
+                            <label>Name on card</label>
+                          </div>
+                          <div class="pt-0 pb-0">
+                            <v-text-field
+                              v-model="cardDetails.name"
+                              required
+                              :rules="[
+                                (v) => !!v || 'Name on card is required.',
+                              ]"
+                              placeholder="Name on Card"
+                            ></v-text-field>
+                          </div>
                         </div>
 
-                        <div class="col-md-12 form-input">
-                          <v-text-field
-                            v-model="cardDetails.card_number"
-                            required
-                            :rules="[
-                              (v) => !!v || 'Card Number is required.',
-                              (v) =>
-                                !v ||
-                                /^(?:(4[0-9]{12}(?:[0-9]{3})?)|(5[1-5][0-9]{14})|(6(?:011|5[0-9]{2})[0-9]{12})|(3[47][0-9]{13})|(3(?:0[0-5]|[68][0-9])[0-9]{11})|((?:2131|1800|35[0-9]{3})[0-9]{11}))$/.test(
-                                  v
-                                ) ||
-                                'Card Number must be valid.',
-                            ]"
-                            placeholder="Enter Card Number"
-                          ></v-text-field>
+                        <div class="col-md-12 form-input pt-0 pb-0">
+                          <div class="label-align pt-0">
+                            <label>Card Number</label>
+                          </div>
+                          <div class="pt-0 pb-0">
+                            <v-text-field
+                              v-model="cardDetails.card_number"
+                              required
+                              :rules="[
+                                (v) => !!v || 'Card Number is required.',
+                                (v) =>
+                                  !v ||
+                                  /^(?:(4[0-9]{12}(?:[0-9]{3})?)|(5[1-5][0-9]{14})|(6(?:011|5[0-9]{2})[0-9]{12})|(3[47][0-9]{13})|(3(?:0[0-5]|[68][0-9])[0-9]{11})|((?:2131|1800|35[0-9]{3})[0-9]{11}))$/.test(
+                                    v
+                                  ) ||
+                                  'Card Number must be valid.',
+                              ]"
+                              placeholder="Enter Card Number"
+                            ></v-text-field>
+                          </div>
                         </div>
 
-                        <div class="col-md-4 form-input">
-                          <v-select
-                            v-model="cardDetails.card_exp_month"
-                            :items="expiryMonths"
-                            placeholder="Enter Expiry Month"
-                            :rules="[(v) => !!v || 'Expiry Month is required.']"
-                          ></v-select>
-                        </div>
-                        
-                        <div class="col-md-4 form-input">
-                          <v-select
-                            v-model="cardDetails.card_exp_year"
-                            :items="expiryYears"
-                            placeholder="Enter Expiry Year"
-                            :rules="[(v) => !!v || 'Expiry Year is required.']"
-                          ></v-select>
+                        <div class="col-md-4 form-input pt-0 pb-0">
+                          <div class="label-align pt-0">
+                            <label>Expiry Month</label>
+                          </div>
+                          <div class="pt-0 pb-0">
+                            <v-select
+                              v-model="cardDetails.card_exp_month"
+                              :items="expiryMonths"
+                              placeholder="Enter Expiry Month"
+                              :rules="[
+                                (v) => !!v || 'Expiry Month is required.',
+                              ]"
+                            ></v-select>
+                          </div>
                         </div>
 
-                        <div class="col-md-4 form-input">
-                          <v-text-field
-                            v-model="cardDetails.cvv"
-                            type="password"
-                            required
-                            :rules="[
-                              (v) => !!v || 'CVV is required.',
-                              (v) =>
-                                !v ||
-                                /^[0-9]{3,3}$/.test(v) ||
-                                'CVV must be valid.',
-                            ]"
-                            placeholder="Enter CVV"
-                          ></v-text-field>
+                        <div class="col-md-4 form-input pt-0 pb-0">
+                          <div class="label-align pt-0">
+                            <label>Expiry Year</label>
+                          </div>
+                          <div class="pt-0 pb-0">
+                            <v-select
+                              v-model="cardDetails.card_exp_year"
+                              :items="expiryYears"
+                              placeholder="Enter Expiry Year"
+                              :rules="[
+                                (v) => !!v || 'Expiry Year is required.',
+                              ]"
+                            ></v-select>
+                          </div>
+                        </div>
+
+                        <div class="col-md-4 form-input pt-0 pb-0">
+                          <div class="label-align pt-0">
+                            <label>CVV</label>
+                          </div>
+                          <div class="pt-0 pb-0">
+                            <v-text-field
+                              v-model="cardDetails.cvv"
+                              type="password"
+                              required
+                              :rules="[
+                                (v) => !!v || 'CVV is required.',
+                                (v) =>
+                                  !v ||
+                                  /^[0-9]{3,3}$/.test(v) ||
+                                  'CVV must be valid.',
+                              ]"
+                              placeholder="Enter CVV"
+                            ></v-text-field>
+                          </div>
                         </div>
                       </div>
                     </v-form>
-                      <div class="button-out">
-                        <v-btn
-                          type="submit"
-                          :loading="loading"
-                          :disabled="loading"
-                          color="success"
-                          class="btn-full-green"
-                          @click="cardAddSubmit"
-                          >Save Payment Info</v-btn
-                        >
-                      </div>
+                    <div class="button-out">
+                      <v-btn
+                        type="submit"
+                        :loading="loading"
+                        :disabled="loading"
+                        class="btn-full-green"
+                        @click="cardAddSubmit"
+                        >Save Payment Info <i data-feather="arrow-right"></i></v-btn
+                      >
+                    </div>
                   </div>
                 </div>
                 <!-- /Add Card -->
-
               </div>
             </div>
             <!-- /Manage Cards -->
-
-
           </div>
         </div>
       </section>
     </div>
-
   </v-app>
 </template>
 
@@ -429,8 +465,9 @@ export default {
       cardList: [],
       loading: false,
       valid: true,
-      card_add_valid : true,
+      card_add_valid: true,
       addNewCard: false,
+      profileUpload: false,
       cardDetails: {
         name: "",
         card_number: "",
@@ -452,7 +489,7 @@ export default {
         phone: "",
         city: "",
         state: "",
-        country: "",
+        // country: "",
         zip_code: "",
       },
       filePondServer: {
@@ -467,7 +504,6 @@ export default {
     };
   },
   methods: {
-
     formSubmit: async function () {
       const isValidated = this.$refs.form.validate();
       if (isValidated === true) {
@@ -577,12 +613,16 @@ export default {
         });
       }
     },
-    
-    showAddCard: function() {
+
+    showAddCard: function () {
       this.addNewCard = true;
     },
 
-    makeCardDefault: async function(id) {
+    showProfileUpload: function () {
+      this.profileUpload = true;
+    },
+
+    makeCardDefault: async function (id) {
       try {
         const response = await CardService.makeDefault(id);
         if (response !== undefined && response.data !== undefined) {
@@ -604,8 +644,7 @@ export default {
           dismissible: false,
         });
       }
-    }
-
+    },
   },
 
   created: async function () {
@@ -616,15 +655,14 @@ export default {
         ...response.data.data,
       };
       this.userImage = response.data.data.image_url;
-      
+
       CardService.list().then((response) => {
         this.cardList = response.data.data;
       });
-      
+
       this.expiryMonths = [...this.expiryMonths].map((month) => {
         return month < 10 ? `0${month}` : month;
       });
-
     } catch (error) {
       this.$toast.open({
         message: error.response.data.message,
