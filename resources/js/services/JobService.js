@@ -63,6 +63,25 @@ class JobService {
       }
     });
   }
+
+  static myJobs() {
+    const token = window.localStorage.getItem("token");
+    return Axios.get(`/api/my/jobs`, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
+  }
+
+  static myUpcomingJobs() {
+    const token = window.localStorage.getItem("token");
+    return Axios.get(`/api/my/jobs/upcoming`, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
+  }
+
 }
 
 export default JobService;

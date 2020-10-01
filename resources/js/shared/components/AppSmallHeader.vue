@@ -23,6 +23,27 @@
               <a class="nav-link" href="#">Services</a>
             </li>
 
+            <li class="nav-item dropdown" v-if="isCustomer || isHauler">
+              <a
+                class="nav-link dropdown-toggle"
+                href="#"
+                id="navbarDropdown"
+                role="button"
+                data-toggle="dropdown"
+                aria-haspopup="true"
+                aria-expanded="false"
+              >
+                Farm
+              </a>
+              <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                <a class="dropdown-item" href="/farms">
+                  <i data-feather="grid"></i> Farm Dashboard</a
+                >
+                <a class="dropdown-item" href="/farms/create">
+                  <i data-feather="briefcase"></i> Create Farm</a
+                >
+              </div>
+            </li>
             <li class="nav-item dropdown">
               <a
                 class="nav-link dropdown-toggle"
@@ -36,10 +57,10 @@
                 Jobs
               </a>
               <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                <a class="dropdown-item" href="#">
+                <a class="dropdown-item" href="/jobs">
                   <i data-feather="grid"></i> Job Dashboard</a
                 >
-                <a class="dropdown-item" href="#">
+                <a class="dropdown-item" href="/jobs/create">
                   <i data-feather="briefcase"></i> Create Job</a
                 >
               </div>

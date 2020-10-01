@@ -56,14 +56,14 @@ trait UserMethods
     public function myJobs()
     {
         if ($this->isCustomer()) {
-            return Job::where('customer_id', $this->id)->with('farm')->get();
+            return Job::where('customer_id', $this->id)->with('farm','customer', 'manager', 'service')->get();
         } else {
             $farm = $this->managerOf;
             if (!$farm) {
                 return [];
             }
 
-            return Job::where('farm_id', $farm->id)->with('farm')->get();
+            return Job::where('farm_id', $farm->id)->with('farm','customer', 'manager', 'service')->get();
         }
     }
     
@@ -73,7 +73,7 @@ trait UserMethods
             return Job::where([
                 'customer_id' => $this->id
             ])->where('job_providing_date', '>', Carbon::now())
-            ->with('farm')
+            ->with('farm','customer', 'manager', 'service')
             ->get();
         } else {
             $farm = $this->managerOf;
@@ -84,7 +84,7 @@ trait UserMethods
             return Job::where([
                 'farm_id' => $farm->id
             ])->where('job_providing_date', '>', Carbon::now())
-            ->with('farm')
+            ->with('farm','customer', 'manager', 'service')
             ->get();
         }
         

@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\DB;
 use App\Models\Service;
+use App\Models\User;
 use App\Models\TimeSlots;
 use Illuminate\Support\Str;
 
@@ -47,7 +48,7 @@ class ServiceController extends Controller
     {
         $user = request()->user();
        
-        if ($user->role_id != config('constant.roles.Customer') && $user->role_id != config('constant.roles.Haulers')) {
+        if ($user->role_id != config('constant.roles.Customer') && $user->role_id != config('constant.roles.Haulers') && $user->role_id != config('constant.roles.Customer_Manager')) {
             return response()->json([
                 'status' => false,
                 'message' => 'unauthorized access.',
@@ -55,7 +56,13 @@ class ServiceController extends Controller
             ], 421);
         }
 
-        $getAllServices = Service::where('service_for', $user->role_id)->get();
+        if ($user->role_id != config('constant.roles.Customer') && $user->role_id != config('constant.roles.Haulers')){
+            $getAllServices = Service::where('service_for', $user->role_id)->get();
+        } else {
+            $customer = User::find($user->managerOf->customer_id);
+            $getAllServices = Service::where('service_for', $customer->role_id)->get();
+        }
+
 
         if (count($getAllServices) > 0) {
             foreach ($getAllServices as $key => $service) {

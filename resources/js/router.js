@@ -32,6 +32,7 @@ import Jobs from "./pages/UserPanel/Jobs";
 import JobList from "./pages/UserPanel/Jobs/JobList.vue";
 import CreateJob from "./pages/UserPanel/Jobs/CreateJob.vue";
 import EditJob from "./pages/UserPanel/Jobs/EditJob.vue";
+import JobsDashboard from "./pages/UserPanel/Jobs/JobsDashboard.vue";
 
 import ProfileSettings from "./pages/UserPanel/ProfileSettings";
 import EditProfile from "./pages/UserPanel/ProfileSettings/EditProfile.vue";
@@ -190,6 +191,16 @@ const router = new VueRouter({
       component: Jobs,
       beforeEnter: checkAuthentication,
       children: [
+        {
+          path: "",
+          name: "JobsDashboard",
+          component: JobsDashboard
+        },
+        {
+          path: "upcoming",
+          name: "upcomingJobsDashboard",
+          component: JobsDashboard
+        },
         {
           path: "create",
           name: "createJob",

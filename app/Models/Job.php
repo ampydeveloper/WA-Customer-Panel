@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Storage;
 
 class Job extends Model
 {
@@ -19,7 +20,7 @@ class Job extends Model
      * @var array
      */
     protected $fillable = [
-        'job_created_by','customer_id', 'manager_id', 'farm_id', 'gate_no', 'service_id', 'time_slots_id', 'job_providing_date', 'weight', 'is_repeating_job', 'repeating_days', 'images',
+        'job_created_by','customer_id', 'card_id', 'manager_id', 'farm_id', 'gate_no', 'service_id', 'time_slots_id', 'job_providing_date', 'weight', 'is_repeating_job', 'repeating_days', 'images',
         'notes', 'amount', 'payment_mode', 'job_status', 'payment_status', 'quick_book', 'truck_id', 'truck_driver_id', 'skidsteer_id', 'skidsteer_driver_id', 'start_time', 'end_time'
     ];
 
@@ -76,5 +77,13 @@ class Job extends Model
     public function employeeSalaries()
     {
         return $this->hasOne('App\Models\EmployeeSalaries', 'user_id');
+    }
+
+    public function putImage($image, $imageName = null)
+    {
+        $imageName = ($imageName) ? $imageName : rand().time().'.'.$image->extension();
+        $path = $this->customer_id.'/jobs/'.$this->id.'/'.$imageName;
+        
+        return (Storage::disk('user_images')->put($path, file_get_contents($image))) ? Storage::disk('user_images')->url($path) : false;
     }
 }

@@ -15,6 +15,8 @@ use App\Models\Service;
 use App\Models\TimeSlots;
 use App\Models\Job;
 use App\Models\CustomerFarm;
+use App\Models\CustomerCardDetail;
+use App\Http\Controllers\PaymentController;
 use App\Http\Requests\Job\{
     CreateJobRequest
 };
@@ -27,8 +29,6 @@ class JobController extends Controller
      */
     public function create(CreateJobRequest $createJobRequest)
     {
-        return $createJobRequest->all();
-        dd($createJobRequest->all());
         $farm = CustomerFarm::find($createJobRequest->farm_id);
         if (!$farm->isOwner()) {
             return response()->json([
@@ -40,7 +40,8 @@ class JobController extends Controller
         try {
             $job = new Job([
                 'job_created_by' => $createJobRequest->user()->id,
-                'customer_id' => $farm->cstomer_id,
+                'customer_id' => $farm->customer_id,
+                'card_id' => null,
                 'manager_id' => (isset($createJobRequest->manager_id) && $createJobRequest->manager_id != '' && $createJobRequest->manager_id != null) ? $createJobRequest->manager_id : null,
                 'farm_id' => (isset($createJobRequest->farm_id) && $createJobRequest->farm_id != '' && $createJobRequest->farm_id != null) ? $createJobRequest->farm_id : null,
                 'service_id' => $createJobRequest->service_id,
@@ -48,16 +49,44 @@ class JobController extends Controller
                 'time_slots_id' => (isset($createJobRequest->time_slots_id) && $createJobRequest->time_slots_id != '' && $createJobRequest->time_slots_id != null) ? $createJobRequest->time_slots_id : null,
                 'job_providing_date' => $createJobRequest->job_providing_date,
                 'weight' => (isset($createJobRequest->weight) && $createJobRequest->weight != '' && $createJobRequest->weight != null) ? $createJobRequest->weight : null,
-                'is_repeating_job' => $createJobRequest->is_repeating_job,
+                'is_repeating_job' => ($createJobRequest->is_repeating_job) ? 2 : 1,
                 'repeating_days' => (isset($createJobRequest->repeating_days) && $createJobRequest->repeating_days != '' && $createJobRequest->repeating_days != null) ? $createJobRequest->repeating_days : null,
                 'payment_mode' => (isset($createJobRequest->payment_mode) && $createJobRequest->payment_mode != '' && $createJobRequest->payment_mode != null) ? $createJobRequest->payment_mode : 3,
-                'images' => (isset($createJobRequest->images) && $createJobRequest->images != '' && $createJobRequest->images != null) ? $createJobRequest->images : null,
+                'images' => null,
                 'notes' => (isset($createJobRequest->notes) && $createJobRequest->notes != '' && $createJobRequest->notes != null) ? $createJobRequest->notes : null,
                 'amount' => $createJobRequest->amount,
             ]);
             if ($job->save()) {
-                // Attach card
-                // CustomerCard::create()
+                if ($createJobRequest->images && count($createJobRequest->images) > 0) {
+                    $jobImages = [];
+                    foreach ($createJobRequest->images as $image) {
+                        $imageName = $job->putImage($image);
+                        if ($imageName) {
+                            $jobImages[] = $imageName;
+                        }
+                    }
+                    $job->update(['images' => json_encode($jobImages)]);
+                }
+
+                if ($createJobRequest->attach_card == 1) {
+                    $payment = new PaymentController();
+                    $cardExist = CustomerCardDetail::where([
+                        'card_number' => $createJobRequest->card['card_number'],
+                        'card_exp_month' => $createJobRequest->card['card_exp_month'],
+                        'card_exp_year' => $createJobRequest->card['card_exp_year']
+                    ])->whereNull('deleted_at')->first();
+                    if (!$cardExist) {
+                        $addCardProcess = $payment->processAddCard($createJobRequest->card);
+                        if ($addCardProcess['status']) {
+                            $cardExist = $addCardProcess['card'];
+                        } else {
+                            return response()->json($addCardProcess, 200);
+                            throw new \Exception('Not able to add card');
+                        }
+                    }
+                    $job->card_id = $cardExist->id;
+                    $job->save();
+                }
                 $mailData = [
                     'job_id' => $job->id,
                     'customer_id' => $job->customer_id,
