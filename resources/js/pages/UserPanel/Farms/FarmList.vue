@@ -49,6 +49,15 @@
                       v-if="isCustomer || isHauler"
                       >Edit</router-link
                     >
+                    <router-link
+                      :to="{
+                        name: 'managerList',
+                        params: { farmId: farm.id },
+                      }"
+                      class="btn btn-info btn-sm"
+                      v-if="isCustomer || isHauler"
+                      >Managers</router-link
+                    >
                     <button
                       @click="deleteFarm(farm.id)"
                       class="btn btn-danger btn-sm"

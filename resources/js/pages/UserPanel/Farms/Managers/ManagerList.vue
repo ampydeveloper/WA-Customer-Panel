@@ -1,41 +1,46 @@
 <template>
-  <div>
-    <div class="panel-heading">
-      <div class="btn-group pull-right">
-        <router-link
-          :to="{
-            name: 'createManager',
-            params: { farmId: $route.params.farmId }
-          }"
-          class="btn btn-success btn-sm"
-          >Create Manager</router-link
-        >
+  <div class="main-wrapper">
+  <section class="page-section-top" data-aos="">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-12">
+            <h2>Manager Dashboard</h2>
+          </div>
+        </div>
       </div>
-      <h4>Managers</h4>
-    </div>
-    <table class="table table-bordered">
-      <thead>
-        <tr>
-          <th scope="col">Name</th>
-          <th scope="col">Email</th>
-          <th scope="col">Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="manager in managerList" :key="manager.id">
-          <td>{{ manager.full_name }}</td>
-          <td>{{ manager.email }}</td>
-          <td>
-            <button
-              @click="deleteManager(manager.id)"
-              class="btn btn-danger btn-sm"
-            >
-              Delete
-            </button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+    </section>
+
+   <section class="job-dashboard-outer center-content-outer" data-aos="">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-12">
+            <table class="table table-bordered">
+              <thead>
+                <tr>
+                  <th scope="col">Name</th>
+                  <th scope="col">Email</th>
+                  <th scope="col">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="manager in managerList" :key="manager.id">
+                  <td>{{ manager.full_name }}</td>
+                  <td>{{ manager.email }}</td>
+                  <td>
+                    <button
+                      @click="deleteManager(manager.id)"
+                      class="btn btn-danger btn-sm"
+                    >
+                      Delete
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
   </div>
 </template>
 
