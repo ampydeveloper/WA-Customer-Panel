@@ -8,9 +8,9 @@
                         <div class="col-md-6 signup-im-bg">
                             <div class="im-text">
                                 <h2>
-                                    WELLINGTON
+                                    WELLINGTON AGRICULTURAL SERVICES
                                     <small
-                                        >Affordable solutions for smaller</small
+                                        >Affordable solutions for smaller farms.</small
                                     >
                                 </h2>
                             </div>
@@ -33,7 +33,7 @@
                                 </form>
 
                                 <p class="already-account">
-                                    Already have an Account
+                                    Already have an account?
                                     <a href="/sign-in">Sign In</a>
                                 </p>
                             </div>
@@ -85,9 +85,9 @@ export default {
                                 .then(
                                     response => {
                                         this.$toast.open({
-                                            message: "Sign up is successfull",
+                                            message: "Sign up is successfull.",
                                             type: "success",
-                                            position: "bottom-right",
+                                            position: "top-right",
                                             dismissible: false
                                         });
                                         window.location.href = "/";
@@ -100,7 +100,7 @@ export default {
                                                     errorKey
                                                 ].join("<br/>"),
                                                 type: "error",
-                                                position: "bottom-right",
+                                                position: "top-right",
                                                 dismissible: false
                                             });
                                         }

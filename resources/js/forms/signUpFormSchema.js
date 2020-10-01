@@ -34,7 +34,7 @@ export default {
             values: function() {
                 return [
                     { id: 4, name: "Customer" },
-                    { id: 6, name: "Hallower" }
+                    { id: 6, name: "hauler" }
                 ];
             },
             default: 4,

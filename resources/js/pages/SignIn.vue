@@ -8,8 +8,8 @@
             <div class="col-md-6 signup-im-bg">
               <div class="im-text">
                 <h2>
-                  WELLINGTON
-                  <small>Affordable solutions for smaller</small>
+                  WELLINGTON AGRICULTURAL SERVICES
+                  <small>Affordable solutions for smaller farms.</small>
                 </h2>
               </div>
             </div>
@@ -31,11 +31,9 @@
                 </form>
 
                 <p class="already-account">
-                  Do not have an Account
+                  Don't have an account?
                   <a href="/sign-up">Sign Up</a>
-                </p>
-                <p class="already-account">
-                  <a href="/forgot-password">Forgot Password</a>
+                   <a href="/forgot-password" class="for-pass-link">Forgot Password?</a>
                 </p>
               </div>
             </div>
@@ -79,13 +77,13 @@ export default {
                     const { access_token, user } = response.data.data;
                     window.localStorage.setItem("token", access_token);
                     window.localStorage.setItem("user", JSON.stringify(user));
-                    window.location.href = "/farms";
+                    window.location.href = "/job-dashboard";
                   },
                   error => {
                     this.$toast.open({
                       message: error.response.data.message,
                       type: "error",
-                      position: "bottom-right",
+                      position: "top-right",
                       dismissible: false
                     });
                   }
