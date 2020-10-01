@@ -46,6 +46,7 @@
                         params: { farmId: farm.id },
                       }"
                       class="btn btn-info btn-sm"
+                      v-if="isCustomer || isHauler"
                       >Edit</router-link
                     >
                     <button

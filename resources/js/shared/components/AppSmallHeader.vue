@@ -23,7 +23,7 @@
               <a class="nav-link" href="#">Services</a>
             </li>
 
-            <li class="nav-item dropdown" v-if="isCustomer || isHauler">
+            <li class="nav-item dropdown">
               <a
                 class="nav-link dropdown-toggle"
                 href="#"
@@ -39,7 +39,7 @@
                 <a class="dropdown-item" href="/farms">
                   <i data-feather="grid"></i> Farm Dashboard</a
                 >
-                <a class="dropdown-item" href="/farms/create">
+                <a class="dropdown-item" href="/farms/create" v-if="isCustomer || isHauler">
                   <i data-feather="briefcase"></i> Create Farm</a
                 >
               </div>
