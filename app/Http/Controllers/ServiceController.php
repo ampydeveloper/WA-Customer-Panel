@@ -47,7 +47,6 @@ class ServiceController extends Controller
     public function list()
     {
         $user = request()->user();
-       
         if ($user->role_id != config('constant.roles.Customer') && $user->role_id != config('constant.roles.Haulers') && $user->role_id != config('constant.roles.Customer_Manager')) {
             return response()->json([
                 'status' => false,
@@ -56,11 +55,16 @@ class ServiceController extends Controller
             ], 421);
         }
 
-        if ($user->role_id != config('constant.roles.Customer') && $user->role_id != config('constant.roles.Haulers')){
+        if ($user->role_id == config('constant.roles.Customer') || $user->role_id == config('constant.roles.Haulers')){
             $getAllServices = Service::where('service_for', $user->role_id)->get();
         } else {
-            $customer = User::find($user->managerOf->customer_id);
-            $getAllServices = Service::where('service_for', $customer->role_id)->get();
+            if ($user->managerOf) {
+                $customer = User::find($user->managerOf->customer_id);
+                $getAllServices = Service::where('service_for', $customer->role_id)->get();
+            } else {
+                $getAllServices = [];
+            }
+            
         }
 
 
