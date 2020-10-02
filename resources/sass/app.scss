@@ -15,7 +15,7 @@ body,
 }
 
 .btn-full-green {
-    color: #fff;
+    color: #fff !important;
     text-transform: capitalize !important;
     padding: 0px 35px !important;
     background: #11b276 !important;
@@ -53,6 +53,37 @@ body,
     &:hover,
     &:focus {
         color: #11b276 !important;
+    }
+}
+
+.btn-table-outline {
+    text-transform: capitalize !important;
+    padding: 0px 14px !important;
+    font-weight: 700 !important;
+    border-radius: 6px !important;
+    font-family: "Gilroy-Bold";
+    display: inline-block;
+    text-align: center;
+    background: transparent !important;
+    color: #11b276 !important;
+    border: 2px solid #11b276 !important;
+    line-height: 30px !important;
+    width: auto;
+    height: 30px !important;
+    font-size: 14px !important;
+    margin-right: 5px;
+
+    svg {
+        width: 16px;
+        height: 16px;
+        margin-right: 2px;
+        stroke-width: 2.5;
+        margin-top: -2px;
+    }
+
+    &:focus {
+        outline: 0;
+        box-shadow: none;
     }
 }
 
@@ -143,9 +174,11 @@ select.form-control {
         thead {
             th {
                 color: #000;
-                font-size: 20px;
+                font-size: 17px;
                 border: 0 !important;
-                line-height: 27px;
+                line-height: 20px;
+                padding: 10px 10px;
+                text-transform: uppercase;
             }
         }
 
@@ -182,6 +215,18 @@ select.form-control {
 
         .basic-info {
             display: block;
+        }
+
+        .badge-tag {
+            color: #53bf7b;
+            padding: 4px 8px 3px 8px;
+            text-transform: capitalize;
+            font-size: 12px;
+            border-radius: 5px;
+            margin-bottom: 5px;
+            display: inline-block;
+            margin-right: 5px;
+            background: rgba(40, 199, 111, 0.15);
         }
     }
 
@@ -222,6 +267,39 @@ select.form-control {
                 }
             }
         }
+
+        .dataTables_paginate {
+            margin-top: 15px;
+        }
+
+        .dataTables_paginate .paginate_button.current,
+        .dataTables_paginate .paginate_button {
+            background: #11b276 !important;
+            border-radius: 50%;
+            color: #fff !important;
+            padding: 7px 16px 7px 15px;
+            border: 0 !important;
+            margin-left: 5px;
+
+            &:hover {
+                color: #fff !important;
+            }
+        }
+
+        .dataTables_paginate .paginate_button.previous,
+        .dataTables_paginate .paginate_button.next {
+            background: #fafafb !important;
+            border-radius: 50%;
+            color: #000 !important;
+            padding: 6px 8px 6px 7px;
+            border: 0 !important;
+            font-size: 17px;
+            margin-left: 5px;
+
+            svg {
+                margin-top: -3px;
+            }
+        }
     }
 
     .basic-grey-box {
@@ -237,8 +315,6 @@ select.form-control {
     .site-header {
         nav {
             .navbar-nav {
-
-
                 .nav-link {
                     font-size: 17px;
                     color: #000;
@@ -255,6 +331,17 @@ select.form-control {
                     margin-top: -.5rem;
                     margin-right: 5px;
                     border-radius: 50%;
+                }
+
+            }
+
+            .navbar-toggler {
+                border: 2px solid #000;
+                border-radius: 0;
+                padding: 0.5rem 0.75rem;
+
+                svg {
+                    color: #000;
                 }
             }
 
@@ -290,11 +377,39 @@ select.form-control {
                     }
                 }
             }
+
+            @media only screen and (max-width: 768px) {
+                #navbarSupportedContent {
+                    text-align: right;
+                    padding-right: 15px;
+                    border-radius: 6px;
+                    box-shadow: 0 5px 25px 0 rgba(0, 0, 0, 0.1);
+                    margin-top: -20px;
+                    background: #fff;
+                }
+
+                .dropdown-menu {
+                    left: 0px;
+                    right: 0;
+                    transition: tr;
+                    transform: translate(0%, 0px);
+                    margin-left: 15px;
+                    text-align: right;
+
+                    a {
+                        padding: 5px 15px 5px 15px;
+                    }
+                }
+            }
         }
 
         .navbar-brand {
             img {
                 width: 90px;
+
+                @media only screen and (max-width: 768px) {
+                    width: 60px;
+                }
             }
         }
 
@@ -319,6 +434,29 @@ select.form-control {
         }
     }
 
+    .stickyHeader {
+        .navbar.navbar-light {
+            .navbar-brand {
+                padding: 0;
+                margin-top: -3px;
+
+                img {
+                    max-width: 65px;
+                }
+            }
+        }
+
+        nav {
+            #navbarSupportedContent {
+                margin-top: 0px;
+            }
+
+            .navbar-nav .nav-link {
+                color: #fff;
+            }
+        }
+
+    }
 }
 
 .site-header {
@@ -511,7 +649,7 @@ select.form-control {
 // footer
 .logged-in-page {
     footer.site-footer {
-        padding: 0;
+        padding: 0 !important;
         font-size: 14px;
 
         .bootm-social-links ul {
@@ -544,6 +682,10 @@ select.form-control {
         h2 {
             margin-bottom: 0px;
             font-size: 4.4vw;
+
+            @media only screen and (max-width: 992px) {
+                font-size: 50px;
+            }
         }
     }
 
@@ -553,6 +695,10 @@ select.form-control {
         border-radius: 6px;
         margin-bottom: 25px;
 
+        .v-card__text {
+            padding: 0;
+        }
+
         h5 {
             margin: 0 0 2px 0;
             font-size: 18px;
@@ -561,6 +707,12 @@ select.form-control {
         h3 {
             font-size: 30px;
             margin: 0;
+        }
+    }
+
+    .job-p-inner {
+        label {
+            margin-bottom: 10px;
         }
     }
 
@@ -636,7 +788,9 @@ select.form-control {
     .send-payment {
         padding: 35px 40px;
         margin-bottom: 25px;
-        border: 2px solid #11b276;
+        // border: 2px solid #11b276;
+        background: #fafafb;
+        border-radius: 6px;
 
         .create-job {
             text-align: center;
@@ -650,6 +804,9 @@ select.form-control {
         }
     }
 
+    .v-input--selection-controls__input+.v-label {
+        margin: 0;
+    }
 }
 
 // Job details
@@ -682,6 +839,12 @@ select.form-control {
             line-height: 20px;
         }
 
+    }
+}
+
+.job-dashboard-outer {
+    .dataTables_wrapper {
+        width: 80%;
     }
 }
 

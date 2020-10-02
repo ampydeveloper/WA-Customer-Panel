@@ -84,7 +84,7 @@
                         >Edit</router-link
                       >
                       <button
-                        class="btn btn-sm btn-danger btn-outline-green"
+                        class="btn-outline-green"
                         @click="cancelJob(job.id)"
                       >
                         Cancel Job

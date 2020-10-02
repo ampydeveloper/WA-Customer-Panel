@@ -322,7 +322,7 @@
                               :rules="[
                                 (v) => !!v || 'Name on card is required.',
                               ]"
-                              placeholder="Name on Card"
+                              placeholder="Enter Name on Card"
                             ></v-text-field>
                           </div>
                         </div>
@@ -357,7 +357,7 @@
                             <v-select
                               v-model="cardDetails.card_exp_month"
                               :items="expiryMonths"
-                              placeholder="Enter Expiry Month"
+                              placeholder="Select Expiry Month"
                               :rules="[
                                 (v) => !!v || 'Expiry Month is required.',
                               ]"
@@ -373,7 +373,7 @@
                             <v-select
                               v-model="cardDetails.card_exp_year"
                               :items="expiryYears"
-                              placeholder="Enter Expiry Year"
+                              placeholder="Select Expiry Year"
                               :rules="[
                                 (v) => !!v || 'Expiry Year is required.',
                               ]"
@@ -389,6 +389,7 @@
                             <v-text-field
                               v-model="cardDetails.cvv"
                               type="password"
+                                     size="4"
                               required
                               :rules="[
                                 (v) => !!v || 'CVV is required.',

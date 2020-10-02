@@ -24,11 +24,9 @@
                   <tr>
                     <th class="job-summ">Job Summary</th>
                     <th>Manager / Farm Location</th>
-                
                     <th class="time-col">Date / Est. Time</th>
                     <th>Quantity</th>
                     <th>Payment Status</th>
-
                     <th>Job Status</th>
                     <th>Actions</th>
                   </tr>
@@ -36,7 +34,6 @@
                 <tbody>
                   <tr v-for="(job, index) in alljobs">
                     <td>
-                      
                       <span class="basic-big">#JOB100{{ job.id }}</span>
                       <span class="basic-info"
                         >${{ job.job_amount ? job.job_amount : 0 }}</span
@@ -58,48 +55,40 @@
                         {{ job.farm.farm_zipcode }}</span
                       >
                     </td>
-                   
                     <td class="job-col-body">
                       <span class="basic-info">{{
                         job.job_providing_date
                       }}</span>
-                     
                     </td>
                     <td>30 Ton</td>
                     <td>
                       <template v-if="job.payment_status">
-                        <span class="badges-item">Paid</span>
+                        <span class="badge-tag">Paid</span>
                       </template>
                       <template v-if="!job.payment_status">
-                        <span class="badges-item">Unpaid</span>
+                        <span class="badge-tag">Unpaid</span>
                       </template>
                     </td>
                     <td>
-                      <template v-if="!job.job_status">
-                        <span class="badges-item">Open</span>
+                      <template v-if="job.job_status == 1">
+                        <span class="badge-tag">Assigned</span>
                       </template>
-                      <template v-if="job.job_status">
-                        <span class="badges-item">Close</span>
+                      <template v-if="job.job_status == 2">
+                        <span class="badge-tag">Completed</span>
                       </template>
+                      <template v-if="job.job_status == 3">
+                        <span class="badge-tag">Closed</span>
+                      </template>
+                      <template v-if="job.job_status == 4">
+                        <span class="badge-tag">Canceled</span>
+                      </template>                     
                     </td>
                     <td>
-                      <a class="" v-if="job.job_status == 0">
-                        <v-btn class="btn-outline-green" @click="cancelJob(job.id)">Cancel</v-btn>
+                      <a class="btn btn-table-outline" v-if="job.job_status == 0" @click="cancelJob(job.id)">
+                       Cancel
                       </a>
-                      <a class="" v-if="job.job_status == 1">
-                        <v-btn class="btn-outline-green">assigned</v-btn>
-                      </a>
-                      <a class="" v-if="job.job_status == 2">
-                        <v-btn class="btn-outline-green">Completed</v-btn>
-                      </a>
-                      <a class="" v-if="job.job_status == 3">
-                        <v-btn class="btn-outline-green">Closed</v-btn>
-                      </a>
-                      <a class="" v-if="job.job_status == 4">
-                        <v-btn class="btn-outline-green">Canceled</v-btn>
-                      </a>
-                      <a class="">
-                        <v-btn class="btn-outline-green">View Details</v-btn>
+                      <a class="btn btn-table-outline">
+                        View Details
                       </a>
                     </td>
                   </tr>
@@ -110,6 +99,17 @@
         </div>
       </section>
     </div>
+    <span id="table-chevron-left" class="d-none">
+      <i data-feather="chevron-left"></i>
+    </span>
+    <span id="table-chevron-right" class="d-none">
+      <i data-feather="chevron-right"></i>
+    </span>
+    <span id="search-input-icon" class="d-none">
+      <span class="search-input-outer">
+        <i data-feather="search"></i>
+      </span>
+    </span>
   </div>
 </template>
 
