@@ -1,6 +1,6 @@
 <template>
   <div class="logged-in-page">
-    <footer class="site-footer">
+    <footer class="site-footer" style="padding: 100px 0 0 0 !important;">
       <div class="container">
         <div class="row">
           <div class="col-md-12 foo-top-text">
