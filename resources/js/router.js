@@ -33,6 +33,7 @@ import JobList from "./pages/UserPanel/Jobs/JobList.vue";
 import CreateJob from "./pages/UserPanel/Jobs/CreateJob.vue";
 import EditJob from "./pages/UserPanel/Jobs/EditJob.vue";
 import JobsDashboard from "./pages/UserPanel/Jobs/JobsDashboard.vue";
+import ViewJob from "./pages/UserPanel/Jobs/ViewJob.vue";
 
 import ProfileSettings from "./pages/UserPanel/ProfileSettings";
 import EditProfile from "./pages/UserPanel/ProfileSettings/EditProfile.vue";
@@ -131,7 +132,7 @@ const router = new VueRouter({
       component: PageNotFound
     },
     {
-      path: "/mapbox",
+      path: "/:jobId/track",
       name: "MapBox",
       component: MapBox
     },
@@ -195,6 +196,11 @@ const router = new VueRouter({
           path: "",
           name: "JobsDashboard",
           component: JobsDashboard
+        },
+        {
+          path: ":jobId/view",
+          name: "ViewJob",
+          component: ViewJob
         },
         {
           path: "upcoming",

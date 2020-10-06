@@ -188,10 +188,11 @@ class JobController extends Controller
      */
     public function get(Job $job)
     {
+
         return response()->json([
             'status' => true,
             'message' => 'Job Details.',
-            'data' => $job
+            'data' => $job->where('id', $job->id)->with('farm','manager', 'service')->first()
         ], 200);
     }
 

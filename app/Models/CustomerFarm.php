@@ -21,6 +21,8 @@ class CustomerFarm extends Model
 
     protected $hidden = ['deleted_at', 'updated_at'];
 
+    protected $appends = ['full_address'];
+
     public function managers()
     {
         return $this->hasMany('App\Models\User', 'farm_id');
@@ -53,6 +55,11 @@ class CustomerFarm extends Model
         $path = $this->customer_id.'/farms/'.$this->id.'/'.$imageName;
         
         return (Storage::disk('user_images')->put($path, file_get_contents($image))) ? Storage::disk('user_images')->url($path) : false;
+    }
+
+    public function getFullAddressAttribute()
+    {
+        return $this->farm_address.' '.$this->farm_city.' '.$this->farm_province.' '.$this->farm_zipcode;
     }
 
 }

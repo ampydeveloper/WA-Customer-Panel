@@ -24,6 +24,8 @@ class Job extends Model
         'notes', 'amount', 'payment_mode', 'job_status', 'payment_status', 'quick_book', 'truck_id', 'truck_driver_id', 'skidsteer_id', 'skidsteer_driver_id', 'start_time', 'end_time'
     ];
 
+    protected $appends = ['job_status_name'];
+
     public function customer()
     {
         return $this->belongsTo('App\Models\User', 'customer_id', 'id');
@@ -85,5 +87,11 @@ class Job extends Model
         $path = $this->customer_id.'/jobs/'.$this->id.'/'.$imageName;
         
         return (Storage::disk('user_images')->put($path, file_get_contents($image))) ? Storage::disk('user_images')->url($path) : false;
+    }
+
+    public function getJobStatusNameAttribute()
+    {
+        $jobStatus = array_flip(config('constant.job_status'));
+        return $jobStatus[$this->job_status];
     }
 }
