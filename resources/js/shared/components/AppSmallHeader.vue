@@ -14,7 +14,8 @@
           aria-expanded="false"
           aria-label="Toggle navigation"
         >
-          <span class="navbar-toggler-icon"></span>
+          <!-- <span class="navbar-toggler-icon"></span> -->
+          <i data-feather="menu"></i>
         </button>
 
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
@@ -23,27 +24,6 @@
               <a class="nav-link" href="#">Services</a>
             </li>
 
-            <li class="nav-item dropdown">
-              <a
-                class="nav-link dropdown-toggle"
-                href="#"
-                id="navbarDropdown"
-                role="button"
-                data-toggle="dropdown"
-                aria-haspopup="true"
-                aria-expanded="false"
-              >
-                Farm
-              </a>
-              <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                <a class="dropdown-item" href="/farms">
-                  <i data-feather="grid"></i> Farm Dashboard</a
-                >
-                <a class="dropdown-item" href="/farms/create" v-if="isCustomer || isHauler">
-                  <i data-feather="briefcase"></i> Create Farm</a
-                >
-              </div>
-            </li>
             <li class="nav-item dropdown">
               <a
                 class="nav-link dropdown-toggle"
@@ -63,12 +43,18 @@
                 <a class="dropdown-item" href="/jobs/create">
                   <i data-feather="briefcase"></i> Create Job</a
                 >
+                <a class="dropdown-item" href="/farms">
+                  <i data-feather="circle"></i> Farm Dashboard</a
+                >
+                <a class="dropdown-item" href="/farms/create" v-if="isCustomer || isHauler">
+                  <i data-feather="pie-chart"></i> Create Farm</a
+                >
               </div>
             </li>
             <li class="nav-item active">
-              <a class="nav-link all-noti-link" href="#">
+              <a class="nav-link all-noti-link" href="#" @click="showNotiList">
                 <span class="bell-outer"> <i data-feather="bell"></i></span>
-                <div class="all-noti-div">
+                <div class="all-noti-div" v-if="!showNoti">
                   <div class="each-noti clearfix">
                     <div class="details-one">
                       <p class="title-item">New Message</p>
@@ -107,21 +93,11 @@
                 John Dane
               </a>
               <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                <!-- <a class="dropdown-item" href="#"> <i data-feather="user"></i> Profile</a> -->
                 <router-link
                   :to="{ name: 'profileSettings' }"
                   class="dropdown-item"
                   ><i data-feather="user"></i> Profile</router-link
                 >
-
-                <a class="dropdown-item" href="#">
-                  <i data-feather="credit-card"></i> Payments</a
-                >
-                <a class="dropdown-item" href="#">
-                  <i data-feather="bell"></i> Notifications</a
-                >
-
-                <!-- <a class="dropdown-item" href="#"> <i data-feather="log-out"></i> Logout</a> -->
                 <a
                   class="dropdown-item"
                   href="javascript:void()"
@@ -140,13 +116,18 @@
 <script>
 export default {
   data: () => {
-    return {};
+    return {
+      showNoti:false,
+    };
   },
   methods: {
     logout: () => {
       window.localStorage.removeItem("token");
       window.localStorage.removeItem("user");
       window.location.href = "/";
+    },
+    showNotiList: function () {
+      this.showNoti = true;
     },
   },
 };

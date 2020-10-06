@@ -10,12 +10,6 @@
       </div>
     </section>
 
-    <div class="panel-heading">
-      <div class="btn-group pull-right" v-if="isCustomer || isHauler">
-        <a href="/farms/create" class="btn btn-success btn-sm">Create Farm</a>
-      </div>
-    </div>
-
     <section class="job-dashboard-outer center-content-outer" data-aos="">
       <div class="container">
         <div class="row">
@@ -37,7 +31,7 @@
                   </td>
                   <td>Manager</td>
                   <td>
-                    0
+                    <span class="badge-tag">0</span>
                   </td>
                   <td>
                     <router-link
@@ -45,11 +39,11 @@
                         name: 'editFarm',
                         params: { farmId: farm.id },
                       }"
-                      class="btn btn-info btn-sm"
+                      class="btn btn-table-outline"
                       v-if="isCustomer || isHauler"
-                      >Edit</router-link
+                      > <i data-feather="edit-3"></i> Edit</router-link
                     >
-                    <router-link
+                    <!-- <router-link
                       :to="{
                         name: 'managerList',
                         params: { farmId: farm.id },
@@ -57,12 +51,11 @@
                       class="btn btn-info btn-sm"
                       v-if="isCustomer || isHauler"
                       >Managers</router-link
-                    >
+                    > -->
                     <button
                       @click="deleteFarm(farm.id)"
-                      class="btn btn-danger btn-sm"
-                    >
-                      Delete
+                      class="btn btn-table-outline"
+                    > <i data-feather="x"></i>  Delete
                     </button>
                   </td>
                 </tr>
