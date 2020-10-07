@@ -87,10 +87,11 @@
                 aria-expanded="false"
               >
                 <img
-                  src="https://pixinvent.com/demo/vuexy-vuejs-admin-dashboard-template/demo-1/img/avatar-s-5.99691e54.jpg"
+                  :src="user.image_url"
                   alt="name"
+                  class="user_header_img"
                 />
-                John Dane
+                <span class="full_name">{{ (user) ? user.full_name : '' }}</span>
               </a>
               <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                 <router-link
@@ -118,7 +119,11 @@ export default {
   data: () => {
     return {
       showNoti:false,
+      user: null
     };
+  },
+  created: function(){
+    this.user = JSON.parse(window.localStorage.getItem("user"));
   },
   methods: {
     logout: () => {

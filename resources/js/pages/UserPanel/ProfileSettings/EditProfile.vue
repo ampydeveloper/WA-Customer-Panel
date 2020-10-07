@@ -547,6 +547,8 @@ export default {
               ...response.data.data,
             };
             window.localStorage.removeItem("user");
+            $('.full_name').html(response.data.data.full_name);
+            $('.user_header_img').attr('src', response.data.data.image_url);
             window.localStorage.setItem(
               "user",
               JSON.stringify(response.data.data)

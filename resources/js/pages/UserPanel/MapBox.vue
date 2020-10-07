@@ -134,7 +134,6 @@ export default {
     try {
       this.response = await JobService.get(this.$route.params.jobId);
       this.job = this.response;
-      console.log(this.job)
     } catch (error) {
       this.$toast.open({
         message: error.response.data.message,

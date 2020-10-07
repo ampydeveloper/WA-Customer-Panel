@@ -176,7 +176,6 @@ export default {
       this.$route.params.farmId
     ).then((response) => {
       this.alljobs = response.data.data;
-      console.log(this.alljobs);
     });
   },
 
