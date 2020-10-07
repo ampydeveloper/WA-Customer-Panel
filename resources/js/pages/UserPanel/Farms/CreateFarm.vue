@@ -24,7 +24,8 @@
 
               <form action novalidate v-if="!addManagers">
                 <vue-form-generator
-                  tag="div"
+                  tag="section"
+                  class="custom-forms"
                   :schema="schema"
                   :options="formOptions"
                   :model="model"
@@ -132,6 +133,7 @@ export default {
       model: emptyFarmRequest,
       fileContainer: [],
       schema: {
+        styleClasses:'row asd ',
         fields: [
           ...farmFormSchema.fields,
           {
@@ -139,7 +141,8 @@ export default {
             onFilePondDrop: (fieldName, file, metadata, load) => {
               this.fileContainer.push(file);
               load(Date.now());
-            }
+            },
+            styleClasses:'col-md-12'  
           },
           {
             type: "submit",

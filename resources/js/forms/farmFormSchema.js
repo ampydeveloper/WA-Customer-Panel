@@ -6,7 +6,8 @@ export default {
       label: "Address*",
       model: "farm_address",
       required: true,
-      validator: ["required", "string"]
+      validator: ["required", "string"],
+      styleClasses:'col-md-4'
     },
     {
       type: "input",
@@ -14,7 +15,8 @@ export default {
       label: "City*",
       model: "farm_city",
       required: true,
-      validator: ["required"]
+      validator: ["required"],
+      styleClasses:'col-md-4'
     },
     {
       type: "input",
@@ -22,7 +24,8 @@ export default {
       label: "Province*",
       model: "farm_province",
       required: true,
-      validator: ["required"]
+      validator: ["required"],
+      styleClasses:'col-md-4'
     },
     {
       type: "input",
@@ -36,7 +39,8 @@ export default {
           var isValidZip = /(^\d{5}$)|(^\d{5}-\d{4}$)/.test(value);
           return isValidZip ? [] : ["Invalid Zipcode"];
         }
-      ]
+      ],
+      styleClasses:'col-md-4'
     },
     {
       type: "input",
@@ -44,7 +48,8 @@ export default {
       label: "Latitude*",
       model: "latitude",
       required: true,
-      validator: ["required"]
+      validator: ["required"],
+      styleClasses:'col-md-4'
     },
     {
       type: "input",
@@ -52,7 +57,8 @@ export default {
       label: "Longitude*",
       model: "longitude",
       required: true,
-      validator: ["required"]
+      validator: ["required"],
+      styleClasses:'col-md-4'
     }
   ]
 };
