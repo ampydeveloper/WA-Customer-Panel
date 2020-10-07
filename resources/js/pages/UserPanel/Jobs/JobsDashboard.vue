@@ -87,9 +87,8 @@
                       <a class="btn btn-table-outline" v-if="job.job_status == 0" @click="cancelJob(job.id)">
                        Cancel
                       </a>
-                      <a class="btn btn-table-outline">
-                        View Details
-                      </a>
+                      <router-link :to="{ name: 'ViewJob', params: { jobId: job.id }}" class="btn btn-table-outline">  View Details</router-link>
+                    
                     </td>
                   </tr>
                 </tbody>

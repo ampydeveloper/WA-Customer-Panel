@@ -45,5 +45,11 @@ export default {
     AppFooter,
     OurSocialMedia,
   },
+
+  beforeCreate() {
+    if(window.localStorage.getItem("token")) {
+      window.location.href = "/jobs";
+    }
+  },
 };
 </script>
