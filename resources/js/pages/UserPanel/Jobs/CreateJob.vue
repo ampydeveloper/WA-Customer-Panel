@@ -161,6 +161,7 @@
                     <div class="pt-0 pb-0">
                       <v-text-field
                         required
+                        v-model="jobRequest.gate_no"
                         :rules="[(v) => !!v || 'Gate Number is required.']"
                         placeholder="Enter Gate Number"
                       ></v-text-field>
@@ -477,6 +478,7 @@ export default {
         time_slots_id: "",
         job_providing_date: moment().format("YYYY-MM-DD"),
         weight: 1,
+        gate_no: '',
         amount: 0,
         notes: "",
         is_repeating_job: false,
@@ -643,8 +645,8 @@ export default {
 
           setTimeout(() => {
             router.push({
-              name: "jobsList",
-              params: { farmId: this.jobRequest.farm_id },
+              name: "ViewJob",
+              params: { jobId: response.data.job_id },
             });
           }, 2000);
         } catch (error) {

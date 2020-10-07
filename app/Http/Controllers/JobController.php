@@ -57,7 +57,7 @@ class JobController extends Controller
                 'amount' => $createJobRequest->amount,
             ]);
             if ($job->save()) {
-                if ($createJobRequest->images && count($createJobRequest->images) > 0) {
+                if (isset($createJobRequest->images) && $createJobRequest->images && count($createJobRequest->images) > 0) {
                     $jobImages = [];
                     foreach ($createJobRequest->images as $image) {
                         $imageName = $job->putImage($image);
@@ -97,7 +97,7 @@ class JobController extends Controller
                 return response()->json([
                     'status' => true,
                     'message' => 'Job created successfully.',
-                    'data' => $job
+                    'job_id' => $job->id
                 ], 200);
             }
         } catch (\Exception $e) {
