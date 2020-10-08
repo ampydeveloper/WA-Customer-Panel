@@ -9,6 +9,12 @@
         :model="model"
       />
     </form>
+    <button
+        class="btn btn-success btn-lg btn-block"
+        @click="cancel"
+      >
+        Cancel
+      </button>
   </div>
 </template>
 
@@ -32,7 +38,7 @@ const emptyManager = {
 };
 
 export default {
-  props: ["newManager"],
+  props: ["newManager", "isEdit"],
   data() {
     return {
       model: this.newManager !== undefined ? this.newManager : emptyManager,
@@ -48,7 +54,7 @@ export default {
             onSubmit: (model, schema) => {
               const { farmId } = this.$route.params;
               if (farmId === undefined) {
-                this.$emit("updatemanager", model);
+                this.$emit("updatemanager", model, this.isEdit);
               } else {
                 const managerRequest = { ...this.model, farm_id: farmId };
                 FarmService.createManager(managerRequest).then(response => {
@@ -71,21 +77,18 @@ export default {
                 });
               }
             }
-          },
-          {
-            type: "cancel",
-            onCancel: (model, schema, ev) => {
-              if (this.$route.name === "createManager") {
-                window.history.back();
-              }
-            }
-          }
+          },    
         ]
       },
       formOptions: {
         validateAfterChanged: true
       }
     };
+  },
+  methods: {
+    cancel: function() {
+      this.$emit("hideAddNewManager");
+    }
   }
 };
 </script>

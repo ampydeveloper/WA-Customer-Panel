@@ -63,6 +63,7 @@
                             <v-date-picker
                               v-model="jobRequest.job_providing_date"
                               @input="menu2 = false"
+                              min="1970-10-03"
                             ></v-date-picker>
                           </v-menu>
                         </div>
@@ -160,9 +161,7 @@
                     </div>
                     <div class="pt-0 pb-0">
                       <v-text-field
-                        required
                         v-model="jobRequest.gate_no"
-                        :rules="[(v) => !!v || 'Gate Number is required.']"
                         placeholder="Enter Gate Number"
                       ></v-text-field>
                     </div>
@@ -178,7 +177,6 @@
                         placeholder="Enter Notes"
                         v-model="jobRequest.notes"
                         rows="3"
-                        :rules="[(v) => !!v || 'Notes is required.']"
                       ></v-textarea>
                     </div>
                   </v-col>
@@ -511,8 +509,8 @@ export default {
       coordinates: [-77.0214, 38.897],
 
       timePeriod: { 1: "Morning", 2: "Afternoon", 3: "Evening" },
-      serviceTimeSlotMap: { 1: [{ id: 1, time: "12AM - 12AM" }] },
-      slotsForPeriod: [{ id: 1, time: "12AM - 12AM" }],
+      serviceTimeSlotMap: {  },
+      slotsForPeriod: [],
       filePondServer: {
         process: (fieldName, file, metadata, load) => {
           this.fileContainer.push(file);

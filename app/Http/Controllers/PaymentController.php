@@ -62,6 +62,11 @@ class PaymentController extends Controller
         }
     }
 
+    public function checkCardExist($cardNumber, $customer_id)
+    {
+        return CustomerCardDetail::where('card_number', $cardNumber)->where('customer_id', $customer_id)->first();
+    }
+
     public function addCard(Request $request)
     {
         $status = $this->processAddCard($request->all());
@@ -81,6 +86,12 @@ class PaymentController extends Controller
         } else {
             $farms = $user->farms;
             $customer = $farms[0]->user;
+        }
+        if ($this->checkCardExist($cardData['card_number'], $customer->id)) {
+            return [
+                'status' => false,
+                'message' => "This card already exist."
+            ];
         }
 
         if(!isset($customer->authorize_net_id) || $customer->authorize_net_id == '') {

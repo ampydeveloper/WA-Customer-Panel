@@ -38,6 +38,8 @@
                         <file-pond
                           name="userProfile.user_image"
                           ref="pond"
+                          allowProcess="false"
+                          allowRevert="true"
                           label-idle="Drop files here or <span class='filepond--label-action'>Browse</span>"
                           accepted-file-types="image/jpg, image/gif,image/svg,image/jpeg, image/png"
                           v-bind:server="filePondServer"
@@ -264,6 +266,7 @@
                         <button
                           class="btn btn-sm btn-danger delete-item"
                           @click="makeCardDefault(card.id)"
+                          v-if="!card.card_primary"
                         >
                           <i data-feather="x">Make primary</i>
                         </button>
@@ -414,6 +417,16 @@
                         >Save Payment Info <i data-feather="arrow-right"></i></v-btn
                       >
                     </div>
+                    <div class="button-out">
+                      <v-btn
+                        :loading="loading"
+                        :disabled="loading"
+                        class="btn-full-green"
+                        style="margin-top:10px;"
+                        @click="hideAddCard"
+                        >Cancel</v-btn
+                      >
+                    </div>
                   </div>
                 </div>
                 <!-- /Add Card -->
@@ -501,6 +514,10 @@ export default {
           this.userProfile.user_image = formData;
           load(Date.now());
         },
+        revert: (fieldName, file, metadata, load) => {
+          this.$refs.pond.removeFile();
+          this.profileUpload = false;
+        }
       },
     };
   },
@@ -554,6 +571,7 @@ export default {
               JSON.stringify(response.data.data)
             );
           }
+          this.profileUpload = false;
         } catch (error) {
           this.$toast.open({
             message: error.response.data.message,
@@ -571,12 +589,21 @@ export default {
         try {
           const response = await CardService.create(this.cardDetails);
           if (response !== undefined && response.data !== undefined) {
-            this.$toast.open({
-              message: response.data.message,
-              type: "success",
-              position: "top-right",
-              dismissible: false,
-            });
+            if(response.data.status) {
+              this.$toast.open({
+                message: response.data.message,
+                type: "success",
+                position: "top-right",
+                dismissible: false,
+              }); 
+            } else {
+              this.$toast.open({
+                message: response.data.message,
+                type: "error",
+                position: "bottom-right",
+                dismissible: false,
+              });
+            }
             this.addNewCard = false;
             CardService.list().then((response) => {
               this.cardList = response.data.data;
@@ -618,7 +645,15 @@ export default {
     },
 
     showAddCard: function () {
+      var $this = this;
+      Object.keys(this.cardDetails).forEach(function(key,index) {
+        $this.cardDetails[key] = '';
+      });
       this.addNewCard = true;
+    },
+
+    hideAddCard: function () {
+      this.addNewCard = false;
     },
 
     showProfileUpload: function () {

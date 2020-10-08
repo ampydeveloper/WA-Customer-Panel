@@ -18,12 +18,15 @@
               <div v-if="addManagers">
                 <create-manager
                   v-on:updatemanager="updateManager"
+                  v-on:hideAddNewManager="hideAddNewManager"
                   v-bind:new-manager="newManager"
+                  v-bind:is-edit="isEdit"
                 />
               </div>
 
               <form action novalidate v-if="!addManagers">
                 <vue-form-generator
+                  ref="form"
                   tag="section"
                   class="custom-forms"
                   :schema="schema"
@@ -55,7 +58,7 @@
                       <button
                         type="button"
                         class="btn btn-sm btn-info"
-                        @click="onManagerEdit(manager)"
+                        @click="onManagerEdit(manager, index)"
                       >
                         Edit
                       </button>
@@ -77,6 +80,7 @@
                 >
                   Create Farm
                 </button>
+                
               </div>
             </div>
           </div>
@@ -144,19 +148,19 @@ export default {
             },
             styleClasses:'col-md-12'  
           },
-          {
-            type: "submit",
-            styleClasses: "submit-button",
-            label: "Create Farm",
-            caption: "Create Farm form",
-            validateBeforeSubmit: true,
-            disabled: () => this.isCreatingFarm,
-            onSubmit: (model, schema) => {
-              this.isCreatingFarm = true;
-              this.addManagers = true;
-              this.newManager = { ...emptyManager };
-            }
-          }
+          // {
+          //   type: "submit",
+          //   styleClasses: "submit-button",
+          //   label: "Create Farm",
+          //   caption: "Create Farm form",
+          //   validateBeforeSubmit: true,
+          //   disabled: () => this.isCreatingFarm,
+          //   onSubmit: (model, schema) => {
+          //     this.isCreatingFarm = true;
+          //     this.addManagers = true;
+          //     this.newManager = { ...emptyManager };
+          //   }
+          // }
         ]
       },
       formOptions: {
@@ -167,23 +171,38 @@ export default {
     };
   },
   methods: {
-    updateManager: function(manager) {
-      const existingManager = _.find(
-        this.model.manager_details,
-        emanager => emanager.email === manager.email
-      );
-
-      if (existingManager !== undefined) {
+    updateManager: function(manager, isEdit) {
+      
+      if (isEdit !== false) {
         this.model.manager_details = _.filter(
           this.model.manager_details,
-          emanager => emanager.email !== manager.email
+          function (v,k) {
+            return k != isEdit;
+          }
         );
+      } else {
+        const existingManager = _.find(
+          this.model.manager_details,
+          emanager => emanager.email === manager.email
+        );
+
+        if (existingManager !== undefined) {
+          this.model.manager_details = _.filter(
+            this.model.manager_details,
+            emanager => emanager.email !== manager.email
+          );
+        }
       }
 
       this.model.manager_details.push(manager);
       this.addManagers = false;
     },
     createFarm: function() {
+
+      const isValidated = this.$refs.form.validate();
+      if (isValidated !== true) {
+        return false;
+      }
       var createFarmRequest = new FormData();
 
       /**
@@ -245,6 +264,10 @@ export default {
     addNewManager: function() {
       this.newManager = { ...emptyManager };
       this.addManagers = true;
+      this.isEdit = false;
+    },
+    hideAddNewManager: function() {
+      this.addManagers = false;
     },
     onManagerDelete: function(manager) {
       this.model.manager_details = _.filter(
@@ -254,9 +277,10 @@ export default {
         }
       );
     },
-    onManagerEdit: function(manager) {
+    onManagerEdit: function(manager, index) {
       this.newManager = { ...manager };
       this.addManagers = true;
+      this.isEdit = index;
     }
   }
 };
