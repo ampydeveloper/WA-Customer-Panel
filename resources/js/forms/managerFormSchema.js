@@ -87,14 +87,6 @@ export default {
     {
       type: "input",
       inputType: "text",
-      label: "Card Image*",
-      model: "manager_card_image",
-      required: true,
-      validator: ["required"]
-    },
-    {
-      type: "input",
-      inputType: "text",
       label: "Card ID Card*",
       model: "manager_id_card",
       required: true,

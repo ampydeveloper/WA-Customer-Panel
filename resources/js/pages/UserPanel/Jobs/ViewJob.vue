@@ -61,7 +61,7 @@
                   </div>
                   <div class="each-details col-sm-4">
                     <p class="head-item">Farm Location</p>
-                    <p class="detail-item">{{ job.farm.full_address }}</p>
+                    <p class="detail-item">{{ (job.farm) ? job.farm.full_address : 'N/A' }}</p>
                   </div>
                   <div class="each-details col-sm-4">
                     <p class="head-item">Date / Est. Time</p>

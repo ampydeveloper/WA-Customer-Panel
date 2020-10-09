@@ -18,6 +18,7 @@ import VueSocketIO from "vue-socket.io";
 import { authorizationMixin } from "./role";
 import fieldCancel from "./forms/custom-fields/fieldCancel.vue";
 import fieldFilepond from "./forms/custom-fields/fieldFilepond.vue";
+import fieldVueGoogleAutocomplete from "./forms/custom-fields/fieldVueGoogleAutocomplete.vue";
 
 window.Vue = require("vue");
 
@@ -28,6 +29,7 @@ Vue.use(Vuetify);
 /** Vue Form Generator */
 Vue.component("fieldCancel", fieldCancel);
 Vue.component("fieldFilepond", fieldFilepond);
+Vue.component("fieldVueGoogleAutocomplete", fieldVueGoogleAutocomplete);
 Vue.use(VueFormGenerator);
 
 Vue.use(VueMapbox, { mapboxgl: Mapbox });

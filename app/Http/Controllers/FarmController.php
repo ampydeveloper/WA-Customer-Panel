@@ -28,6 +28,36 @@ use App\Http\Requests\Farm\Manager\{
 };
 class FarmController extends Controller
 {
+
+    public function getDistance($lat1, $lon1, $lat2, $lon2, $unit)
+    {
+        $lat2 = ($lat2 == null) ? config('constant.warehouse.lat') : $lat2;
+        $lon2 = ($lon2 == null) ? config('constant.warehouse.lon') : $lon2;
+        $lat1 = (float)$lat1;
+        $lat2 = (float)$lat2;
+        $lon1 = (float)$lon1;
+        $lon2 = (float)$lon2;
+
+        if (($lat1 == $lat2) && ($lon1 == $lon2)) {
+            return 0;
+          }
+          else {
+            $theta = $lon1 - $lon2;
+            $dist = sin(deg2rad($lat1)) * sin(deg2rad($lat2)) +  cos(deg2rad($lat1)) * cos(deg2rad($lat2)) * cos(deg2rad($theta));
+            $dist = acos($dist);
+            $dist = rad2deg($dist);
+            $miles = $dist * 60 * 1.1515;
+            $unit = strtoupper($unit);
+        
+            if ($unit == "K") {
+              return (int) ($miles * 1.609344);
+            } else if ($unit == "N") {
+              return (int) ($miles * 0.8684);
+            } else {
+              return (int) $miles;
+            }
+          }
+    }
     /**
      * @method create: Function to create customer farm.
      * 
@@ -38,6 +68,7 @@ class FarmController extends Controller
         try {
             $customer = $request->user();
             DB::beginTransaction();
+            $distance =  $this->getDistance($request->latitude, $request->longitude, null, null, 'M');
             $farmDetails = new CustomerFarm([
                 'customer_id' => $customer->id,
                 'farm_address' => $request->farm_address,
@@ -50,6 +81,7 @@ class FarmController extends Controller
                 'latitude' => $request->latitude,
                 'longitude' => $request->longitude,
                 'created_by' => $request->user()->id,
+                'distance' => $distance
             ]);
             if ($farmDetails->save()) {
                 if ($request->farm_image && count($request->farm_image) > 0) {  
@@ -166,6 +198,8 @@ class FarmController extends Controller
     public function update(CustomerFarm $customerFarm, UpdateFarmRequest $request)
     {
         try {
+            $distance =  $this->getDistance($request->latitude, $request->longitude, null, null, 'M');
+
             $customerFarm->update([
                 'farm_address' => $request->farm_address,
                 'farm_unit' => (isset($request->farm_unit) && $request->farm_unit != '' && $request->farm_unit != null) ? ($request->farm_unit) : null,
@@ -176,6 +210,7 @@ class FarmController extends Controller
                 'farm_active' => $request->farm_active,
                 'latitude' => $request->latitude,
                 'longitude' => $request->longitude,
+                'distance' => $distance
             ]);
 
             return response()->json([

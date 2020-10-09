@@ -49,11 +49,12 @@
                       <span class="basic-info" v-if="job.manager"
                         >{{ job.manager.first_name }}</span
                       >
-                      <span class="basic-info"
-                        >{{ job.farm.farm_address }} {{ job.farm.farm_city }}
+                      <span class="basic-info" v-if="job.farm">
+                        {{ job.farm.farm_address }} {{ job.farm.farm_city }}
                         {{ job.farm.farm_province }} 
                         {{ job.farm.farm_zipcode }}</span
                       >
+                      <span class="basic-info" v-if="!job.farm">N/A</span>
                     </td>
                     <td class="job-col-body">
                       <span class="basic-info">{{
@@ -126,47 +127,6 @@ export default {
     dialog: false,
     jobList: {}, 
     alljobs: {
-      0: {
-        amount: 129600,
-        customer: {
-          id: 111,
-          prefix: "Mr.",
-          first_name: "Elijah",
-          last_name: "Joffrion",
-          email: "Elijah@yopmail.com",
-        },
-        farm: {
-          farm_address: "Wellington",
-          farm_city: "Te Aro",
-          farm_province: "Wellington",
-          farm_unit: "5/26 Marion Street",
-          farm_zipcode: "62365",
-        },
-        farm_id: 17,
-        gate_no: "56",
-        job_created_by: 1,
-        job_providing_date: "2020-09-24",
-        job_status: 0,
-        manager: {
-          prefix: "Mr.",
-          first_name: "Lucas",
-          last_name: "Demeter",
-          email: "Lucas@yopmail.com",
-        },
-        manager_id: 112,
-        payment_notes: null,
-        payment_status: 0,
-        service: {
-          service_name: "STANDARD LOAD",
-        },
-        skidsteer: null,
-        skidsteer_driver: null,
-        skidsteer_driver_id: null,
-        skidsteer_id: null,
-        start_time: null,
-        truck: null,
-        truck_driver: null,
-      },
     },
   }),
 

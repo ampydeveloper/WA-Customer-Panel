@@ -101,7 +101,8 @@
                         <v-text-field
                           v-model="userProfile.phone"
                           required
-                          :rules="[(v) => !!v || 'Phone is required.']"
+                          min='10'
+                          :rules="[(v) => /(^\d{10}$)/.test(v) || 'Invalid Phone Number (10 digits).']"
                           placeholder="Phone"
                         ></v-text-field>
                       </div>

@@ -32,7 +32,7 @@ const emptyManager = {
   manager_city: "",
   manager_province: "",
   manager_zipcode: "",
-  manager_card_image: "",
+  manager_card_image: [],
   manager_id_card: "",
   salary: ""
 };
@@ -45,6 +45,14 @@ export default {
       schema: {
         fields: [
           ...managerFormSchema.fields,
+          // {
+          //   type: "filepond",
+          //   onFilePondDrop: (fieldName, file, metadata, load) => {
+          //     this.model.manager_card_image.push(file);
+          //     load(Date.now());
+          //   },
+          //   styleClasses:'col-md-12'  
+          // },
           {
             type: "submit",
             styleClasses: "submit-button",

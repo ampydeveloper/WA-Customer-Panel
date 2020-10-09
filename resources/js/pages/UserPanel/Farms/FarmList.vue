@@ -29,7 +29,8 @@
                     {{ farm.farm_address }} {{ farm.farm_city }} <br />
                     {{ farm.farm_province }} {{ farm.farm_zipcode }}
                   </td>
-                  <td>Manager</td>
+                  <td v-if="!farm.primary_manager"> N/A </td>
+                  <td v-if="farm.primary_manager"> {{ farm.primary_manager.full_name }} / {{ farm.primary_manager.phone }} / {{ farm.primary_manager.email }}</td>
                   <td>
                     <span class="badge-tag">0</span>
                   </td>

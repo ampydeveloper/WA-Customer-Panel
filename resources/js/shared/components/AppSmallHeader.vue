@@ -20,7 +20,7 @@
 
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
           <ul class="navbar-nav ml-auto">
-            <li class="nav-item active">
+            <li class="nav-item active" v-if="isCustomer">
               <a class="nav-link" href="javascript:void(0);">Services</a>
             </li>
 
@@ -43,10 +43,10 @@
                 <a class="dropdown-item" href="/jobs/create">
                   <i data-feather="briefcase"></i> Create Job</a
                 >
-                <a class="dropdown-item" href="/farms">
+                <a class="dropdown-item" href="/farms" v-if="isCustomer">
                   <i data-feather="circle"></i> Farm Dashboard</a
                 >
-                <a class="dropdown-item" href="/farms/create" v-if="isCustomer || isHauler">
+                <a class="dropdown-item" href="/farms/create" v-if="isCustomer">
                   <i data-feather="pie-chart"></i> Create Farm</a
                 >
               </div>

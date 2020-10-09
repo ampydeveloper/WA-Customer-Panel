@@ -10,7 +10,7 @@ trait UserMethods
 {
     public function isCustomer()
     {
-        return ($this->role_id == config('constant.roles.Customer') || $this->role_id == config('constant.roles.haulers'));
+        return ($this->role_id == config('constant.roles.Customer') || $this->role_id == config('constant.roles.Haulers'));
     }
 
     public function canAccessFarm($farmId)

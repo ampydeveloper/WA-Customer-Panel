@@ -140,6 +140,13 @@ export default {
         styleClasses:'row asd ',
         fields: [
           ...farmFormSchema.fields,
+          // {
+          //   type: "vueGoogleAutocomplete",
+          //   styleClasses:'col-md-12'  ,
+          //   onGetAddressData : ($event) => {
+              
+          //   }
+          // },
           {
             type: "filepond",
             onFilePondDrop: (fieldName, file, metadata, load) => {

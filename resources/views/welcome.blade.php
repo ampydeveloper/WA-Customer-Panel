@@ -32,6 +32,10 @@
     <script src="assets/js/owl.carousel.js" defer></script>
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script src="https://unpkg.com/feather-icons"></script>
+    <script src='https://npmcdn.com/@turf/turf/turf.min.js'></script>
+    <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.js'></script>
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCZ3PTWFGfTu4UYGIDiXJvMTxVcIpjWJGM&libraries=geometry,places"></script>
+    <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.css' rel='stylesheet' />
     <script>
         function openNav() {
             document.getElementById("mySidenav").style.width = "100%";

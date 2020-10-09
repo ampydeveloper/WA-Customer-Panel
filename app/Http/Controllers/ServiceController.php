@@ -70,7 +70,7 @@ class ServiceController extends Controller
 
         if (count($getAllServices) > 0) {
             foreach ($getAllServices as $key => $service) {
-                if ($service->service_for == config('constant.roles.Customer')) {
+                if ($service->service_for == config('constant.roles.Customer') || $service->service_for == config('constant.roles.Haulers')) {
                     $timeSlots = TimeSlots::whereIn('id', json_decode($service->slot_time))->get();
                     $getAllServices[$key]["timeSlots"] = $timeSlots;
                 }

@@ -113,21 +113,6 @@
                           ></v-radio>
                         </v-radio-group>
 
-                        <v-radio-group
-                          v-model="jobRequest.time_slots_id"
-                          row
-                          :rules="requiredRules"
-                          label=""
-                           color="black"
-                        >
-                          <v-radio
-                            v-for="(slot, ind) in slotsForPeriod"
-                            :key="ind"
-                            :label="slot.time"
-                            :value="slot.id"
-                             color="black"
-                          ></v-radio>
-                        </v-radio-group>
                       </div>
                    
                   </v-col>
@@ -197,7 +182,7 @@
                     </div>
                   </v-col>
 
-                  <v-col cols="12" md="12" class="pt-0 pb-0">
+                  <v-col cols="12" md="12" class="pt-0 pb-0" v-if="isCustomer">
                     <div class="label-align pt-0">
                       <label>Farms</label>
                     </div>
@@ -240,7 +225,7 @@
                   </v-card-text>
                 </div>
 
-                <div class="send-payment">
+                <div class="send-payment" v-if="isCustomer">
                   <h5 class="heading2">Initiate Payment</h5>
                   <v-radio-group
                     v-model="jobRequest.attach_card"
@@ -473,7 +458,6 @@ export default {
       jobRequest: {
         farm_id: "",
         service_id: "",
-        time_slots_id: "",
         job_providing_date: moment().format("YYYY-MM-DD"),
         weight: 1,
         gate_no: '',

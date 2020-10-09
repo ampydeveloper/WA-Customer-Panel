@@ -5,6 +5,7 @@ namespace App\Http\Requests\Job;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
+use Auth;
 
 class CreateJobRequest extends FormRequest
 {
@@ -25,15 +26,19 @@ class CreateJobRequest extends FormRequest
      */
     public function rules()
     {
-        return [
+        $rules = [
             'service_id' => 'required',
             'job_providing_date' => 'required|date|date_format:Y-m-d',
             'is_repeating_job' => 'required',
             'amount' => 'required',
             'repeating_days' => 'required_if:is_repeating_job,==,2',
-            'farm_id' => 'required',
-            'time_slots_id' => 'required'
         ];
+
+        if (Auth::user()->role_id != config('constant.roles.Haulers')) {
+            $rules['farm_id'] = 'sometimes|required';
+        }
+
+        return $rules;
     }
 
 

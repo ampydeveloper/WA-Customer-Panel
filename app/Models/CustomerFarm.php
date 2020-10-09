@@ -16,12 +16,12 @@ class CustomerFarm extends Model
      * @var array
      */
     protected $fillable = [
-        'customer_id', 'farm_address', 'farm_city', 'farm_image', 'farm_province', 'farm_unit', 'farm_zipcode', 'farm_active', 'latitude', 'longitude', 'created_by'
+        'customer_id', 'farm_address', 'farm_city', 'farm_image', 'farm_province', 'farm_unit', 'farm_zipcode', 'farm_active', 'latitude', 'longitude', 'distance', 'created_by'
     ];
 
     protected $hidden = ['deleted_at', 'updated_at'];
 
-    protected $appends = ['full_address'];
+    protected $appends = ['full_address', 'primary_manager'];
 
     public function managers()
     {
@@ -60,6 +60,11 @@ class CustomerFarm extends Model
     public function getFullAddressAttribute()
     {
         return $this->farm_address.' '.$this->farm_city.' '.$this->farm_province.' '.$this->farm_zipcode;
+    }
+
+    public function getPrimaryManagerAttribute()
+    {
+        return $this->managers()->first();
     }
 
 }

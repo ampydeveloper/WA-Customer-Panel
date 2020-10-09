@@ -85,5 +85,9 @@ return [
     ],
     'range_cover' => [
         'distance' => 4
+    ],
+    'warehouse' => [
+        'lat' => '31.23',
+        'lon' => '34.34'
     ]
 ];

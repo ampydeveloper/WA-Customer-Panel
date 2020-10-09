@@ -29,21 +29,21 @@ class JobController extends Controller
      */
     public function create(CreateJobRequest $createJobRequest)
     {
-        $farm = CustomerFarm::find($createJobRequest->farm_id);
-        if (!$farm->isOwner()) {
-            return response()->json([
+        if (Auth::user()->role_id != config('constant.roles.Haulers')) {
+            $farm = CustomerFarm::find($createJobRequest->farm_id);
+            if (!$farm->isOwner()) {
+                return response()->json([
                 'status' => false,
                 'message' => 'Unauthorized access.',
             ], 421);
+            }
         }
         DB::beginTransaction();
         try {
-            $job = new Job([
+            $data = [
                 'job_created_by' => $createJobRequest->user()->id,
-                'customer_id' => $farm->customer_id,
                 'card_id' => null,
                 'manager_id' => (isset($createJobRequest->manager_id) && $createJobRequest->manager_id != '' && $createJobRequest->manager_id != null) ? $createJobRequest->manager_id : null,
-                'farm_id' => (isset($createJobRequest->farm_id) && $createJobRequest->farm_id != '' && $createJobRequest->farm_id != null) ? $createJobRequest->farm_id : null,
                 'service_id' => $createJobRequest->service_id,
                 'gate_no' => (isset($createJobRequest->gate_no) && $createJobRequest->gate_no != '' && $createJobRequest->gate_no != null) ? $createJobRequest->gate_no : null,
                 'time_slots_id' => (isset($createJobRequest->time_slots_id) && $createJobRequest->time_slots_id != '' && $createJobRequest->time_slots_id != null) ? $createJobRequest->time_slots_id : null,
@@ -55,7 +55,17 @@ class JobController extends Controller
                 'images' => null,
                 'notes' => (isset($createJobRequest->notes) && $createJobRequest->notes != '' && $createJobRequest->notes != null) ? $createJobRequest->notes : null,
                 'amount' => $createJobRequest->amount,
-            ]);
+            ];
+
+            if (Auth::user()->role_id != config('constant.roles.Haulers')) {
+                $data['farm_id'] = (isset($createJobRequest->farm_id) && $createJobRequest->farm_id != '' && $createJobRequest->farm_id != null) ? $createJobRequest->farm_id : null;
+                $data['customer_id'] = $farm->customer_id;
+            } else {
+                $data['farm_id'] = null;
+                $data['customer_id'] = Auth::user()->id;
+            }
+
+            $job = new Job($data);
             if ($job->save()) {
                 if (isset($createJobRequest->images) && $createJobRequest->images && count($createJobRequest->images) > 0) {
                     $jobImages = [];
@@ -304,6 +314,7 @@ class JobController extends Controller
         return response()->json([
             'status' => true,
             'message' => 'Job List',
+            'asd' => 'dsf',
             'data' => Auth::user()->myJobs()
         ], 200);
     }

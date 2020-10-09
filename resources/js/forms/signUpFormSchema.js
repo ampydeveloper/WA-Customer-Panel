@@ -75,7 +75,13 @@ export default {
             label: "Phone Number*",
             model: "phone",
             required: true,
-            validator: ["required"]
+            validator: [
+                "required",
+                (value, field, model) => {
+                    var isValidNo = /(^\d{10}$)/.test(value);
+                    return isValidNo ? [] : ["Invalid Phone Number (10 digits)."];
+                }
+            ]
         },
         {
             type: "input",
