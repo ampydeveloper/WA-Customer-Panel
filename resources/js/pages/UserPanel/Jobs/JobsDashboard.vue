@@ -61,7 +61,8 @@
                         job.job_providing_date
                       }}</span>
                     </td>
-                    <td>30 Ton</td>
+                    <td v-if="job.weight">{{ job.weight }} Ton</td>
+                    <td v-if="!job.weight">N/A</td>
                     <td>
                       <template v-if="job.payment_status">
                         <span class="badge-tag">Paid</span>
@@ -71,18 +72,9 @@
                       </template>
                     </td>
                     <td>
-                      <template v-if="job.job_status == 1">
-                        <span class="badge-tag">Assigned</span>
-                      </template>
-                      <template v-if="job.job_status == 2">
-                        <span class="badge-tag">Completed</span>
-                      </template>
-                      <template v-if="job.job_status == 3">
-                        <span class="badge-tag">Closed</span>
-                      </template>
-                      <template v-if="job.job_status == 4">
-                        <span class="badge-tag">Canceled</span>
-                      </template>                     
+                     <template>
+                        <span class="badge-tag">{{ job.job_status_name }}</span>
+                      </template>                  
                     </td>
                     <td>
                       <a class="btn btn-table-outline" v-if="job.job_status == 0" @click="cancelJob(job.id)">
@@ -149,8 +141,12 @@ export default {
           position: "top-right",
           dismissible: false,
         });
-        const jobIndex = this.alljobs.findIndex((job) => job.id === managerId);
-        this.alljobs.splice(jobIndex, 1);
+        const { name: routeName } = this.$route;
+        JobService[routeName === "JobsDashboard" ? "myJobs" : "myUpcomingJobs"](
+          this.$route.params.farmId
+        ).then((response) => {
+          this.alljobs = response.data.data;
+        });
       } catch (error) {
         this.$toast.open({
           message: error.response.data.message,

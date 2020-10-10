@@ -32,7 +32,7 @@
                   <td v-if="!farm.primary_manager"> N/A </td>
                   <td v-if="farm.primary_manager"> {{ farm.primary_manager.full_name }} / {{ farm.primary_manager.phone }} / {{ farm.primary_manager.email }}</td>
                   <td>
-                    <span class="badge-tag">0</span>
+                    <span class="badge-tag">{{ farm.total_jobs }}</span>
                   </td>
                   <td>
                     <router-link

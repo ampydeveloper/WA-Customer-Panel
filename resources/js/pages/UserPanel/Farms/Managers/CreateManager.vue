@@ -1,9 +1,9 @@
 <template>
-  <div class="new-user-signup">
-    <h1>New Manager</h1>
+  <div class="custom-forms" style="border:1px solid #c5c5c5; padding: 10px; margin: 0 0 0 50px;">
+    <h5>Add Manager</h5>
     <form action novalidate>
       <vue-form-generator
-        tag="div"
+        tag="section"
         :schema="schema"
         :options="formOptions"
         :model="model"
@@ -45,18 +45,32 @@ export default {
       schema: {
         fields: [
           ...managerFormSchema.fields,
-          // {
-          //   type: "filepond",
-          //   onFilePondDrop: (fieldName, file, metadata, load) => {
-          //     this.model.manager_card_image.push(file);
-          //     load(Date.now());
-          //   },
-          //   styleClasses:'col-md-12'  
-          // },
+          {
+            type: "filepond",
+            label: "Card Image",
+            // files: [
+            //     {
+            //         source: '12345',
+            //         options: {
+            //             type: 'local',
+            //             file: window.ttt
+            //         }
+            //     }
+            // ],
+            allowMultiple: false,
+            onFilePondDrop: (fieldName, file, metadata, load) => {
+              this.model.manager_card_image = [];
+              this.model.manager_card_image.push(file);
+              window.ttt=file;
+              load(Date.now());
+            },
+            required: true,
+            styleClasses:'col-md-12'
+          },
           {
             type: "submit",
-            styleClasses: "submit-button",
-            label: "Create Manager",
+            styleClasses: "submit-button col-md-12",
+            buttonText: "Add Manager",
             caption: "Create Manager form",
             validateBeforeSubmit: true,
             onSubmit: (model, schema) => {
@@ -84,7 +98,7 @@ export default {
                   );
                 });
               }
-            }
+            },
           },    
         ]
       },

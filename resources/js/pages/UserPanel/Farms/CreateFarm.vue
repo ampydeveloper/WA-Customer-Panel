@@ -15,16 +15,8 @@
         <div class="row">
           <div class="col-md-12">
             <div class="basic-grey-box">
-              <div v-if="addManagers">
-                <create-manager
-                  v-on:updatemanager="updateManager"
-                  v-on:hideAddNewManager="hideAddNewManager"
-                  v-bind:new-manager="newManager"
-                  v-bind:is-edit="isEdit"
-                />
-              </div>
 
-              <form action novalidate v-if="!addManagers">
+              <form action novalidate>
                 <vue-form-generator
                   ref="form"
                   tag="section"
@@ -35,16 +27,25 @@
                 />
               </form>
 
-              <button
+              <!--<button
                 class="btn btn-success btn-lg btn-block"
                 style="width : 200px;"
                 @click="addNewManager"
                 v-if="!addManagers"
               >
                 Add New Manager
-              </button>
+              </button> -->
 
-              <div class="form-group" v-if="hasManager && !addManagers">
+              <div >
+                <create-manager
+                  v-on:updatemanager="updateManager"
+                  v-on:hideAddNewManager="hideAddNewManager"
+                  v-bind:new-manager="newManager"
+                  v-bind:is-edit="isEdit"
+                />
+              </div>
+
+              <div class="form-group" v-if="hasManager">
                 <ul class="list-group">
                   <li
                     class="list-group-item"
@@ -106,7 +107,7 @@ const emptyManager = {
   manager_city: "",
   manager_province: "",
   manager_zipcode: "",
-  manager_card_image: "",
+  manager_card_image: [],
   manager_id_card: "",
   salary: ""
 };
@@ -136,8 +137,9 @@ export default {
       newManager: { ...emptyManager },
       model: emptyFarmRequest,
       fileContainer: [],
+      isEdit: false,
       schema: {
-        styleClasses:'row asd ',
+        styleClasses:'row',
         fields: [
           ...farmFormSchema.fields,
           // {

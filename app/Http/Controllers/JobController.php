@@ -43,7 +43,6 @@ class JobController extends Controller
             $data = [
                 'job_created_by' => $createJobRequest->user()->id,
                 'card_id' => null,
-                'manager_id' => (isset($createJobRequest->manager_id) && $createJobRequest->manager_id != '' && $createJobRequest->manager_id != null) ? $createJobRequest->manager_id : null,
                 'service_id' => $createJobRequest->service_id,
                 'gate_no' => (isset($createJobRequest->gate_no) && $createJobRequest->gate_no != '' && $createJobRequest->gate_no != null) ? $createJobRequest->gate_no : null,
                 'time_slots_id' => (isset($createJobRequest->time_slots_id) && $createJobRequest->time_slots_id != '' && $createJobRequest->time_slots_id != null) ? $createJobRequest->time_slots_id : null,
@@ -60,9 +59,11 @@ class JobController extends Controller
             if (Auth::user()->role_id != config('constant.roles.Haulers')) {
                 $data['farm_id'] = (isset($createJobRequest->farm_id) && $createJobRequest->farm_id != '' && $createJobRequest->farm_id != null) ? $createJobRequest->farm_id : null;
                 $data['customer_id'] = $farm->customer_id;
+                $data['manager_id'] = (isset($createJobRequest->manager_id) && $createJobRequest->manager_id != '' && $createJobRequest->manager_id != null) ? $createJobRequest->manager_id : $farm->primary_manager->id;
             } else {
                 $data['farm_id'] = null;
                 $data['customer_id'] = Auth::user()->id;
+                $data['manager_id'] = (isset($createJobRequest->manager_id) && $createJobRequest->manager_id != '' && $createJobRequest->manager_id != null) ? $createJobRequest->manager_id : null;
             }
 
             $job = new Job($data);
@@ -314,7 +315,6 @@ class JobController extends Controller
         return response()->json([
             'status' => true,
             'message' => 'Job List',
-            'asd' => 'dsf',
             'data' => Auth::user()->myJobs()
         ], 200);
     }

@@ -9,7 +9,8 @@ export default {
       label: "First Name*",
       model: "manager_first_name",
       required: true,
-      validator: ["required"]
+      validator: ["required"],
+      styleClasses:'col-md-4 mb-0 pb-0'
     },
     {
       type: "input",
@@ -17,7 +18,8 @@ export default {
       label: "Last Name*",
       model: "manager_last_name",
       required: true,
-      validator: ["required"]
+      validator: ["required"],
+      styleClasses:'col-md-4 mb-0 pb-0'
     },
     {
       type: "input",
@@ -36,7 +38,8 @@ export default {
           }
           return result;
         }
-      ]
+      ],
+      styleClasses:'col-md-4 mb-0 pb-0'
     },
     {
       type: "input",
@@ -44,7 +47,8 @@ export default {
       label: "Phone Number*",
       model: "manager_phone",
       required: true,
-      validator: ["required"]
+      validator: ["required"],
+      styleClasses:'col-md-4 mb-0 pb-0'
     },
     {
       type: "input",
@@ -52,7 +56,8 @@ export default {
       label: "Address*",
       model: "manager_address",
       required: true,
-      validator: ["required"]
+      validator: ["required"],
+      styleClasses:'col-md-4 mb-0 pb-0'
     },
     {
       type: "input",
@@ -60,7 +65,8 @@ export default {
       label: "City*",
       model: "manager_city",
       required: true,
-      validator: ["required"]
+      validator: ["required"],
+      styleClasses:'col-md-4 mb-0 pb-0'
     },
     {
       type: "input",
@@ -68,7 +74,8 @@ export default {
       label: "Province*",
       model: "manager_province",
       required: true,
-      validator: ["required"]
+      validator: ["required"],
+      styleClasses:'col-md-4 mb-0 pb-0'
     },
     {
       type: "input",
@@ -82,7 +89,8 @@ export default {
           var isValidZip = /(^\d{5}$)|(^\d{5}-\d{4}$)/.test(value);
           return isValidZip ? [] : ["Invalid Zipcode"];
         }
-      ]
+      ],
+      styleClasses:'col-md-4 mb-0 pb-0'
     },
     {
       type: "input",
@@ -90,7 +98,8 @@ export default {
       label: "Card ID Card*",
       model: "manager_id_card",
       required: true,
-      validator: ["required"]
+      validator: ["required"],
+      styleClasses:'col-md-4 mb-0 pb-0'
     },
     {
       type: "input",
@@ -107,7 +116,8 @@ export default {
           }
           return result;
         }
-      ]
+      ],
+      styleClasses:'col-md-4 mb-0 pb-0'
     }
   ]
 };

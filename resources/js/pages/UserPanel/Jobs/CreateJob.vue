@@ -193,16 +193,7 @@
                         placeholder="Select Farm"
                         :rules="[(v) => !!v || 'Farms is required.']"
                       ></v-select>
-                      <MglMap
-                        :accessToken="accessToken"
-                        :mapStyle.sync="mapStyle"
-                        :zoom="zoom"
-                        :center="coordinates"
-                      >
-                        <!-- Adding navigation control -->
-                        <MglNavigationControl position="top-right" />
-                        <!-- <MglMarker :coordinates="coordinates" color="blue" /> -->
-                      </MglMap>
+                      <div id='farm_map' class='contain' style="float: left; width: 100%; position: relative; height: 300px;"></div>
                     </div>
                   </v-col>
                 </div>
@@ -432,8 +423,7 @@ import "filepond/dist/filepond.min.css";
 import "filepond-plugin-image-preview/dist/filepond-plugin-image-preview.min.css";
 import FilePondPluginFileValidateType from "filepond-plugin-file-validate-type";
 import FilePondPluginImagePreview from "filepond-plugin-image-preview";
-import Mapbox from "mapbox-gl";
-import { MglMap, MglNavigationControl, MglMarker } from "vue-mapbox";
+import mapboxgl from "mapbox-gl";
 
 const FilePond = vueFilePond(
   FilePondPluginFileValidateType,
@@ -443,12 +433,11 @@ const FilePond = vueFilePond(
 export default {
   components: {
     FilePond,
-    MglMap,
-    MglNavigationControl,
-    MglMarker,
   },
   data() {
     return {
+      map: null,
+      coordinates: [],
       valid: true,
       expiryMonths: _.range(1, 13),
       expiryYears: _.range(
@@ -486,12 +475,6 @@ export default {
       weightShow: false,
       servicePrice: 0,
       fileContainer: [],
-      accessToken:
-        "pk.eyJ1IjoibGFyYXZlbGNoZCIsImEiOiJja2ZiNTVraWkwdWdsMnBweGFubnBxMWZtIn0.xY-ky0EqYfVZJmNI5Io4ew", // your access token. Needed if you using Mapbox maps
-      mapStyle: "mapbox://styles/mapbox/streets-v11",
-      zoom: 15,
-      coordinates: [-77.0214, 38.897],
-
       timePeriod: { 1: "Morning", 2: "Afternoon", 3: "Evening" },
       serviceTimeSlotMap: {  },
       slotsForPeriod: [],
@@ -542,10 +525,31 @@ export default {
         (farm) => farm.value === farmId
       );
       if (selectedFarm !== undefined && selectedFarm.length > 0) {
-        this.coordinates = [
-          selectedFarm[0].longitude,
-          selectedFarm[0].latitude,
-        ];
+        if (this.coordinates.length == 0) {
+          this.coordinates = [
+            selectedFarm[0].longitude,
+            selectedFarm[0].latitude,
+          ];
+          this.renderMap();
+        } else {
+          this.coordinates = [
+            selectedFarm[0].longitude,
+            selectedFarm[0].latitude,
+          ];
+          this.map.getSource('farm').setData({
+            type: 'Feature',
+            properties: {},
+            geometry: {
+              type: 'Point',
+              coordinates: this.coordinates
+            }
+          });
+          this.map.flyTo({
+            center: this.coordinates,
+            speed: 1
+          });
+        }
+       
       }
     },
   },
@@ -641,6 +645,41 @@ export default {
         }
       }
     },
+    renderMap: function() {
+      mapboxgl.accessToken = 'pk.eyJ1IjoibG9jb25lIiwiYSI6ImNrYmZkMzNzbDB1ZzUyenM3empmbXE3ODQifQ.SiBnr9-6jpC1Wa8OTAmgVA';
+      var $this = this;
+      this.map = new mapboxgl.Map({
+        container: 'farm_map',
+        style: 'mapbox://styles/mapbox/light-v9',
+        center: $this.coordinates, // starting position
+        zoom: 12
+      });
+      this.map.on('load', function() {
+        $this.map.addSource('farm', { 
+            type: 'geojson', 
+            data: {
+            type: 'FeatureCollection',
+            features: [{
+              type: 'Feature',
+              properties: {},
+              geometry: {
+                type: 'Point',
+                coordinates: $this.coordinates
+              }
+            }]
+          }
+        });
+        // Add starting point to the map
+        $this.map.addLayer({
+          id: 'farm',
+          type: 'symbol',
+          source: 'farm',
+          layout: {
+            'icon-image': 'town-hall-15'
+          }
+        });
+      });
+    }
   },
 };
 </script>

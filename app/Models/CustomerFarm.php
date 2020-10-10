@@ -21,7 +21,7 @@ class CustomerFarm extends Model
 
     protected $hidden = ['deleted_at', 'updated_at'];
 
-    protected $appends = ['full_address', 'primary_manager'];
+    protected $appends = ['full_address', 'primary_manager', 'total_jobs'];
 
     public function managers()
     {
@@ -65,6 +65,11 @@ class CustomerFarm extends Model
     public function getPrimaryManagerAttribute()
     {
         return $this->managers()->first();
+    }
+
+    public function getTotalJobsAttribute()
+    {
+        return $this->jobs()->count();
     }
 
 }

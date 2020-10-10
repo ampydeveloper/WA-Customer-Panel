@@ -26,7 +26,7 @@
                     <th>Quantity</th>
                     <th>Payment Status</th>
 
-                    <th>Job Status</th>
+                    <th>Job Status1</th>
                     <th>Actions</th>
                   </tr>
                 </thead>

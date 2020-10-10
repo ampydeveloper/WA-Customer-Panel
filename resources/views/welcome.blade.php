@@ -15,6 +15,8 @@
     <link href="assets/vendor/aos/aos.css" rel="stylesheet">
     <!--<link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">-->
     <link rel="stylesheet" type="text/css" href="css/font-awesome.min.css">
+    <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.css' rel='stylesheet' />
+
     <!--  Main CSS File -->
     <link href="css/style.css" rel="stylesheet">
     <link href="css/owl.carousel.min.css" rel="stylesheet">
@@ -35,7 +37,6 @@
     <script src='https://npmcdn.com/@turf/turf/turf.min.js'></script>
     <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.js'></script>
     <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCZ3PTWFGfTu4UYGIDiXJvMTxVcIpjWJGM&libraries=geometry,places"></script>
-    <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.css' rel='stylesheet' />
     <script>
         function openNav() {
             document.getElementById("mySidenav").style.width = "100%";

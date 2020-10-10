@@ -1,11 +1,14 @@
 <template>
   <file-pond
     name="filePond"
-    v-bind:allow-multiple="true"
+    v-bind:allow-multiple="schema.allowMultiple"
     ref="pond"
     label-idle="Drop files here or <span class='filepond--label-action'>Browse</span>"
     accepted-file-types="image/jpg,image/jpeg, image/png"
     v-bind:server="filePondServer"
+    v-bind:files="schema.files"
+    v-bind:required="schema.required"
+    v-on:init="handleFilePondInit"
   />
 </template>
 
@@ -35,9 +38,25 @@ export default {
           if (isFunction(this.schema.onFilePondDrop)) {
             this.schema.onFilePondDrop(fieldName, file, metadata, load);
           }
+        },
+        load: (source, load, error, progress, abort, headers) => {
+          console.log(this.schema);
+          console.log(a);
         }
       }
     };
-  }
+  },
+   methods: {
+        handleFilePondInit: function() {
+          console.log(this.schema);
+          // var a = this.schema.getUploadedFile();
+          // console.log(a);
+            console.log('FilePond has initialized');
+            // example of instance method call on pond reference
+            // console.log(this);
+            // this.$refs.pond.addFiles(schema.files)
+            // this.$refs.pond.getFiles();
+        }
+    },
 };
 </script>

@@ -23,7 +23,7 @@
 </template>
 
 <script>
-import { MglMap, MglNavigationControl, MglGeojsonLayer } from "vue-mapbox";
+import { MglMap, MglNavigationControl, MglGeojsonLayer } from "vue-mapbox"; 
 import DashboardHeader from "../../shared/components/DashboardHeader";
 import mapboxgl from "mapbox-gl";
 // var geojson = {
@@ -145,6 +145,7 @@ export default {
   },
   
   mounted() {
+    alert('sdf');
     mapboxgl.accessToken = 'pk.eyJ1IjoibGFyYXZlbGNoZCIsImEiOiJja2ZiNTVraWkwdWdsMnBweGFubnBxMWZtIn0.xY-ky0EqYfVZJmNI5Io4ew';
       var map = new mapboxgl.Map({
         container: 'map',
