@@ -44,18 +44,18 @@ class ServiceController extends Controller
      *
      * Return JSON Response.
      */
-    public function list()
-    {
+    
+    public function serviceList() {
         $user = request()->user();
+        
         if ($user->role_id != config('constant.roles.Customer') && $user->role_id != config('constant.roles.Haulers') && $user->role_id != config('constant.roles.Customer_Manager')) {
             return response()->json([
-                'status' => false,
-                'message' => 'unauthorized access.',
-                'data' => []
-            ], 421);
+                        'status' => false,
+                        'message' => 'unauthorized access.',
+                        'data' => []
+                            ], 421);
         }
-
-        if ($user->role_id == config('constant.roles.Customer') || $user->role_id == config('constant.roles.Haulers')){
+        if ($user->role_id == config('constant.roles.Customer') || $user->role_id == config('constant.roles.Haulers')) {
             $getAllServices = Service::where('service_for', $user->role_id)->get();
         } else {
             if ($user->managerOf) {
@@ -64,25 +64,11 @@ class ServiceController extends Controller
             } else {
                 $getAllServices = [];
             }
-            
         }
-
-
-        if (count($getAllServices) > 0) {
-            foreach ($getAllServices as $key => $service) {
-                if ($service->service_for == config('constant.roles.Customer') || $service->service_for == config('constant.roles.Haulers')) {
-                    $timeSlots = TimeSlots::whereIn('id', json_decode($service->slot_time))->get();
-                    $getAllServices[$key]["timeSlots"] = $timeSlots;
-                }
-            }
-        }
-
         return response()->json([
-            'status' => true,
-            'message' => 'Service Listing.',
-            'data' => $getAllServices
-        ], 200);
+                    'status' => true,
+                    'message' => 'Service Listing.',
+                    'data' => $getAllServices
+                        ], 200);
     }
-
-
 }

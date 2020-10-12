@@ -22,7 +22,7 @@
               >
                 <thead>
                   <tr>
-                    <th class="job-summ">Job Summary</th>
+                    <th class="job-summ">Job Summary saaca</th>
                     <th>Manager / Farm Location</th>
                     <th class="time-col">Date / Est. Time</th>
                     <th>Quantity</th>
@@ -36,7 +36,7 @@
                     <td>
                       <span class="basic-big">#JOB100{{ job.id }}</span>
                       <span class="basic-info"
-                        >${{ job.job_amount ? job.job_amount : 0 }}</span
+                        >${{ job.amount ? job.amount : 0 }}</span
                       >
                       <span class="basic-info">{{
                         job.service.service_name
