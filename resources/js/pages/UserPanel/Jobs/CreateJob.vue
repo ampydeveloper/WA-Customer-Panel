@@ -92,29 +92,26 @@
                   </v-col>
 
                   <v-col cols="12" md="12" class="t-s-inner pt-0 pb-0">
-                   
-                      <div class="label-align pt-0">
-                        <label>Time Slots</label>
-                      </div>
-                      <div class="pt-0 pb-0">
-                        <v-radio-group
-                          v-model="selectedTimePeriod"
-                          row
-                          :rules="requiredRules"
-                          label=""
-                           color="black"
-                        >
-                          <v-radio
-                            v-for="(n, i) in Object.keys(serviceTimeSlotMap)"
-                            :key="i"
-                            :label="`${timePeriod[n]}`"
-                            :value="n"
-                            color="black"
-                          ></v-radio>
-                        </v-radio-group>
-
-                      </div>
-                   
+                    <div class="label-align pt-0">
+                      <label>Time Slots</label>
+                    </div>
+                    <div class="pt-0 pb-0">
+                      <v-radio-group
+                        v-model="selectedTimePeriod"
+                        row
+                        :rules="requiredRules"
+                        label=""
+                        color="black"
+                      >
+                        <v-radio
+                          v-for="(n, i) in Object.keys(serviceTimeSlotMap)"
+                          :key="i"
+                          :label="`${timePeriod[n]}`"
+                          :value="n"
+                          color="black"
+                        ></v-radio>
+                      </v-radio-group>
+                    </div>
                   </v-col>
 
                   <v-col cols="12" md="12" class="pt-0 pb-0">
@@ -193,7 +190,16 @@
                         placeholder="Select Farm"
                         :rules="[(v) => !!v || 'Farms is required.']"
                       ></v-select>
-                      <div id='farm_map' class='contain' style="float: left; width: 100%; position: relative; height: 300px;"></div>
+                      <div
+                        id="farm_map"
+                        class="contain"
+                        style="
+                          float: left;
+                          width: 100%;
+                          position: relative;
+                          height: 300px;
+                        "
+                      ></div>
                     </div>
                   </v-col>
                 </div>
@@ -218,19 +224,48 @@
 
                 <div class="send-payment" v-if="isCustomer">
                   <h5 class="heading2">Initiate Payment</h5>
-                  <v-radio-group
+                  <!-- <v-radio-group
                     v-model="jobRequest.attach_card"
                     row
                     label="Use card for payment"
                   >
                     <v-radio label="Yes" :value="1"></v-radio>
                     <v-radio label="No" :value="0"></v-radio>
-                  </v-radio-group>
+                  </v-radio-group> -->
 
-                  <div
-                    v-if="jobRequest.attach_card == 1"
-                    class="send-payment-form"
-                  >
+                  <table class="table payment-info-table simple-table-out" v-if="!addNewCard">
+                    <thead>
+                      <tr>
+                        <th></th>
+                        <th>Name</th>
+                        <th>Card Number</th>
+                        <th>Card Expiry</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr v-for="(card, index) in cardList" :key="card.id">
+                        <td><v-radio :value="1"></v-radio></td>
+                        <td>{{ card.name }}</td>
+                        <td>**** **** **** {{ card.last_four }}</td>
+                        <td>
+                          {{ card.card_exp_month }} / {{ card.card_exp_year }}
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+
+                  <div class="add-n-c-outer clearfix">
+                    <a
+                      href="javascript:void(0);"
+                      @click="showAddCard"
+                      id="add-card-link"
+                      class="btn-full-green btn-outline-green float-right"
+                      v-if="!addNewCard"
+                      >Add New Card <i data-feather="arrow-right"></i
+                    ></a>
+                  </div>
+
+                  <div class="send-payment-form" v-if="addNewCard">
                     <ul class="credit-cards-list list-unstyled">
                       <li>
                         <img src="img/visa.png" alt="" />
@@ -285,28 +320,6 @@
                           <label>Expiry Month</label>
                         </div>
                         <div class="pt-0 pb-0">
-                          <!-- <select
-                          id="exp_month"
-                          data-stripe="exp_month"
-                          v-model="jobRequest.card.card_exp_month"
-                          name="exp_month"
-                          class="form-control required"
-                        >
-                          <option value="">Exp. Month</option>
-                          <option value="01">01</option>
-                          <option value="02">02</option>
-                          <option value="03">03</option>
-                          <option value="04">04</option>
-                          <option value="05">05</option>
-                          <option value="06">06</option>
-                          <option value="07">07</option>
-                          <option value="8">08</option>
-                          <option value="09">09</option>
-                          <option value="10">10</option>
-                          <option value="11">11</option>
-                          <option value="12">12</option>
-                        </select> -->
-
                           <v-select
                             v-model="jobRequest.card.card_exp_month"
                             data-stripe="exp_month"
@@ -322,22 +335,6 @@
                           <label>Expiry Year</label>
                         </div>
                         <div class="pt-0 pb-0">
-                          <!-- <select
-                          id="exp_year"
-                          v-model="jobRequest.card.card_exp_year"
-                          data-stripe="exp_year"
-                          name="exp_year"
-                          class="form-control required"
-                        >
-                          <option value="">Exp. Year</option>
-                          <option
-                            v-for="year in expiryYears"
-                            v-bind:value="year"
-                          >
-                            {{ year }}
-                          </option>
-                        </select> -->
-
                           <v-select
                             id="exp_year"
                             v-model="jobRequest.card.card_exp_year"
@@ -353,12 +350,6 @@
                           <label>CVV</label>
                         </div>
                         <div class="pt-0 pb-0">
-                          <!-- <v-text-field
-                          size="4"
-                          v-model="jobRequest.card.cvv"
-                          placeholder="CVV"
-                        ></v-text-field> -->
-
                           <v-text-field
                             v-model="jobRequest.card.cvv"
                             type="password"
@@ -386,8 +377,8 @@
                     :disabled="loading"
                     class="btn-full-green"
                     @click="formSubmit"
-                    >Create Job <i data-feather="arrow-right"></i></v-btn
-                  >
+                    >Create Job <i data-feather="arrow-right"></i
+                  ></v-btn>
                 </v-col>
 
                 <div class="reach-out">
@@ -405,6 +396,131 @@
             </div>
           </v-form>
         </div>
+
+        <section class="footer-extra-details">
+          <div class="container">
+            <div class="row">
+              <div class="news-footer-outer col-sm-7">
+                <h2>
+                  Our
+                  <br />
+                  <span class="bg-custom-thickness">latest news</span>
+                </h2>
+                <div class="tabs-get">
+                  <div class="tab-content">
+                    <div class="tab-pane fade active show">
+                      <div class="products-inner row">
+                        <div class="col-md-12">
+                          <div class="news-latest-cols">
+                            <div class="nes-im">
+                              <a href="#">
+                                <img src="img/news-1.jpg" alt />
+                              </a>
+                            </div>
+                            <span class="vendor">Work</span>
+                            <div class="news-right">
+                              <h3>
+                                <a href="#">
+                                  Donec nec justo eget felis facilisis digniss
+                                  Aliquam
+                                </a>
+                              </h3>
+                              <p>
+                                Adapting wild plants and animals for people to
+                                use is called farmers were domestication....
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div class="col-md-12">
+                          <div class="news-latest-cols">
+                            <div class="nes-im">
+                              <a href="#">
+                                <img src="img/news-2.jpg" alt />
+                              </a>
+                            </div>
+                            <span class="vendor">Work</span>
+                            <div class="news-right">
+                              <h3>
+                                <a href="#">
+                                  Donec nec justo eget felis facilisis digniss
+                                  Aliquam
+                                </a>
+                              </h3>
+                              <p>
+                                Adapting wild plants and animals for people to
+                                use is called farmers were domestication....
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="social-footer-outer col-sm-5">
+                <h2>
+                  Our
+                  <br />
+                  <span class="bg-custom-thickness">social</span> media
+                </h2>
+
+                <div class="row">
+                  <div class="insta-post">
+                    <a href="#">
+                      <div class="insta-im">
+                        <img src="img/instagram-1.jpg" alt />
+                      </div>
+                      <div class="insta-overlay">
+                        <h4>Donec nec justo eget</h4>
+                      </div>
+                    </a>
+                  </div>
+                  <!-------------post-end------------>
+
+                  <div class="insta-post">
+                    <a href="#">
+                      <div class="insta-im">
+                        <img src="img/instagram-2.jpg" alt />
+                      </div>
+                      <div class="insta-overlay">
+                        <h4>Donec nec justo eget</h4>
+                      </div>
+                    </a>
+                  </div>
+                  <!-------------post-end------------>
+
+                  <div class="insta-post">
+                    <a href="#">
+                      <div class="insta-im">
+                        <img src="img/instagram-3.jpg" alt />
+                      </div>
+                      <div class="insta-overlay">
+                        <h4>Donec nec justo eget</h4>
+                      </div>
+                    </a>
+                  </div>
+                  <!-------------post-end------------>
+
+                  <div class="insta-post">
+                    <a href="#">
+                      <div class="insta-im">
+                        <img src="img/instagram-4.jpg" alt />
+                      </div>
+                      <div class="insta-overlay">
+                        <h4>Donec nec justo eget</h4>
+                      </div>
+                    </a>
+                  </div>
+                  <!-------------post-end------------>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
       </section>
     </div>
   </v-app>
@@ -417,6 +533,7 @@ import FarmService from "../../../services/FarmService";
 import router from "../../../router";
 import _ from "lodash";
 import moment from "moment";
+import CardService from "../../../services/CardService";
 
 import vueFilePond from "vue-filepond";
 import "filepond/dist/filepond.min.css";
@@ -438,6 +555,8 @@ export default {
     return {
       map: null,
       coordinates: [],
+      cardList: [],
+      addNewCard: false,
       valid: true,
       expiryMonths: _.range(1, 13),
       expiryYears: _.range(
@@ -449,7 +568,7 @@ export default {
         service_id: "",
         job_providing_date: moment().format("YYYY-MM-DD"),
         weight: 1,
-        gate_no: '',
+        gate_no: "",
         amount: 0,
         notes: "",
         is_repeating_job: false,
@@ -476,7 +595,7 @@ export default {
       servicePrice: 0,
       fileContainer: [],
       timePeriod: { 1: "Morning", 2: "Afternoon", 3: "Evening" },
-      serviceTimeSlotMap: {  },
+      serviceTimeSlotMap: {},
       slotsForPeriod: [],
       filePondServer: {
         process: (fieldName, file, metadata, load) => {
@@ -536,20 +655,19 @@ export default {
             selectedFarm[0].longitude,
             selectedFarm[0].latitude,
           ];
-          this.map.getSource('farm').setData({
-            type: 'Feature',
+          this.map.getSource("farm").setData({
+            type: "Feature",
             properties: {},
             geometry: {
-              type: 'Point',
-              coordinates: this.coordinates
-            }
+              type: "Point",
+              coordinates: this.coordinates,
+            },
           });
           this.map.flyTo({
             center: this.coordinates,
-            speed: 1
+            speed: 1,
           });
         }
-       
       }
     },
   },
@@ -584,6 +702,10 @@ export default {
         latitude: farm.latitude,
         longitude: farm.longitude,
       };
+    });
+
+    CardService.list().then((response) => {
+      this.cardList = response.data.data;
     });
   },
   methods: {
@@ -645,41 +767,47 @@ export default {
         }
       }
     },
-    renderMap: function() {
-      mapboxgl.accessToken = 'pk.eyJ1IjoibG9jb25lIiwiYSI6ImNrYmZkMzNzbDB1ZzUyenM3empmbXE3ODQifQ.SiBnr9-6jpC1Wa8OTAmgVA';
+    showAddCard: function () {
+      this.addNewCard = true;
+    },
+    renderMap: function () {
+      mapboxgl.accessToken =
+        "pk.eyJ1IjoibG9jb25lIiwiYSI6ImNrYmZkMzNzbDB1ZzUyenM3empmbXE3ODQifQ.SiBnr9-6jpC1Wa8OTAmgVA";
       var $this = this;
       this.map = new mapboxgl.Map({
-        container: 'farm_map',
-        style: 'mapbox://styles/mapbox/light-v9',
+        container: "farm_map",
+        style: "mapbox://styles/mapbox/light-v9",
         center: $this.coordinates, // starting position
-        zoom: 12
+        zoom: 12,
       });
-      this.map.on('load', function() {
-        $this.map.addSource('farm', { 
-            type: 'geojson', 
-            data: {
-            type: 'FeatureCollection',
-            features: [{
-              type: 'Feature',
-              properties: {},
-              geometry: {
-                type: 'Point',
-                coordinates: $this.coordinates
-              }
-            }]
-          }
+      this.map.on("load", function () {
+        $this.map.addSource("farm", {
+          type: "geojson",
+          data: {
+            type: "FeatureCollection",
+            features: [
+              {
+                type: "Feature",
+                properties: {},
+                geometry: {
+                  type: "Point",
+                  coordinates: $this.coordinates,
+                },
+              },
+            ],
+          },
         });
         // Add starting point to the map
         $this.map.addLayer({
-          id: 'farm',
-          type: 'symbol',
-          source: 'farm',
+          id: "farm",
+          type: "symbol",
+          source: "farm",
           layout: {
-            'icon-image': 'town-hall-15'
-          }
+            "icon-image": "town-hall-15",
+          },
         });
       });
-    }
+    },
   },
 };
 </script>

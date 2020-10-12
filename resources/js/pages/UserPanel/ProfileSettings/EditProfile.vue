@@ -193,7 +193,7 @@
             <!-- /Profile -->
 
             <!-- Notifications -->
-            <div class="col-sm-6 content-right-outer">
+            <!-- <div class="col-sm-6 content-right-outer">
               <div class="each-profile-block">
                 <h5 class="heading2">All Notifications</h5>
                 <div class="all-noti-div">
@@ -226,7 +226,7 @@
                   </div>
                 </div>
               </div>
-            </div>
+            </div> -->
             <!-- /Notifications -->
 
             <!-- Manage Cards -->
