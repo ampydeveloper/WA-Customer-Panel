@@ -65,6 +65,8 @@
           </div>
         </div>
       </div>
+
+       <sub-footer />
     </section>
     
     <span id="table-chevron-left" class="d-none">
@@ -82,12 +84,14 @@
 </template>
 
 <script>
+import subFooter from "../subFooter";
 import DashboardHeader from "../../../shared/components/DashboardHeader";
 import FarmService from "../../../services/FarmService";
 
 export default {
   components: {
     DashboardHeader,
+      subFooter,
   },
   data() {
     return {

@@ -5,7 +5,10 @@
         <div class="container">
           <div class="row">
             <div class="col-md-12">
-              <h2>Create Job</h2>
+              <h2>
+                Create<br>
+                <span class="bg-custom-thickness"> Job </span>
+              </h2>
             </div>
           </div>
         </div>
@@ -31,7 +34,7 @@
                       <v-select
                         v-model="jobRequest.service_id"
                         :items="serviceList"
-                        label="Select Service"
+                        placeholder="Select Service"
                         :rules="[(v) => !!v || 'Service is required.']"
                       ></v-select>
                     </div>
@@ -93,7 +96,7 @@
 
                   <v-col cols="12" md="12" class="t-s-inner pt-0 pb-0">
                     <div class="label-align pt-0">
-                      <label>Time Slots</label>
+                      <label>Service Time</label>
                     </div>
                     <div class="pt-0 pb-0">
                       <v-radio-group
@@ -205,7 +208,7 @@
                 </div>
               </div>
 
-              <div class="col-sm-6">
+              <div class="col-sm-6 content-right-outer">
                 <!-- <div class="farm-manager">
                 <img
                   src="https://pixinvent.com/demo/vuexy-vuejs-admin-dashboard-template/demo-1/img/avatar-s-5.99691e54.jpg"
@@ -233,7 +236,10 @@
                     <v-radio label="No" :value="0"></v-radio>
                   </v-radio-group> -->
 
-                  <table class="table payment-info-table simple-table-out" v-if="!addNewCard">
+                  <table
+                    class="table payment-info-table simple-table-out"
+                    v-if="!addNewCard"
+                  >
                     <thead>
                       <tr>
                         <th></th>
@@ -244,7 +250,14 @@
                     </thead>
                     <tbody>
                       <tr v-for="(card, index) in cardList" :key="card.id">
-                        <td><v-radio :value="1"></v-radio></td>
+                        <td>
+                          <div class="pretty p-default p-round">
+                            <input type="radio" name="radio1" />
+                            <div class="state">
+                              <label></label>
+                            </div>
+                          </div>
+                        </td>
                         <td>{{ card.name }}</td>
                         <td>**** **** **** {{ card.last_four }}</td>
                         <td>
@@ -397,136 +410,14 @@
           </v-form>
         </div>
 
-        <section class="footer-extra-details">
-          <div class="container">
-            <div class="row">
-              <div class="news-footer-outer col-sm-7">
-                <h2>
-                  Our
-                  <br />
-                  <span class="bg-custom-thickness">latest news</span>
-                </h2>
-                <div class="tabs-get">
-                  <div class="tab-content">
-                    <div class="tab-pane fade active show">
-                      <div class="products-inner row">
-                        <div class="col-md-12">
-                          <div class="news-latest-cols">
-                            <div class="nes-im">
-                              <a href="#">
-                                <img src="img/news-1.jpg" alt />
-                              </a>
-                            </div>
-                            <span class="vendor">Work</span>
-                            <div class="news-right">
-                              <h3>
-                                <a href="#">
-                                  Donec nec justo eget felis facilisis digniss
-                                  Aliquam
-                                </a>
-                              </h3>
-                              <p>
-                                Adapting wild plants and animals for people to
-                                use is called farmers were domestication....
-                              </p>
-                            </div>
-                          </div>
-                        </div>
-
-                        <div class="col-md-12">
-                          <div class="news-latest-cols">
-                            <div class="nes-im">
-                              <a href="#">
-                                <img src="img/news-2.jpg" alt />
-                              </a>
-                            </div>
-                            <span class="vendor">Work</span>
-                            <div class="news-right">
-                              <h3>
-                                <a href="#">
-                                  Donec nec justo eget felis facilisis digniss
-                                  Aliquam
-                                </a>
-                              </h3>
-                              <p>
-                                Adapting wild plants and animals for people to
-                                use is called farmers were domestication....
-                              </p>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div class="social-footer-outer col-sm-5">
-                <h2>
-                  Our
-                  <br />
-                  <span class="bg-custom-thickness">social</span> media
-                </h2>
-
-                <div class="row">
-                  <div class="insta-post">
-                    <a href="#">
-                      <div class="insta-im">
-                        <img src="img/instagram-1.jpg" alt />
-                      </div>
-                      <div class="insta-overlay">
-                        <h4>Donec nec justo eget</h4>
-                      </div>
-                    </a>
-                  </div>
-                  <!-------------post-end------------>
-
-                  <div class="insta-post">
-                    <a href="#">
-                      <div class="insta-im">
-                        <img src="img/instagram-2.jpg" alt />
-                      </div>
-                      <div class="insta-overlay">
-                        <h4>Donec nec justo eget</h4>
-                      </div>
-                    </a>
-                  </div>
-                  <!-------------post-end------------>
-
-                  <div class="insta-post">
-                    <a href="#">
-                      <div class="insta-im">
-                        <img src="img/instagram-3.jpg" alt />
-                      </div>
-                      <div class="insta-overlay">
-                        <h4>Donec nec justo eget</h4>
-                      </div>
-                    </a>
-                  </div>
-                  <!-------------post-end------------>
-
-                  <div class="insta-post">
-                    <a href="#">
-                      <div class="insta-im">
-                        <img src="img/instagram-4.jpg" alt />
-                      </div>
-                      <div class="insta-overlay">
-                        <h4>Donec nec justo eget</h4>
-                      </div>
-                    </a>
-                  </div>
-                  <!-------------post-end------------>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
+            <sub-footer />
       </section>
     </div>
   </v-app>
 </template>
 
 <script>
+import subFooter from "../subFooter";
 import jobFormSchema from "../../../forms/jobFormSchema";
 import JobService from "../../../services/JobService";
 import FarmService from "../../../services/FarmService";
@@ -550,6 +441,7 @@ const FilePond = vueFilePond(
 export default {
   components: {
     FilePond,
+    subFooter,
   },
   data() {
     return {

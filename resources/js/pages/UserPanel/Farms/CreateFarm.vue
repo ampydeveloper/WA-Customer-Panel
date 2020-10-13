@@ -25,6 +25,7 @@
                   :options="formOptions"
                   :model="model"
                 />
+                <!-- <v-form-base :schema="schema" :options="formOptions" :model="model" />      -->
               </form>
 
               <!--<button
@@ -97,6 +98,7 @@ import FarmService from "../../../services/FarmService";
 import CreateManager from "./Managers/CreateManager";
 import router from "../../../router";
 import _ from "lodash";
+import VFormBase from 'vuetify-form-base';  
 
 const emptyManager = {
   manager_first_name: "",
@@ -125,7 +127,8 @@ const emptyFarmRequest = {
 
 export default {
   components: {
-    CreateManager
+    CreateManager,
+    VFormBase 
   },
   computed: {
     hasManager: function() {

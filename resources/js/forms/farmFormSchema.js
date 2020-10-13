@@ -3,7 +3,7 @@ export default {
     {
       type: "input",
       inputType: "text",
-      label: "Address*",
+      label: "Address",
       model: "farm_address",
       required: true,
       validator: ["required", "string"],
@@ -12,7 +12,7 @@ export default {
     {
       type: "input",
       inputType: "text",
-      label: "City*",
+      label: "City",
       model: "farm_city",
       required: true,
       validator: ["required"],
@@ -21,7 +21,7 @@ export default {
     {
       type: "input",
       inputType: "text",
-      label: "Province*",
+      label: "Province",
       model: "farm_province",
       required: true,
       validator: ["required"],
@@ -30,7 +30,7 @@ export default {
     {
       type: "input",
       inputType: "text",
-      label: "Zipcode*",
+      label: "Zipcode",
       model: "farm_zipcode",
       required: true,
       validator: [

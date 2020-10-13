@@ -37,7 +37,7 @@ Route::group(['middleware' => 'auth:api', 'prefix' => 'customer', 'as' => 'custo
 
     // Services related routes
     Route::group(['prefix' => 'service', 'as' => 'service'], function () {
-        Route::get('list', 'ServiceController@list')->name('list');
+        Route::get('list', 'ServiceController@serviceList')->name('list');
         Route::get('{service}', 'ServiceController@get')->name('get');
     });
 

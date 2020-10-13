@@ -200,6 +200,7 @@ select.form-control {
         tbody {
             tr {
                 background: #fafafb !important;
+                border-bottom: 10px solid #fff;
 
                 td {
                     border: 0;
@@ -737,6 +738,9 @@ select.form-control {
         border-radius: 6px;
         margin-bottom: 25px;
         color: #37c698;
+        position: absolute;
+        bottom: 80px;
+        width: 100%;
 
         svg {
             width: 18px;
@@ -752,6 +756,9 @@ select.form-control {
         padding: 17px 25px;
         border-radius: 6px;
         margin-bottom: 25px;
+        position: absolute;
+        bottom: 0;
+        width: 100%;
 
         svg {
             width: 18px;
@@ -768,13 +775,19 @@ select.form-control {
     .create-job-but {
         text-align: center;
         margin-bottom: 25px;
-        svg{
+
+        svg {
             position: absolute;
-    right: 0;
+            right: 0;
         }
-        button{
+
+        button {
             width: 60%;
         }
+    }
+
+    .content-right-outer {
+        padding-bottom: 166px;
     }
 
     // .farm-manager {
@@ -1043,21 +1056,26 @@ select.form-control {
     margin-right: -12px;
     margin-left: -12px;
 }
-.simple-table-out{
-th{
-    color: #000;
-    font-size: 17px;
-    border: 0 !important;
-    line-height: 20px;
-    padding: 10px 10px;
-    text-transform: uppercase;
+
+.simple-table-out {
+    th {
+        color: #000;
+        font-size: 17px;
+        border: 0 !important;
+        line-height: 20px;
+        padding: 10px 10px;
+        text-transform: uppercase;
+    }
 }
-}
+
 .footer-extra-details {
+    margin-top: 50px;
+
     .insta-post {
         width: calc(50% - 24px) !important;
     }
-    h2{
+
+    h2 {
         font-size: 4.4vw;
     }
 
@@ -1081,6 +1099,154 @@ th{
                 margin: 0;
                 line-height: 24px;
             }
+        }
+    }
+}
+
+.store-app-outer {
+    background: #1ec285;
+    padding: 20px 0 20px;
+    margin-bottom: 50px;
+
+    h2 {
+        font-size: 3vw;
+        margin: 0;
+    }
+
+    .footer-download-btn {
+        text-align: center;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 100%;
+
+        a {
+            margin: 0 10px;
+        }
+    }
+}
+
+// Cool Radio
+.pretty {
+    position: relative;
+    display: inline-block;
+    margin-right: 1em;
+    white-space: nowrap;
+    line-height: 1;
+}
+
+.pretty input {
+    position: absolute;
+    left: 0;
+    top: 0;
+    min-width: 1em;
+    width: 100%;
+    height: 100%;
+    z-index: 2;
+    opacity: 0;
+    margin: 0;
+    padding: 0;
+    cursor: pointer;
+}
+
+.pretty .state label {
+    position: initial;
+    display: inline-block;
+    font-weight: normal;
+    margin: 0;
+    text-indent: 1.5em;
+    min-width: calc(1em + 2px);
+}
+
+.pretty .state label:before,
+.pretty .state label:after {
+    content: '';
+    width: calc(1em + 2px);
+    height: calc(1em + 2px);
+    display: block;
+    box-sizing: border-box;
+    border-radius: 0;
+    border: 1px solid transparent;
+    z-index: 0;
+    position: absolute;
+    left: 0;
+    top: calc((0% - (100% - 1em)) - 8%);
+    background-color: transparent;
+}
+
+.pretty .state label:before {
+    border-color: #11b276;
+}
+
+.pretty .state.p-is-hover,
+.pretty .state.p-is-indeterminate {
+    display: none;
+}
+
+.pretty.p-default.p-fill .state label:after {
+    -webkit-transform: scale(1);
+    -ms-transform: scale(1);
+    transform: scale(1);
+}
+
+.pretty.p-default .state label:after {
+    -webkit-transform: scale(0.6);
+    -ms-transform: scale(0.6);
+    transform: scale(0.6);
+}
+
+.pretty.p-default input:checked~.state label:after {
+    background-color: #11b276 !important;
+}
+
+.pretty.p-default.p-thick .state label:before,
+.pretty.p-default.p-thick .state label:after {
+    border-width: calc(1em / 7);
+}
+
+.pretty.p-default.p-thick .state label:after {
+    -webkit-transform: scale(0.4) !important;
+    -ms-transform: scale(0.4) !important;
+    transform: scale(0.4) !important;
+}
+
+.pretty.p-round .state label:before,
+.pretty.p-round .state label:after {
+    border-radius: 100%;
+}
+
+.pretty.p-round.p-icon .state .icon {
+    border-radius: 100%;
+    overflow: hidden;
+}
+
+.pretty.p-round.p-icon .state .icon:before {
+    -webkit-transform: scale(0.8);
+    -ms-transform: scale(0.8);
+    transform: scale(0.8);
+}
+
+// END
+.vue-form-generator {
+    .field-input {
+        margin: 0;
+
+        input {
+            border: 0;
+            border-bottom: 1px solid #000;
+            border-radius: 0;
+            background: transparent;
+            height: 32px;
+        }
+
+        label {
+            margin: 0;
+            line-height: 13px;
+            font-size: 14px;
+            font-weight: 600;
+            font-family: "Gilroy-Bold";
+            color: #19191a;
         }
     }
 }

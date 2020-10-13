@@ -22,7 +22,7 @@
               >
                 <thead>
                   <tr>
-                    <th class="job-summ">Job Summary saaca</th>
+                    <th class="job-summ">Job Summary</th>
                     <th>Manager / Farm Location</th>
                     <th class="time-col">Date / Est. Time</th>
                     <th>Quantity</th>
@@ -89,6 +89,8 @@
             </div>
           </div>
         </div>
+
+         <sub-footer />
       </section>
     </div>
     <span id="table-chevron-left" class="d-none">
@@ -106,6 +108,7 @@
 </template>
 
 <script>
+import subFooter from "../subFooter";
 import AppSmallHeader from "../../../shared/components/AppSmallHeader";
 import AppSmallFooter from "../../../shared/components/AppSmallFooter";
 import JobService from "../../../services/JobService";
@@ -114,6 +117,7 @@ export default {
   components: {
     AppSmallHeader,
     AppSmallFooter,
+      subFooter,
   },
   data: () => ({
     dialog: false,
