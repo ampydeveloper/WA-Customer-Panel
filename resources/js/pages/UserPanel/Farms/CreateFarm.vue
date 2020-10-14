@@ -4,7 +4,11 @@
       <div class="container">
         <div class="row">
           <div class="col-md-12">
-            <h2>Create Farm</h2>
+            <h2>
+              Create
+              <br />
+              <span class="bg-custom-thickness"> Farm </span>
+            </h2>
           </div>
         </div>
       </div>
@@ -15,7 +19,7 @@
         <div class="row">
           <div class="col-md-12">
             <div class="basic-grey-box">
-
+              <h5 class="heading2">Add Farm Details</h5>
               <form action novalidate>
                 <vue-form-generator
                   ref="form"
@@ -25,10 +29,9 @@
                   :options="formOptions"
                   :model="model"
                 />
-                <!-- <v-form-base :schema="schema" :options="formOptions" :model="model" />      -->
               </form>
-
-              <!--<button
+            </div>
+            <!--<button
                 class="btn btn-success btn-lg btn-block"
                 style="width : 200px;"
                 @click="addNewManager"
@@ -37,53 +40,50 @@
                 Add New Manager
               </button> -->
 
-              <div >
-                <create-manager
-                  v-on:updatemanager="updateManager"
-                  v-on:hideAddNewManager="hideAddNewManager"
-                  v-bind:new-manager="newManager"
-                  v-bind:is-edit="isEdit"
-                />
-              </div>
+            <div class="basic-grey-box">
+              <create-manager
+                v-on:updatemanager="updateManager"
+                v-on:hideAddNewManager="hideAddNewManager"
+                v-bind:new-manager="newManager"
+                v-bind:is-edit="isEdit"
+              />
+            </div>
 
-              <div class="form-group" v-if="hasManager">
-                <ul class="list-group">
-                  <li
-                    class="list-group-item"
-                    v-for="(manager, index) in model.manager_details"
-                    :key="index"
-                  >
-                    {{ manager.manager_first_name }}
-                    {{ manager.manager_last_name }} / {{ manager.email }}
-
-                    <div style="display: inline; float: right;">
-                      <button
-                        type="button"
-                        class="btn btn-sm btn-info"
-                        @click="onManagerEdit(manager, index)"
-                      >
-                        Edit
-                      </button>
-                      <button
-                        type="button"
-                        class="btn btn-sm btn-danger"
-                        @click="onManagerDelete(manager)"
-                      >
-                        Delete
-                      </button>
-                    </div>
-                  </li>
-                </ul>
-
-                <button
-                  class="btn btn-success btn-lg btn-block"
-                  style="display: inline; margin-top: 20px"
-                  @click="createFarm"
+            <div class="form-group" v-if="hasManager">
+              <ul class="list-group" style="display: none">
+                <li
+                  class="list-group-item"
+                  v-for="(manager, index) in model.manager_details"
+                  :key="index"
                 >
-                  Create Farm
+                  {{ manager.manager_first_name }}
+                  {{ manager.manager_last_name }} / {{ manager.email }}
+
+                  <div style="display: inline; float: right">
+                    <button
+                      type="button"
+                      class="btn btn-sm btn-info"
+                      @click="onManagerEdit(manager, index)"
+                    >
+                      Edit
+                    </button>
+                    <button
+                      type="button"
+                      class="btn btn-sm btn-danger"
+                      @click="onManagerDelete(manager)"
+                    >
+                      Delete
+                    </button>
+                  </div>
+                </li>
+              </ul>
+
+              <div class="basic-button-out clearfix">
+                <button class="btn-full-green" @click="createFarm">
+                  Create Farm <i data-feather="arrow-right"></i>
                 </button>
-                
               </div>
+
             </div>
           </div>
         </div>
@@ -98,7 +98,7 @@ import FarmService from "../../../services/FarmService";
 import CreateManager from "./Managers/CreateManager";
 import router from "../../../router";
 import _ from "lodash";
-import VFormBase from 'vuetify-form-base';  
+import VFormBase from "vuetify-form-base";
 
 const emptyManager = {
   manager_first_name: "",
@@ -111,7 +111,7 @@ const emptyManager = {
   manager_zipcode: "",
   manager_card_image: [],
   manager_id_card: "",
-  salary: ""
+  salary: "",
 };
 
 const emptyFarmRequest = {
@@ -122,18 +122,18 @@ const emptyFarmRequest = {
   farm_active: 1,
   latitude: "",
   longitude: "",
-  manager_details: []
+  manager_details: [],
 };
 
 export default {
   components: {
     CreateManager,
-    VFormBase 
+    VFormBase,
   },
   computed: {
-    hasManager: function() {
+    hasManager: function () {
       return this.model.manager_details.length > 0;
-    }
+    },
   },
   data() {
     return {
@@ -142,14 +142,14 @@ export default {
       fileContainer: [],
       isEdit: false,
       schema: {
-        styleClasses:'row',
+        styleClasses: "row",
         fields: [
           ...farmFormSchema.fields,
           // {
           //   type: "vueGoogleAutocomplete",
           //   styleClasses:'col-md-12'  ,
           //   onGetAddressData : ($event) => {
-              
+
           //   }
           // },
           {
@@ -158,7 +158,7 @@ export default {
               this.fileContainer.push(file);
               load(Date.now());
             },
-            styleClasses:'col-md-12'  
+            styleClasses: "col-md-4",
           },
           // {
           //   type: "submit",
@@ -173,35 +173,34 @@ export default {
           //     this.newManager = { ...emptyManager };
           //   }
           // }
-        ]
+        ],
       },
       formOptions: {
-        validateAfterChanged: true
+        validateAfterChanged: true,
       },
       isCreatingFarm: false,
-      addManagers: false
+      addManagers: false,
     };
   },
   methods: {
-    updateManager: function(manager, isEdit) {
-      
+    updateManager: function (manager, isEdit) {
       if (isEdit !== false) {
         this.model.manager_details = _.filter(
           this.model.manager_details,
-          function (v,k) {
+          function (v, k) {
             return k != isEdit;
           }
         );
       } else {
         const existingManager = _.find(
           this.model.manager_details,
-          emanager => emanager.email === manager.email
+          (emanager) => emanager.email === manager.email
         );
 
         if (existingManager !== undefined) {
           this.model.manager_details = _.filter(
             this.model.manager_details,
-            emanager => emanager.email !== manager.email
+            (emanager) => emanager.email !== manager.email
           );
         }
       }
@@ -209,8 +208,7 @@ export default {
       this.model.manager_details.push(manager);
       this.addManagers = false;
     },
-    createFarm: function() {
-
+    createFarm: function () {
       const isValidated = this.$refs.form.validate();
       if (isValidated !== true) {
         return false;
@@ -227,7 +225,7 @@ export default {
         } else {
           if (this.model.manager_details.length > 0) {
             this.model.manager_details.forEach((manager, ind) => {
-              Object.keys(manager).forEach(k => {
+              Object.keys(manager).forEach((k) => {
                 createFarmRequest.append(
                   `manager_details[${ind}][${k}]`,
                   manager[k]
@@ -249,51 +247,51 @@ export default {
 
       FarmService.create(createFarmRequest)
         .then(
-          response => {
+          (response) => {
             this.$toast.open({
               message: response.data.message,
               type: "success",
               position: "top-right",
-              dismissible: false
+              dismissible: false,
             });
             this.model = emptyFarmRequest;
             this.addManagers = false;
             router.push({ name: "farmsList" });
           },
-          error => {
+          (error) => {
             this.$toast.open({
               message: error.response.data.message,
               type: "error",
               position: "bottom-right",
-              dismissible: false
+              dismissible: false,
             });
           }
         )
-        .finally(_ => {
+        .finally((_) => {
           this.isCreatingFarm = false;
         });
     },
-    addNewManager: function() {
+    addNewManager: function () {
       this.newManager = { ...emptyManager };
       this.addManagers = true;
       this.isEdit = false;
     },
-    hideAddNewManager: function() {
+    hideAddNewManager: function () {
       this.addManagers = false;
     },
-    onManagerDelete: function(manager) {
+    onManagerDelete: function (manager) {
       this.model.manager_details = _.filter(
         this.model.manager_details,
-        function(man) {
+        function (man) {
           return man.email !== manager.email;
         }
       );
     },
-    onManagerEdit: function(manager, index) {
+    onManagerEdit: function (manager, index) {
       this.newManager = { ...manager };
       this.addManagers = true;
       this.isEdit = index;
-    }
-  }
+    },
+  },
 };
 </script>

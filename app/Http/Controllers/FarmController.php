@@ -78,8 +78,10 @@ class FarmController extends Controller
                 'farm_zipcode' => $request->farm_zipcode,
                 'farm_image' => (isset($request->farm_images) && $request->farm_images != '' && $request->farm_images != null) ? json_encode($request->farm_images) : null,
                 'farm_active' => ($request->farm_active) ? $request->farm_active : 1,
-                'latitude' => $request->latitude,
-                'longitude' => $request->longitude,
+//                'latitude' => $request->latitude,
+//                'longitude' => $request->longitude,
+                'latitude' => '-41.28889',
+                'longitude' => '174.77722',
                 'created_by' => $request->user()->id,
                 'distance' => $distance
             ]);

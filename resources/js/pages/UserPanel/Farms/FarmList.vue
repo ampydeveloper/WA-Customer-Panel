@@ -35,7 +35,7 @@
                     <span class="badge-tag">{{ farm.total_jobs }}</span>
                   </td>
                   <td>
-                    <router-link
+                    <!-- <router-link
                       :to="{
                         name: 'editFarm',
                         params: { farmId: farm.id },
@@ -43,7 +43,7 @@
                       class="btn btn-table-outline"
                       v-if="isCustomer || isHauler"
                       > <i data-feather="edit-3"></i> Edit</router-link
-                    >
+                    > -->
                     <!-- <router-link
                       :to="{
                         name: 'managerList',

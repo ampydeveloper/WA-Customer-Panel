@@ -6,7 +6,7 @@
           <div class="row">
             <div class="col-md-12">
               <h2>
-                Create<br>
+                Create<br />
                 <span class="bg-custom-thickness"> Job </span>
               </h2>
             </div>
@@ -94,12 +94,16 @@
                     </v-row>
                   </v-col>
 
-                  <v-col cols="12" md="12" class="t-s-inner pt-0 pb-0">
+                  <v-col
+                    cols="12"
+                    md="12"
+                    class="t-s-inner pt-0 service-time-timing-outer"
+                  >
                     <div class="label-align pt-0">
                       <label>Service Time</label>
                     </div>
-                    <div class="pt-0 pb-0">
-                      <v-radio-group
+                    <div class="pt-0 pb-0 service-time-timing-out">
+                      <!-- <v-radio-group
                         v-model="selectedTimePeriod"
                         row
                         :rules="requiredRules"
@@ -113,7 +117,26 @@
                           :value="n"
                           color="black"
                         ></v-radio>
-                      </v-radio-group>
+                      </v-radio-group> -->
+
+                      <div class="pretty p-default p-round">
+                        <input type="radio" name="slot_type" value="1" />
+                        <div class="state">
+                          <label>Morning</label>
+                        </div>
+                      </div>
+                      <div class="pretty p-default p-round">
+                        <input type="radio" name="slot_type" value="2" />
+                        <div class="state">
+                          <label>Afternoon</label>
+                        </div>
+                      </div>
+                      <div class="pretty p-default p-round">
+                        <input type="radio" name="slot_type" value="3" />
+                        <div class="state">
+                          <label>Evening</label>
+                        </div>
+                      </div>
                     </div>
                   </v-col>
 
@@ -208,7 +231,7 @@
                 </div>
               </div>
 
-              <div class="col-sm-6 content-right-outer">
+              <div class="col-sm-6 content-right-outer content-right-outer-wid">
                 <!-- <div class="farm-manager">
                 <img
                   src="https://pixinvent.com/demo/vuexy-vuejs-admin-dashboard-template/demo-1/img/avatar-s-5.99691e54.jpg"
@@ -410,7 +433,7 @@
           </v-form>
         </div>
 
-            <sub-footer />
+        <sub-footer />
       </section>
     </div>
   </v-app>
@@ -499,9 +522,14 @@ export default {
   },
   watch: {
     "jobRequest.service_id": function (serviceId) {
-      const { timeSlots, service_type, price } = _.find(this.allServices, {
-        id: serviceId,
-      });
+      
+      const { timeSlots, service_type, slot_type, price } = _.find(
+        this.allServices,
+        {
+          id: serviceId,
+        }
+      );
+      console.log(slot_type);
       /** Clear any existing slots */
       this.serviceTimeSlotMap = {};
       /** Clear any existing time durations */
@@ -509,17 +537,28 @@ export default {
       /** Clear any selection of period */
       this.selectedTimePeriod = null;
 
-      if (timeSlots !== undefined && timeSlots.length > 0) {
-        timeSlots.forEach((timeSlot) => {
-          this.serviceTimeSlotMap[timeSlot.slot_type] = [
-            ...(this.serviceTimeSlotMap[timeSlot.slot_type] || []),
-            {
-              id: timeSlot.id,
-              time: `${timeSlot.slot_start} - ${timeSlot.slot_end}`,
-            },
-          ];
-        });
-      }
+      // if (timeSlots !== undefined && timeSlots.length > 0) {
+      //   timeSlots.forEach((timeSlot) => {
+      //     this.serviceTimeSlotMap[timeSlot.slot_type] = [
+      //       ...(this.serviceTimeSlotMap[timeSlot.slot_type] || []),
+      //       {
+      //         id: timeSlot.id,
+      //         time: `${timeSlot.slot_start} - ${timeSlot.slot_end}`,
+      //       },
+      //     ];
+      //   });
+      // }
+
+      $(".service-time-timing-outer").show();
+      $(".service-time-timing-out .pretty").hide();
+
+      $.each(JSON.parse(slot_type), function (index, value) {
+        console.log(value);
+        $(".service-time-timing-out :input[value='" + value + "']")
+          .parent()
+          .css({display:'inline-block'});
+      });
+
       this.weightShow = service_type === 1;
       this.jobRequest.amount = price;
       this.servicePrice = price;

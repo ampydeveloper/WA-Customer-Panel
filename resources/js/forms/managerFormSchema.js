@@ -6,7 +6,7 @@ export default {
     {
       type: "input",
       inputType: "text",
-      label: "First Name*",
+      label: "First Name",
       model: "manager_first_name",
       required: true,
       validator: ["required"],
@@ -15,7 +15,7 @@ export default {
     {
       type: "input",
       inputType: "text",
-      label: "Last Name*",
+      label: "Last Name",
       model: "manager_last_name",
       required: true,
       validator: ["required"],
@@ -24,7 +24,7 @@ export default {
     {
       type: "input",
       inputType: "email",
-      label: "Email*",
+      label: "Email",
       model: "email",
       required: true,
       validator: [
@@ -44,7 +44,7 @@ export default {
     {
       type: "input",
       inputType: "text",
-      label: "Phone Number*",
+      label: "Phone Number",
       model: "manager_phone",
       required: true,
       validator: ["required"],
@@ -53,7 +53,7 @@ export default {
     {
       type: "input",
       inputType: "text",
-      label: "Address*",
+      label: "Address",
       model: "manager_address",
       required: true,
       validator: ["required"],
@@ -62,7 +62,7 @@ export default {
     {
       type: "input",
       inputType: "text",
-      label: "City*",
+      label: "City",
       model: "manager_city",
       required: true,
       validator: ["required"],
@@ -71,7 +71,7 @@ export default {
     {
       type: "input",
       inputType: "text",
-      label: "Province*",
+      label: "Province",
       model: "manager_province",
       required: true,
       validator: ["required"],
@@ -80,7 +80,7 @@ export default {
     {
       type: "input",
       inputType: "text",
-      label: "Zipcode*",
+      label: "Zipcode",
       model: "manager_zipcode",
       required: true,
       validator: [
@@ -95,7 +95,7 @@ export default {
     {
       type: "input",
       inputType: "text",
-      label: "Card ID Card*",
+      label: "Card ID",
       model: "manager_id_card",
       required: true,
       validator: ["required"],
@@ -104,7 +104,7 @@ export default {
     {
       type: "input",
       inputType: "text",
-      label: "Salary*",
+      label: "Salary",
       model: "salary",
       required: true,
       validator: [

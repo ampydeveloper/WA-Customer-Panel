@@ -1,6 +1,6 @@
 <template>
-  <div class="custom-forms" style="border:1px solid #c5c5c5; padding: 10px; margin: 0 0 0 50px;">
-    <h5>Add Manager</h5>
+  <div class="custom-forms">
+    <h5 class="heading2">Add Manager Details</h5>
     <form action novalidate>
       <vue-form-generator
         tag="section"
@@ -10,7 +10,8 @@
       />
     </form>
     <button
-        class="btn btn-success btn-lg btn-block"
+        class="btn btn-outline-green"
+        style="display: none"
         @click="cancel"
       >
         Cancel
@@ -65,7 +66,7 @@ export default {
               load(Date.now());
             },
             required: true,
-            styleClasses:'col-md-12'
+            styleClasses:'col-md-4'
           },
           {
             type: "submit",

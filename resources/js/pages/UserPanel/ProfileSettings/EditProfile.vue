@@ -259,7 +259,7 @@
                       </td>
                       <td>
                         <button
-                          class="btn btn-sm btn-danger delete-item"
+                          class="btn-outline-red delete-item"
                           @click="deleteCard(card.id)"
                         >
                           <i data-feather="x">Delete</i>
@@ -269,7 +269,7 @@
                           @click="makeCardDefault(card.id)"
                           v-if="!card.card_primary"
                         >
-                          <i data-feather="x">Make primary</i>
+                          Make primary</i>
                         </button>
                       </td>
                     </tr>
@@ -408,7 +408,7 @@
                         </div>
                       </div>
                     </v-form>
-                    <div class="button-out">
+                    <div class="button-out clearfix">
                       <v-btn
                         type="submit"
                         :loading="loading"
@@ -418,14 +418,14 @@
                         >Save Payment Info <i data-feather="arrow-right"></i></v-btn
                       >
                     </div>
-                    <div class="button-out">
+                    <div class="button-out clearfix">
                       <v-btn
                         :loading="loading"
                         :disabled="loading"
-                        class="btn-full-green"
-                        style="margin-top:10px;"
+                        class="btn-outline-red float-right"
+                        style="margin-top:17px;"
                         @click="hideAddCard"
-                        >Cancel</v-btn
+                        ><i data-feather="x"></i> Cancel</v-btn
                       >
                     </div>
                   </div>

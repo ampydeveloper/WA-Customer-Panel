@@ -56,6 +56,35 @@ body,
     }
 }
 
+.btn-outline-red {
+    background: transparent !important;
+    color: #e3342f !important;
+    border: 2px solid #e3342f !important;
+    line-height: 37px !important;
+    width: auto;
+    height: 40px !important;
+    font-size: 14px !important;
+    text-transform: capitalize !important;
+    padding: 0px 14px !important;
+    font-weight: 700 !important;
+    border-radius: 6px !important;
+    font-family: "Gilroy-Bold";
+    display: inline-block;
+    text-align: center;
+    // line-height: 30px !important;
+    // height: 30px !important;
+
+    &:hover,
+    &:focus {
+        color: #e3342f !important;
+    }
+
+    &.delete-item {
+        height: 30px !important;
+        line-height: 31px !important;
+    }
+}
+
 .btn-table-outline {
     text-transform: capitalize !important;
     padding: 0px 14px !important;
@@ -786,7 +815,7 @@ select.form-control {
         }
     }
 
-    .content-right-outer {
+    .content-right-outer-wid {
         padding-bottom: 166px;
     }
 
@@ -941,6 +970,8 @@ select.form-control {
 
             .btn-full-green {
                 float: right;
+                width: 325px;
+
             }
         }
 
@@ -1229,7 +1260,9 @@ select.form-control {
 
 // END
 .vue-form-generator {
-    .field-input {
+
+    .field-input,
+    .form-group {
         margin: 0;
 
         input {
@@ -1238,6 +1271,10 @@ select.form-control {
             border-radius: 0;
             background: transparent;
             height: 32px;
+
+            &:focus {
+                box-shadow: none;
+            }
         }
 
         label {
@@ -1248,5 +1285,52 @@ select.form-control {
             font-family: "Gilroy-Bold";
             color: #19191a;
         }
+    }
+
+    .field-wrap input[type="submit"] {
+        color: #fff !important;
+        text-transform: capitalize !important;
+        padding: 0px 35px !important;
+        background: #11b276 !important;
+        font-weight: 700 !important;
+        height: 46px !important;
+        font-size: 16px !important;
+        border-radius: 6px !important;
+        font-family: "Gilroy-Bold";
+        display: inline-block;
+        line-height: 49px;
+        width: 100%;
+        text-align: center;
+        margin: 0;
+        width: 325px;
+        float: right;
+
+        &:hover,
+        &:focus {
+            color: #fff !important;
+        }
+
+    }
+
+    .field-wrap button {
+        background: inherit;
+        min-width: inherit;
+    }
+}
+
+.basic-button-out {
+    button {
+        width: 325px;
+        float: right;
+    }
+}
+
+.service-time-timing-outer {
+    display: none;
+}
+
+.service-time-timing-out {
+    .pretty {
+        display: none;
     }
 }

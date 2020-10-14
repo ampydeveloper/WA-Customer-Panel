@@ -42,23 +42,23 @@ export default {
       ],
       styleClasses:'col-md-4'
     },
-    {
-      type: "input",
-      inputType: "text",
-      label: "Latitude*",
-      model: "latitude",
-      required: true,
-      validator: ["required"],
-      styleClasses:'col-md-4'
-    },
-    {
-      type: "input",
-      inputType: "text",
-      label: "Longitude*",
-      model: "longitude",
-      required: true,
-      validator: ["required"],
-      styleClasses:'col-md-4'
-    }
+    // {
+    //   type: "input",
+    //   inputType: "text",
+    //   label: "Latitude*",
+    //   model: "latitude",
+    //   required: true,
+    //   validator: ["required"],
+    //   styleClasses:'col-md-4'
+    // },
+    // {
+    //   type: "input",
+    //   inputType: "text",
+    //   label: "Longitude*",
+    //   model: "longitude",
+    //   required: true,
+    //   validator: ["required"],
+    //   styleClasses:'col-md-4'
+    // }
   ]
 };
