@@ -40,31 +40,21 @@ h4 {
 
 @font-face {
     font-family: "Gilroy-Bold";
-    src: url("../fonts/Gilroy-Bold.eot?#iefix") format("embedded-opentype"),
-        url("../fonts/Gilroy-Bold.woff") format("woff"),
-        url("../fonts/Gilroy-Bold.ttf") format("truetype"),
-        url("../fonts/Gilroy-Bold.svg#Gilroy-Bold") format("svg");
+    src: url("../fonts/Gilroy-Bold.eot?#iefix") format("embedded-opentype"), url("../fonts/Gilroy-Bold.woff") format("woff"), url("../fonts/Gilroy-Bold.ttf") format("truetype"), url("../fonts/Gilroy-Bold.svg#Gilroy-Bold") format("svg");
     font-weight: normal;
     font-style: normal;
 }
 
 @font-face {
     font-family: "SFProDisplay-Bold";
-    src: url("../fonts/SFProDisplay-Bold.eot?#iefix") format("embedded-opentype"),
-        url("../fonts/SFProDisplay-Bold.woff") format("woff"),
-        url("../fonts/SFProDisplay-Bold.ttf") format("truetype"),
-        url("../fonts/SFProDisplay-Bold.svg#SFProDisplay-Bold") format("svg");
+    src: url("../fonts/SFProDisplay-Bold.eot?#iefix") format("embedded-opentype"), url("../fonts/SFProDisplay-Bold.woff") format("woff"), url("../fonts/SFProDisplay-Bold.ttf") format("truetype"), url("../fonts/SFProDisplay-Bold.svg#SFProDisplay-Bold") format("svg");
     font-weight: normal;
     font-style: normal;
 }
 
 @font-face {
     font-family: "SFProDisplay-Regular";
-    src: url("../fonts/SFProDisplay-Regular.eot?#iefix")
-        format("embedded-opentype"),
-        url("../fonts/SFProDisplay-Regular.woff") format("woff"),
-        url("../fonts/SFProDisplay-Regular.ttf") format("truetype"),
-        url("../fonts/SFProDisplay-Regular.svg#SFProDisplay-Regular") format("svg");
+    src: url("../fonts/SFProDisplay-Regular.eot?#iefix") format("embedded-opentype"), url("../fonts/SFProDisplay-Regular.woff") format("woff"), url("../fonts/SFProDisplay-Regular.ttf") format("truetype"), url("../fonts/SFProDisplay-Regular.svg#SFProDisplay-Regular") format("svg");
     font-weight: normal;
     font-style: normal;
 }
@@ -298,7 +288,6 @@ a {
 .half-heading {
     width: 100%;
     max-width: 960px;
-
     margin-bottom: 20px;
 }
 
@@ -427,7 +416,7 @@ a {
     transition: all 0.3s ease-in-out;
 }
 
-.site-header span.menu-toggle svg{
+.site-header span.menu-toggle svg {
     width: 27px;
     height: 27px;
 }
@@ -442,7 +431,7 @@ a {
 .home-page .site-header.stickyHeader span.menu-toggle {
     /*background: #11b276;*/
     color: #fff;
-        border: 2px solid #fff;
+    border: 2px solid #fff;
     padding-top: 0px;
     background: transparent;
 }
@@ -503,6 +492,7 @@ ul.contact-apge-addss li p {
 ul.contact-apge-addss li p a {
     color: #595959;
 }
+
 ul.contact-apge-addss li p a:hover,
 ul.contact-apge-addss li p a:focus {
     color: #11b276;
@@ -552,6 +542,7 @@ ul.contact-apge-addss li {
     outline: none;
     box-shadow: none;
 }
+
 .contact-form-section form .form-control:focus {
     border-color: #11b276;
 }
@@ -560,14 +551,17 @@ ul.contact-apge-addss li {
     /* Chrome/Opera/Safari */
     color: #9d9d9d;
 }
+
 .contact-form-section form .form-control::-moz-placeholder {
     /* Firefox 19+ */
     color: #9d9d9d;
 }
+
 .contact-form-section form .form-control:-ms-input-placeholder {
     /* IE 10+ */
     color: #9d9d9d;
 }
+
 .contact-form-section form .form-control:-moz-placeholder {
     /* Firefox 18- */
     color: #9d9d9d;
@@ -659,7 +653,7 @@ ul.footer-links li a {
 }
 
 .tabs-title-custom .nav-pills .nav-link.active,
-.tabs-title-custom .nav-pills .show > .nav-link {
+.tabs-title-custom .nav-pills .show>.nav-link {
     background: none;
     color: #000000;
     border-color: #000;
@@ -735,6 +729,7 @@ ul.footer-links li a {
     margin-right: 5px;
 }
 
+
 /*.service-block-custom:hover {
   box-shadow: 0 5px 10px rgba(0, 0, 0, 0.15);
   transform: translateY(-5px);
@@ -779,6 +774,7 @@ ul.footer-links li a {
     max-width: 990px;
     padding: 0 15px;
 }
+
 .banner-text-inner h1 {
     color: #fff;
     line-height: 1;
@@ -861,6 +857,7 @@ ul.footer-links li a {
     vertical-align: top;
     padding: 0 15px;
 }
+
 span.lets-str-icon {
     display: block;
     width: 70px;
@@ -945,6 +942,7 @@ span.lets-str-icon {
     display: block;
     overflow: hidden;
 }
+
 .how-work-text-inner p {
     font-size: 19px;
 }
@@ -954,9 +952,11 @@ span.lets-str-icon {
     margin-bottom: 20px;
     line-height: 1;
 }
+
 .how-it-work ul li {
     position: relative;
 }
+
 .how-it-work ul {
     counter-reset: my-sec-counter;
 }
@@ -1088,7 +1088,7 @@ span.lets-str-icon {
     -moz-transform: scale(1.1);
 }
 
-.tab-content > .tab-pane.active.in {
+.tab-content>.tab-pane.active.in {
     opacity: 1;
 }
 
@@ -1408,6 +1408,7 @@ span.author-name {
     margin-right: 0;
 }
 
+
 /*-------------signup-page-css-----------*/
 
 .page-signup .main-wrapper {
@@ -1468,6 +1469,7 @@ body.page-signup .logo-area {
     width: 100%;
     max-width: 650px;
     margin: 0 auto;
+    margin-bottom: 7rem;
     /* padding-top: 110px; */
     position: relative;
 }
@@ -1545,9 +1547,12 @@ p.already-account {
     font-size: 17px;
     letter-spacing: 0.5px;
 }
-p.already-account .for-pass-link{
-        float: right;
+
+p.already-account .for-pass-link {
+    float: right;
 }
+
+
 /*------------media-query-start------------*/
 
 @media only screen and (min-width: 1500px) {
@@ -1563,7 +1568,6 @@ p.already-account .for-pass-link{
     .footr-links-upper .col-md-6:last-child {
         margin-top: -80px;
     }
-
     .container,
     .container-lg,
     .container-md,
@@ -1571,7 +1575,6 @@ p.already-account .for-pass-link{
     .container-xl {
         max-width: 1200px;
     }
-
     .col-md-6.btn-store-app {
         padding-left: 40px;
     }
@@ -1597,46 +1600,36 @@ p.already-account .for-pass-link{
         color: #595959;
         font-size: 17px;
     }
-
     h1 {
         font-size: 90px;
     }
-
     h2 {
         font-size: 65px;
     }
-
     h3 {
         font-size: 45px;
     }
-
     h4 {
         font-size: 30px;
     }
-
     .banner-text-inner h1 {
         font-size: 90px;
         max-width: 650px;
         width: 100%;
     }
-
     .let-strt-text h4 {
         font-size: 28px;
         margin-bottom: 15px;
     }
-
     .news-tabs {
         top: 40px;
     }
-
     .im-text h2 {
         font-size: 65px;
     }
-
     .im-text h2 small {
         font-size: 19px;
     }
-
     .new-user-signup h1 {
         font-size: 70px;
     }
@@ -1646,33 +1639,27 @@ p.already-account .for-pass-link{
     .im-text h2 {
         font-size: 48px;
     }
-
     .im-text h2 small {
         font-size: 14px;
     }
-
     .new-user-signup {
         padding: 45px 20px 0 20px;
     }
     .service-block-custom-inner ul li {
         width: 100%;
     }
-
     .page-section-top h2 {
         font-size: 55px;
     }
-
     .tabs-title-custom .nav-pills .nav-link {
         font-size: 20px;
     }
-
     .tabs-content-custom .tab-pane {
         background: #11b276;
         padding: 25px;
         font-size: 18px;
         margin-top: 15px;
     }
-
     ul.contact-apge-addss li {
         display: inline-block;
         width: 100%;
@@ -1680,69 +1667,54 @@ p.already-account .for-pass-link{
         margin: 0 -2px;
         vertical-align: top;
     }
-
     .page-section-top h5 {
         font-size: 23px;
     }
-
     .about-us-page h2 {
         font-size: 55px;
     }
-
     .half-heading h2 {
         font-size: 55px;
     }
-
     .half-heading p {
         font-size: 19px;
     }
-
     section.about-benefit h2 {
         font-size: 57px;
         line-height: 1;
     }
-
     h1 {
         font-size: 80px;
     }
-
     h2 {
         font-size: 55px;
     }
-
     h3 {
         font-size: 35px;
     }
-
     h4 {
         font-size: 28px;
     }
-
     .let-strt-text h4 {
         font-size: 25px;
     }
-
     .news-tabs {
         position: relative;
         right: 0;
         top: 0;
         margin-bottom: 60px;
     }
-
     .news-latest h2 {
         line-height: 1;
         display: inline-block;
         margin-bottom: 50px;
     }
-
     .insta-overlay h4 {
         font-size: 18px;
     }
-
     .insta-post {
         width: calc(50% - 24px);
     }
-
     .new-user-signup h1 {
         font-size: 55px;
     }
@@ -1752,75 +1724,60 @@ p.already-account .for-pass-link{
     .new-user-signup {
         padding: 45px 0px 0 0px;
     }
-
     .new-user-signup h1 small {
         display: block;
         font-size: 26px;
         padding-top: 10px;
         color: #b9b9b9;
     }
-
     .col-md-6.signup-im-bg {
         background-size: 100%;
         padding-bottom: 100%;
     }
-
     .im-text {
         padding-bottom: 0;
     }
-
     .im-text h2 small {
         font-size: 13px;
     }
-
     .service-block-custom-inner {
         border: 2px solid #000;
         margin: 20px 0;
         padding: 25px 20px;
     }
-
     .services-main {
         margin-bottom: 100px;
     }
-
     .service-block-custom-inner .about-benefit ul {
         padding-top: 40px;
     }
-
     .col-md-6.box-layout {
         width: 95%;
         margin-left: auto;
         margin-right: auto;
         max-width: 100%;
     }
-
     .page-section-top h5 {
         margin-bottom: 30px;
     }
-
     .contact-form-section form#contactForm {
         padding-left: 0;
     }
-
     .page-section-top p {
         font-size: 19px;
     }
-
     .ask-question-tabs {
         padding-bottom: 90px;
     }
-
     .contact-form-section {
         margin-bottom: 90px;
     }
-
     .footr-links-upper .col-md-6 {
         float: none;
         width: 100%;
         padding-left: 0;
         padding-right: 0;
     }
-
     .footer-middle-part.row {
         padding-bottom: 40px;
         margin: 0;
@@ -1829,16 +1786,13 @@ p.already-account .for-pass-link{
         font-size: 22px;
         margin-top: 40px;
     }
-
     footer.site-footer {
         padding: 50px 0 20px 0;
     }
-
     footer.site-footer h3 {
         font-size: 24px;
         margin-bottom: 20px;
     }
-
     .bootm-social-links ul {
         text-align: center;
     }
@@ -1847,64 +1801,52 @@ p.already-account .for-pass-link{
         text-align: center;
         margin-top: 0;
     }
-
     .footer-download-btn a.btn.btn-account {
         font-size: 16px;
     }
-
     .page-section-top {
         padding: 50px 0 50px 0;
     }
-
     .footr-links-upper h4 {
         margin-top: 40px;
     }
-
     .contact-form-section form .form-control {
         font-size: 17px;
     }
-
     .con-im-ratio img {
         transform: translate(40px, 40px);
         -webkit-transform: translate(40px, 40px);
         -moz-transform: translate(40px, 40px);
         width: 95%;
     }
-
     .about-us-page {
         padding: 60px 0;
     }
-
     .download-from-strore {
         padding-top: 10px;
         margin-bottom: 50px;
         text-align: center;
     }
-
     .download-from-strore a.btnpblack {
         display: block;
         text-align: center;
     }
-
     .think-about-area,
     section.about-benefit {
         padding: 60px 0;
     }
-
     .about-benefit ul li:last-child {
         margin-bottom: 0;
     }
     section.about-benefit h2 {
         font-size: 55px;
     }
-
     .banner-text-inner h1 {
         font-size: 55px;
         max-width: 400px;
         width: 100%;
         margin-bottom: 30px;
     }
-
     .banner-text-inner {
         position: relative;
         z-index: 9;
@@ -1912,7 +1854,6 @@ p.already-account .for-pass-link{
         max-width: 430px;
         padding: 0 15px;
     }
-
     .banner-text-inner p {
         color: #fff;
         font-size: 22px;
@@ -1920,7 +1861,6 @@ p.already-account .for-pass-link{
         width: 100%;
         max-width: 100%;
     }
-
     .banner-section {
         min-height: 500px;
         padding: 160px 0 150px;
@@ -1930,42 +1870,33 @@ p.already-account .for-pass-link{
     body {
         overflow-x: hidden;
     }
-
     .col-md-6.md-none img {
         width: 95%;
     }
     .lets-started-section {
         padding: 70px 0 30px 0;
     }
-
     .how-it-work {
         padding: 70px 0 20px;
     }
-
     h1 {
         font-size: 60px;
     }
-
     h2 {
         font-size: 45px;
     }
-
     h3 {
         font-size: 30px;
     }
-
     h4 {
         font-size: 26px;
     }
-
     .how-work-text-inner p {
         font-size: 17px;
     }
-
     .our-services-home {
         margin-top: 60px;
     }
-
     #testimonial-new .owl-nav {
         position: relative;
         top: 0;
@@ -1973,18 +1904,15 @@ p.already-account .for-pass-link{
         text-align: center;
         margin-top: 15px;
     }
-
     .news-latest {
         padding: 70px 0;
         position: relative;
     }
-
     .news-latest-cols h3 {
         font-size: 26px;
         margin-top: 20px;
         margin-bottom: 15px;
     }
-
     .news-latest-cols {
         position: relative;
         padding-top: 15px;
@@ -1997,19 +1925,15 @@ p.already-account .for-pass-link{
     .news-tabs {
         margin-bottom: 30px;
     }
-
     .news-latest {
         padding: 70px 0 40px 0;
     }
-
     .instagram-section {
         padding: 60px 0 70px 0;
     }
-
     .instagram-section h2 {
         margin-bottom: 40px;
     }
-
     .bg-custom-thickness:after {
         top: 25px;
         bottom: 11px;
@@ -2017,18 +1941,15 @@ p.already-account .for-pass-link{
         left: 0;
         z-index: -1;
     }
-
     .insta-post:first-child,
     .insta-post:nth-of-type(2),
     .insta-post:nth-of-type(3) {
         width: calc(50% - 16px);
     }
-
     .insta-post {
         width: calc(50% - 16px);
         margin: 7px;
     }
-
     .insta-im img {
         position: absolute;
         width: 100%;
@@ -2042,28 +1963,23 @@ p.already-account .for-pass-link{
         padding-bottom: 100%;
         overflow: hidden;
     }
-
     .test-text-inner {
         margin: 95px 0px 15px 0px;
         padding: 125px 15px 35px 15px;
     }
-
     .testi-avtar-im {
         left: 15px;
     }
-
     .services-slider {
         margin: 30px 0;
         position: relative;
     }
-
     .our-services-home .owl-nav {
         position: relative;
         top: 0;
         right: 0;
         text-align: center;
     }
-
     .services-slider .service-block-custom-inner {
         padding: 35px 20px;
         border: 2px solid #000;
@@ -2074,22 +1990,18 @@ p.already-account .for-pass-link{
         line-height: 1.6;
         color: #000;
     }
-
     .our-services-home .owl-carousel .owl-stage-outer {
         overflow: hidden;
     }
     .testimonial-slider .owl-carousel .owl-stage-outer {
         overflow: hidden;
     }
-
     .how-it-work .how-work-text span.small-icon {
         margin-right: 10px;
     }
-
     .how-it-work .how-work-text {
         padding-right: 0;
     }
-
     .let-strt-text {
         padding: 0;
     }
@@ -2103,11 +2015,9 @@ p.already-account .for-pass-link{
     .lets-started-section .download-from-strore a img {
         max-width: 140px;
     }
-
     .logo-area img {
         max-width: 90px;
     }
-
     .site-header span.menu-toggle {
         margin-top: 25px;
     }
@@ -2120,7 +2030,6 @@ p.already-account .for-pass-link{
     .banner-section {
         padding: 160px 0 70px;
     }
-
     .banner-btn a {
         font-size: 16px;
         min-width: 145px;
@@ -2128,7 +2037,6 @@ p.already-account .for-pass-link{
         padding: 7px 10px;
         margin-right: 9px;
     }
-
     .banner-text-inner p {
         color: #fff;
         font-size: 19px;
@@ -2137,31 +2045,25 @@ p.already-account .for-pass-link{
     .banner-text-inner h1 {
         font-size: 47px;
     }
-
     h2 {
         font-size: 40px;
     }
-
     #testimonial-new h2 {
         padding-left: 0;
     }
-
     .tabs-get ul.nav.nav-tabs li {
         margin-left: 6px;
     }
-
     .tabs-get ul.nav.nav-tabs li a {
         font-size: 16px;
         padding: 10px 18px;
     }
-
     .footer-download-btn a.btn.btn-account {
         display: block;
     }
     .footer-download-btn {
         text-align: center;
     }
-
     .footer-download-btn img {
         max-width: 150px;
     }
@@ -2171,17 +2073,14 @@ p.already-account .for-pass-link{
     .banner-btn a {
         min-width: 125px;
     }
-
     .banner-text-inner h1 {
         font-size: 40px;
     }
-
     .im-text {
         position: absolute;
         padding: 20px;
         padding-bottom: 0;
     }
-
     .im-text h2 {
         font-size: 42px;
     }
@@ -2218,8 +2117,7 @@ p.already-account .for-pass-link{
     text-align: center;
     vertical-align: middle;
     user-select: none;
-    transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out,
-        border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+    transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
 }
 
 .submit-button input[disabled="disabled"] {

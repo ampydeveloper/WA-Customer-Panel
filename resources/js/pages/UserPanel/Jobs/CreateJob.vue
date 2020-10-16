@@ -152,14 +152,38 @@
                         }`"
                       ></v-switch>
 
-                      <v-text-field
+                      <v-row v-if="jobRequest.is_repeating_job">
+                        <v-col cols="12" sm="2" md="2">
+                          <v-checkbox v-model="jobRequest.repeating_days" label="Monday" value="monday"></v-checkbox>
+                        </v-col>
+                        <v-col cols="12" sm="2" md="2">
+                          <v-checkbox v-model="jobRequest.repeating_days" label="Tuesday" value="tuesday" hide-details></v-checkbox>
+                        </v-col>
+                        <v-col cols="12" sm="2" md="2">
+                          <v-checkbox v-model="jobRequest.repeating_days" label="Wednesday" value="wednesday" hide-details></v-checkbox>
+                        </v-col>
+                        <v-col cols="12" sm="2" md="2">
+                          <v-checkbox v-model="jobRequest.repeating_days" label="Thursday" value="thursday" hide-details></v-checkbox>
+                        </v-col>
+                        <v-col cols="12" sm="2" md="2">
+                          <v-checkbox v-model="jobRequest.repeating_days" label="Friday" value="friday" hide-details></v-checkbox>
+                        </v-col>
+                        <v-col cols="12" sm="2" md="2">
+                          <v-checkbox v-model="jobRequest.repeating_days" label="Saturday" value="saturday" hide-details></v-checkbox>
+                        </v-col>
+                        <v-col cols="12" sm="3" md="3">
+                          <v-checkbox v-model="jobRequest.repeating_days" label="Sunday" value="sunday" hide-details></v-checkbox>
+                        </v-col>
+                      </v-row>
+
+                      <!-- <v-text-field
                         v-model="jobRequest.repeating_days"
                         required
                         type="number"
                         :rules="requiredRules"
                         v-if="jobRequest.is_repeating_job"
                         label="Repeating Days"
-                      ></v-text-field>
+                      ></v-text-field> -->
                     </div>
                   </v-col>
 
@@ -487,7 +511,7 @@ export default {
         amount: 0,
         notes: "",
         is_repeating_job: false,
-        repeating_days: 0,
+        repeating_days: [],
         attach_card: 0,
         card: {
           name: "",
@@ -673,7 +697,7 @@ export default {
               createJobRequest.append(`images[${ind}]`, file, file.name);
             });
           }
-
+          
           const response = await JobService.create(createJobRequest);
           this.$toast.open({
             message: response.data.message,

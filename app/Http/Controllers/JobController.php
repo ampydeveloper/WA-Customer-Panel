@@ -38,6 +38,7 @@ class JobController extends Controller
             ], 421);
             }
         }
+
         DB::beginTransaction();
         try {
             $data = [
@@ -49,13 +50,13 @@ class JobController extends Controller
                 'job_providing_date' => $createJobRequest->job_providing_date,
                 'weight' => (isset($createJobRequest->weight) && $createJobRequest->weight != '' && $createJobRequest->weight != null) ? $createJobRequest->weight : null,
                 'is_repeating_job' => ($createJobRequest->is_repeating_job) ? 2 : 1,
-                'repeating_days' => (isset($createJobRequest->repeating_days) && $createJobRequest->repeating_days != '' && $createJobRequest->repeating_days != null) ? $createJobRequest->repeating_days : null,
+                'repeating_days' => (isset($createJobRequest->repeating_days) && $createJobRequest->repeating_days != '' && $createJobRequest->repeating_days != null) ? json_encode(explode(',', $createJobRequest->repeating_days)) : null,
                 'payment_mode' => (isset($createJobRequest->payment_mode) && $createJobRequest->payment_mode != '' && $createJobRequest->payment_mode != null) ? $createJobRequest->payment_mode : 3,
                 'images' => null,
                 'notes' => (isset($createJobRequest->notes) && $createJobRequest->notes != '' && $createJobRequest->notes != null) ? $createJobRequest->notes : null,
                 'amount' => $createJobRequest->amount,
             ];
-
+            
             if (Auth::user()->role_id != config('constant.roles.Haulers')) {
                 $data['farm_id'] = (isset($createJobRequest->farm_id) && $createJobRequest->farm_id != '' && $createJobRequest->farm_id != null) ? $createJobRequest->farm_id : null;
                 $data['customer_id'] = $farm->customer_id;

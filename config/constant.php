@@ -89,5 +89,6 @@ return [
     'warehouse' => [
         'lat' => '31.23',
         'lon' => '34.34'
-    ]
+    ],
+    'repeating_days' => ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'],
 ];

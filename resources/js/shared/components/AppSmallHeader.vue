@@ -37,10 +37,14 @@
                 Jobs
               </a>
               <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                <a class="dropdown-item" href="/jobs">
+                <router-link class="dropdown-item" to="/jobs"><i data-feather="grid"></i> Job Dashboard</router-link>
+                <router-link class="dropdown-item" to="/jobs/create"><i data-feather="briefcase"></i> Create Job</router-link>
+                <router-link class="dropdown-item" to="/farms"><i data-feather="circle"></i> Farm Dashboard</router-link>
+                <router-link class="dropdown-item" to="/farms/create"><i data-feather="pie-chart"></i> Create Farm</router-link>
+                <!-- <a class="dropdown-item" href="/jobs">
                   <i data-feather="grid"></i> Job Dashboard</a
-                >
-                <a class="dropdown-item" href="/jobs/create">
+                > -->
+                <!-- <a class="dropdown-item" href="/jobs/create">
                   <i data-feather="briefcase"></i> Create Job</a
                 >
                 <a class="dropdown-item" href="/farms" v-if="isCustomer">
@@ -48,7 +52,7 @@
                 >
                 <a class="dropdown-item" href="/farms/create" v-if="isCustomer">
                   <i data-feather="pie-chart"></i> Create Farm</a
-                >
+                > -->
               </div>
             </li>
             <li class="nav-item active">

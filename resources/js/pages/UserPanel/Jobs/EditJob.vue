@@ -11,7 +11,7 @@
               class="slide-right"
               autocomplete="off"
             >
-              <h1>Start Job</h1>
+              <h1>Edit Job</h1>
               <div class="form-group">
                 <v-select
                   v-model="jobRequest.farm_id"
@@ -50,7 +50,7 @@
                   ></v-date-picker>
                 </v-menu>
 
-                <v-radio-group
+                <!-- <v-radio-group
                   row
                   v-model="selectedTimePeriod"
                   :rules="requiredRules"
@@ -62,9 +62,9 @@
                     :label="`${timePeriod[n]}`"
                     :value="n"
                   ></v-radio>
-                </v-radio-group>
+                </v-radio-group> -->
 
-                <v-radio-group
+                <!-- <v-radio-group
                   v-model="jobRequest.time_slots_id"
                   row
                   :rules="requiredRules"
@@ -76,7 +76,37 @@
                     :label="slot.time"
                     :value="slot.id"
                   ></v-radio>
-                </v-radio-group>
+                </v-radio-group> -->
+
+                <v-col
+                    cols="12"
+                    md="12"
+                    class="t-s-inner mb-4 p-0 service-time-timing-outer"
+                  >
+                    <div class="label-align pt-0">
+                      <label style="font-weight:100;font-size:14px;">Service Time</label>
+                    </div>
+                    <div class="pt-0 pb-0 service-time-timing-out">
+                      <div class="pretty p-default p-round">
+                        <input type="radio" name="slot_type" value="1" />
+                        <div class="state">
+                          <label>Morning</label>
+                        </div>
+                      </div>
+                      <div class="pretty p-default p-round">
+                        <input type="radio" name="slot_type" value="2" />
+                        <div class="state">
+                          <label>Afternoon</label>
+                        </div>
+                      </div>
+                      <div class="pretty p-default p-round">
+                        <input type="radio" name="slot_type" value="3" />
+                        <div class="state">
+                          <label>Evening</label>
+                        </div>
+                      </div>
+                    </div>
+                  </v-col>
 
                 <v-switch
                   v-model="jobRequest.is_repeating_job"
@@ -183,7 +213,7 @@ export default {
   },
   watch: {
     "jobRequest.service_id": function(serviceId) {
-      const { timeSlots, service_type, price } = _.find(this.allServices, {
+      const { timeSlots, service_type, slot_type, price } = _.find(this.allServices, {
         id: serviceId
       });
       /** Clear any existing slots */
@@ -193,17 +223,27 @@ export default {
       /** Clear any selection of period */
       this.selectedTimePeriod = null;
 
-      if (timeSlots !== undefined && timeSlots.length > 0) {
-        timeSlots.forEach(timeSlot => {
-          this.serviceTimeSlotMap[timeSlot.slot_type] = [
-            ...(this.serviceTimeSlotMap[timeSlot.slot_type] || []),
-            {
-              id: timeSlot.id,
-              time: `${timeSlot.slot_start} - ${timeSlot.slot_end}`
-            }
-          ];
-        });
-      }
+      // if (timeSlots !== undefined && timeSlots.length > 0) {
+      //   timeSlots.forEach(timeSlot => {
+      //     this.serviceTimeSlotMap[timeSlot.slot_type] = [
+      //       ...(this.serviceTimeSlotMap[timeSlot.slot_type] || []),
+      //       {
+      //         id: timeSlot.id,
+      //         time: `${timeSlot.slot_start} - ${timeSlot.slot_end}`
+      //       }
+      //     ];
+      //   });
+      // }
+      $(".service-time-timing-outer").show();
+      $(".service-time-timing-out .pretty").hide();
+
+      $.each(JSON.parse(slot_type), function (index, value) {
+        console.log(value);
+        $(".service-time-timing-out :input[value='" + value + "']")
+          .parent()
+          .css({display:'inline-block'});
+      });
+
       this.weightShow = service_type === 1;
       this.jobRequest.amount = price;
       this.servicePrice = price;

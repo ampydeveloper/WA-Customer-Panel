@@ -1,6 +1,6 @@
 <template>
   <div class="loc-page logged-in-page">
-    <app-small-header />
+    <!-- <app-small-header /> -->
     <div class="main-wrapper">
       <section class="page-section-top" data-aos="">
         <div class="container">
