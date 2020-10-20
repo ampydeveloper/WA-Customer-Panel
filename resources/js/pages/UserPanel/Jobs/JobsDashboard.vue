@@ -6,7 +6,7 @@
         <div class="container">
           <div class="row">
             <div class="col-md-12">
-              <h2>Job Dashboard dscds</h2>
+              <h2>Job Dashboard</h2>
             </div>
           </div>
         </div>
@@ -80,8 +80,8 @@
                       <a class="btn btn-table-outline" v-if="job.job_status == 0" @click="cancelJob(job.id)">
                        Cancel
                       </a>
-                      <router-link :to="{ name: 'ViewJob', params: { jobId: job.id }}" class="btn btn-table-outline">  View Details</router-link>
-                    <router-link v-if="job.job_status == 0" :to="{ name: 'editJob', params: { jobId: job.id }}" class="btn btn-table-outline">Edit</router-link>
+                      <!--<router-link :to="{ name: 'ViewJob', params: { jobId: job.id }}" class="btn btn-table-outline">  View Details</router-link>
+                    <router-link v-if="job.job_status == 0" :to="{ name: 'editJob', params: { jobId: job.id }}" class="btn btn-table-outline">Edit</router-link>-->
                     </td>
                   </tr>
                 </tbody>

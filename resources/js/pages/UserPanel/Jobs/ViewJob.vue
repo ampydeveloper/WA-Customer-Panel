@@ -15,11 +15,14 @@
       <section class="job-details-outer center-content-outer" data-aos="">
         <div class="container">
           <div class="row">
-            <div class="col-sm-6 content-left-outer">
+
+<div class="col-sm-12">
               <div class="map-route-outer">
                 <div id='map' class='contain' style="float: left; width: 100%; position: relative; height: 300px;"></div>
               </div>
+ </div>
 
+            <div class="col-sm-6 content-left-outer">
               <div class="job-summary-outer">
                 <!-- <h5 class="heading2">Job Summary</h5> -->
 
