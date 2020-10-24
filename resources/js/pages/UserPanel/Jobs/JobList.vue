@@ -75,14 +75,14 @@
                       }}</span>
                     </td>
                     <td>
-                      <!-- <router-link
+                      <router-link
                         :to="{
                           name: 'editJob',
                           params: { jobId: job.id },
                         }"
                         class="btn-outline-green"
                         >Edit</router-link
-                      > -->
+                      >
                       <button
                         class="btn-outline-green"
                         @click="cancelJob(job.id)"

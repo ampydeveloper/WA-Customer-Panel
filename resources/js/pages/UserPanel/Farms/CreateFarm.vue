@@ -31,14 +31,14 @@
                 />
               </form>
             </div>
-            <!--<button
+            <button
                 class="btn btn-success btn-lg btn-block"
                 style="width : 200px;"
                 @click="addNewManager"
                 v-if="!addManagers"
               >
                 Add New Manager
-              </button> -->
+              </button>
 
             <div class="basic-grey-box">
               <create-manager
