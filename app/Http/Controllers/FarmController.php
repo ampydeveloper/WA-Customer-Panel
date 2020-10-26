@@ -119,10 +119,11 @@ class FarmController extends Controller
                     ]);
 
                     if ($saveManger->save()) {
+                        $imageName = $farmDetails->putImage($manager['manager_card_image']);
                         $mangerDetails = new ManagerDetail([
                             'user_id' => $saveManger->id,
                             'identification_number' => $manager['manager_id_card'],
-                            'document' => $manager['manager_card_image'],
+                            'document' => $imageName,
                             'salary' => $manager['salary'],
                             'joining_date' => date('Y/m/d'),
                         ]);
@@ -192,7 +193,7 @@ class FarmController extends Controller
     }
 
     /*
-     * @method update : Function to update farm details.
+     * @method update : Function to update farm and manager details.
      * 
      */
     public function update(CustomerFarm $customerFarm, UpdateFarmRequest $request)
@@ -211,6 +212,42 @@ class FarmController extends Controller
                 'longitude' => $request->longitude,
                 'distance' => $distance
             ]);
+
+            foreach ($request->manager_details as $manager) {
+                $data = [
+                    'prefix' => (isset($manager['manager_prefix']) && $manager['manager_prefix'] != '' && $manager['manager_prefix'] != null) ? $manager['manager_prefix'] : null,
+                    'first_name' => $manager['manager_first_name'],
+                    'last_name' => $manager['manager_last_name'],
+                    'email' => $manager['email'],
+                    'phone' => $manager['manager_phone'],
+                    'address' => $manager['manager_address'],
+                    'city' => $manager['manager_city'],
+                    'state' => $manager['manager_province'],
+                    'zip_code' => $manager['manager_zipcode'],
+                    'user_image' => (isset($manager['manager_image']) && $manager['manager_image'] != '' && $manager['manager_image'] != null) ? $manager['manager_image'] : null,
+                    'farm_id' => $customerFarm->id
+                ];
+                if(!array_key_exists('id', $manager)){
+                    $newPassword = Str::random();
+                    $data['password'] = bcrypt($newPassword);
+                    $saveManger = new User($data);
+                    if ($saveManger->save()) {
+                        $mangerDetails = new ManagerDetail([
+                            'user_id' => $saveManger->id,
+                            'identification_number' => $manager['manager_id_card'],
+                            'document' => $manager['manager_card_image'],
+                            'salary' => $manager['salary'],
+                            'joining_date' => date('Y/m/d'),
+                        ]);
+                        if ($mangerDetails->save()) {
+                            $this->_confirmPassword($saveManger, $newPassword);
+                        }
+                    }
+                }else{
+                    User::where('id', $manager['id'])->update($data);
+                    ManagerDetail::where('user_id', $manager['id'])->update(['identification_number' => $manager['manager_id_card'], 'salary' => $manager['salary']]);
+                }
+            }
 
             return response()->json([
                         'status' => true,
@@ -240,10 +277,12 @@ class FarmController extends Controller
                 ], 421);
         }
 
-        dd($customerFarm);
         try {
             DB::beginTransaction();
             $newPassword = Str::random();
+            if(isset($request->manager_image)) {
+                
+            }
             $saveManager = new User([
                 'prefix' => (isset($request->manager_prefix) && $request->manager_prefix != '' && $request->manager_prefix != null) ? $request->manager_prefix : null,
                 'first_name' => $request->manager_first_name,
@@ -265,10 +304,11 @@ class FarmController extends Controller
             ]);
 
             if ($saveManager->save()) {
+                $imageName = $farmDetails->putImage($request->manager_card_image);
                 $managerDetails = new ManagerDetail([
                     'user_id' => $saveManager->id,
                     'identification_number' => $request->manager_id_card,
-                    'document' => $request->manager_card_image,
+                    'document' => $imageName,
                     'salary' => $request->salary,
                     'joining_date' => date('Y/m/d'),
                 ]);
@@ -300,6 +340,7 @@ class FarmController extends Controller
                     'farm_id' => 'required',
                     'manager_first_name' => 'required',
                     'manager_last_name' => 'required',
+                    'email' => 'required|string|email|unique:users,email,' . Auth::user()->id,
                     'manager_phone' => 'required',
                     'manager_address' => 'required',
                     'manager_city' => 'required',
@@ -321,16 +362,6 @@ class FarmController extends Controller
         $confirmed = 1;
         $manager = User::whereId($request->manager_id)->first();
         if ($request->email != '' && $request->email != null) {
-            $checkEmail = User::where('email', $request->email)->first();
-            if ($checkEmail !== null) {
-                if ($checkEmail->id !== $manager->id) {
-                    return response()->json([
-                                'status' => false,
-                                'message' => 'Email is already taken.',
-                                'data' => []
-                            ], 422);
-                }
-            }
             if ($manager->email !== $request->email) {
                 $confirmed = 0;
             }

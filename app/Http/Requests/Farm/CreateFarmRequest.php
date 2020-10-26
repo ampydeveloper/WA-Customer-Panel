@@ -43,7 +43,7 @@ class CreateFarmRequest extends FormRequest
             'manager_details.*.manager_city' => 'required',
             'manager_details.*.manager_province' => 'required',
             'manager_details.*.manager_zipcode' => 'required',
-            'manager_details.*.manager_card_image' => 'required',
+            'manager_details.*.manager_card_image' => 'required|image|max:5120',
             'manager_details.*.manager_id_card' => 'required',
             'manager_details.*.salary' => 'required'
         ];
