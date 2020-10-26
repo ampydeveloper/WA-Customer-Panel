@@ -28,10 +28,12 @@ class CreateJobRequest extends FormRequest
     {
         $rules = [
             'service_id' => 'required',
+            'manager_id' => 'required',
+            'payment_mode' => 'required',
             'job_providing_date' => 'required|date|date_format:Y-m-d',
             'is_repeating_job' => 'required',
             'amount' => 'required',
-            'repeating_days' => 'required_if:is_repeating_job,==,2',
+            'repeating_days' => 'required_if:is_repeating_job,==,true',
         ];
 
         if (Auth::user()->role_id != config('constant.roles.Haulers')) {

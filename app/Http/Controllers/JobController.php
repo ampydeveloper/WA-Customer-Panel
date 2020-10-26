@@ -29,6 +29,26 @@ class JobController extends Controller
      */
     public function create(CreateJobRequest $createJobRequest)
     {
+        
+//        dd($createJobRequest->all());
+        $validator = Validator::make($createJobRequest->all(), [
+                    'manager_id' => 'required',
+                    'service_id' => 'required',
+                    'job_providing_date' => 'required',
+                    'is_repeating_job' => 'required',
+                    'payment_mode' => 'required',
+                    'repeating_days' => 'required_if:is_repeating_job,==,true',
+        ]);
+        if ($validator->fails()) {
+            return response()->json([
+                        'status' => false,
+                        'message' => 'The given data was invalid.',
+                        'data' => $validator->errors()
+                            ], 422);
+        }
+        
+        
+        
         if (Auth::user()->role_id != config('constant.roles.Haulers')) {
             $farm = CustomerFarm::find($createJobRequest->farm_id);
             if (!$farm->isOwner()) {
@@ -215,7 +235,7 @@ class JobController extends Controller
      */
     public function cancelJob(Job $job)
     {
-        if (round((strtotime($job->job_providing_date) - strtotime(date('Y/m/d'))) / 3600, 1) >= 24) {
+        if ($job->job_status == config('constant.job_status.open')) {
             try {
                 $job->update(['job_status' => config('constant.job_status.cancelled')]);
                 return response()->json([
@@ -264,8 +284,25 @@ class JobController extends Controller
 
     public function update(Request $request)
     {
+        $validator = Validator::make($request->all(), [
+                    'job_id' => 'required',
+                    'manager_id' => 'required',
+                    'service_id' => 'required',
+                    'job_providing_date' => 'required',
+                    'is_repeating_job' => 'required',
+                    'payment_mode' => 'required',
+                    'repeating_days' => 'required_if:is_repeating_job,==,true',
+        ]);
+        if ($validator->fails()) {
+            return response()->json([
+                        'status' => false,
+                        'message' => 'The given data was invalid.',
+                        'data' => $validator->errors()
+                            ], 422);
+        }
+        
         $checkIfEdittingAllowed = Job::where('id', $request->job_id)->first();
-        if (round((strtotime($checkIfEdittingAllowed->job_providing_date) - strtotime(date('Y/m/d'))) / 3600, 1)) {
+        if ($checkIfEdittingAllowed->job_status == config('constant.job_status.open')) {
             try {
                 Job::whereId($request->job_id)->update([
                     'manager_id' => (isset($request->manager_id) && $request->manager_id != '' && $request->manager_id != null) ? $request->manager_id : null,
@@ -276,7 +313,7 @@ class JobController extends Controller
                     'job_providing_date' => $request->job_providing_date,
                     'weight' => (isset($request->weight) && $request->weight != '' && $request->weight != null) ? $request->weight : null,
                     'is_repeating_job' => $request->is_repeating_job,
-                    'repeating_days' => (isset($request->repeating_days) && $request->repeating_days != '' && $request->repeating_days != null) ? $request->repeating_days : null,
+                    'repeating_days' => (isset($request->repeating_days) && $request->repeating_days != '' && $request->repeating_days != null) ? json_encode(explode(',', $request->repeating_days)) : null,
                     'payment_mode' => (isset($request->payment_mode) && $request->payment_mode != '' && $request->payment_mode != null) ? $request->payment_mode : 3,
                     'images' => (isset($request->images) && $request->images != '' && $request->images != null) ? $request->images : null,
                     'notes' => (isset($request->notes) && $request->notes != '' && $request->notes != null) ? $request->notes : null,

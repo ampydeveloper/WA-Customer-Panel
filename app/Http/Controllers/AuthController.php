@@ -468,6 +468,12 @@ class AuthController extends Controller
     {
         $user = Auth::user();
         if ($user->role_id == config('constant.roles.Customer') || $user->role_id == config('constant.roles.Haulers')) {
+            
+            if ($request->email != '' && $request->email != null) {
+                if ($user->email !== $request->email) {
+                    $confirmed = 0;
+                }
+            }
             try {
                 $data = [
                     'first_name' => $request->first_name,
@@ -478,15 +484,29 @@ class AuthController extends Controller
                     'city' => $request->city,
                     'state' => $request->state,
                     'zip_code' => $request->zip_code,
-                    'country' => $request->country,
                 ];
 
                 if ($request->user_image) {
                     $imageName = $user->putImage($request->user_image);
                     $data['user_image'] = $imageName;
                 }
+                if(isset($confirmed)) {
+                    $data['is_confirmed'] = $confirmed;
+                }
+                if ($request->password != '' && $request->password != null) {
+                    $data['password'] = bcrypt($request->password);
+                }
 
-                $user->update($data);
+//                $user->update($data);
+                if (isset($confirmed)) {
+                    $this->_updateEmail($user, $request->email);
+                        $request->user()->token()->revoke();
+                        return response()->json([
+                                    'status' => true,
+                                    'message' => 'Please confirm email and login again',
+                                    'data' => []
+                        ]);
+                }
 
                 return response()->json([
                     'status' => true,
@@ -516,5 +536,19 @@ class AuthController extends Controller
             'message' => 'Successfully logged out.',
             'data' => []
         ]);
+    }
+    
+    public function _updateEmail($user, $email) {
+        $name = $user->first_name . ' ' . $user->last_name;
+        $data = array(
+            'name' => $name,
+            'email' => $email,
+            'verificationLink' => env('APP_URL') . 'confirm-update-email/' . base64_encode($email) . '/' . base64_encode($user->id)
+        );
+
+        Mail::send('email_templates.welcome_email', $data, function ($message) use ($name, $email) {
+            $message->to($email, $name)->subject('Email Address Confirmation');
+            $message->from(env('MAIL_USERNAME'), env('MAIL_USERNAME'));
+        });
     }
 }

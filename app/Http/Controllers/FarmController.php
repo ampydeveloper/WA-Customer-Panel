@@ -24,7 +24,7 @@ use App\Http\Requests\Farm\{
     UpdateFarmRequest
 };
 use App\Http\Requests\Farm\Manager\{
-    CreateFarmManagerRequest,
+    CreateFarmManagerRequest
 };
 class FarmController extends Controller
 {
@@ -78,10 +78,8 @@ class FarmController extends Controller
                 'farm_zipcode' => $request->farm_zipcode,
                 'farm_image' => (isset($request->farm_images) && $request->farm_images != '' && $request->farm_images != null) ? json_encode($request->farm_images) : null,
                 'farm_active' => ($request->farm_active) ? $request->farm_active : 1,
-//                'latitude' => $request->latitude,
-//                'longitude' => $request->longitude,
-                'latitude' => '-41.28889',
-                'longitude' => '174.77722',
+                'latitude' => $request->latitude,
+                'longitude' => $request->longitude,
                 'created_by' => $request->user()->id,
                 'distance' => $distance
             ]);
@@ -201,7 +199,6 @@ class FarmController extends Controller
     {
         try {
             $distance =  $this->getDistance($request->latitude, $request->longitude, null, null, 'M');
-
             $customerFarm->update([
                 'farm_address' => $request->farm_address,
                 'farm_unit' => (isset($request->farm_unit) && $request->farm_unit != '' && $request->farm_unit != null) ? ($request->farm_unit) : null,
@@ -243,6 +240,7 @@ class FarmController extends Controller
                 ], 421);
         }
 
+        dd($customerFarm);
         try {
             DB::beginTransaction();
             $newPassword = Str::random();
