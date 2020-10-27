@@ -31,8 +31,8 @@ class CreateFarmRequest extends FormRequest
             'farm_province' => 'required',
             'farm_zipcode' => 'required',
             'farm_active' => 'required',
-//            'latitude' => 'required',
-//            'longitude' => 'required',
+            'latitude' => 'required',
+            'longitude' => 'required',
             'farm_image.*' => 'sometimes|required|image|max:5120',
     
             'manager_details.*.manager_first_name' => 'required',
@@ -43,7 +43,7 @@ class CreateFarmRequest extends FormRequest
             'manager_details.*.manager_city' => 'required',
             'manager_details.*.manager_province' => 'required',
             'manager_details.*.manager_zipcode' => 'required',
-            'manager_details.*.manager_card_image' => 'required',
+            'manager_details.*.manager_card_image' => 'required|image|max:5120',
             'manager_details.*.manager_id_card' => 'required',
             'manager_details.*.salary' => 'required'
         ];

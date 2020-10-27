@@ -24,7 +24,7 @@ use App\Http\Requests\Farm\{
     UpdateFarmRequest
 };
 use App\Http\Requests\Farm\Manager\{
-    CreateFarmManagerRequest,
+    CreateFarmManagerRequest
 };
 class FarmController extends Controller
 {
@@ -78,10 +78,8 @@ class FarmController extends Controller
                 'farm_zipcode' => $request->farm_zipcode,
                 'farm_image' => (isset($request->farm_images) && $request->farm_images != '' && $request->farm_images != null) ? json_encode($request->farm_images) : null,
                 'farm_active' => ($request->farm_active) ? $request->farm_active : 1,
-//                'latitude' => $request->latitude,
-//                'longitude' => $request->longitude,
-                'latitude' => '-41.28889',
-                'longitude' => '174.77722',
+                'latitude' => $request->latitude,
+                'longitude' => $request->longitude,
                 'created_by' => $request->user()->id,
                 'distance' => $distance
             ]);
@@ -121,10 +119,11 @@ class FarmController extends Controller
                     ]);
 
                     if ($saveManger->save()) {
+                        $imageName = $farmDetails->putImage($manager['manager_card_image']);
                         $mangerDetails = new ManagerDetail([
                             'user_id' => $saveManger->id,
                             'identification_number' => $manager['manager_id_card'],
-                            'document' => $manager['manager_card_image'],
+                            'document' => $imageName,
                             'salary' => $manager['salary'],
                             'joining_date' => date('Y/m/d'),
                         ]);
@@ -201,7 +200,6 @@ class FarmController extends Controller
     {
         try {
             $distance =  $this->getDistance($request->latitude, $request->longitude, null, null, 'M');
-
             $customerFarm->update([
                 'farm_address' => $request->farm_address,
                 'farm_unit' => (isset($request->farm_unit) && $request->farm_unit != '' && $request->farm_unit != null) ? ($request->farm_unit) : null,
@@ -282,6 +280,9 @@ class FarmController extends Controller
         try {
             DB::beginTransaction();
             $newPassword = Str::random();
+            if(isset($request->manager_image)) {
+                
+            }
             $saveManager = new User([
                 'prefix' => (isset($request->manager_prefix) && $request->manager_prefix != '' && $request->manager_prefix != null) ? $request->manager_prefix : null,
                 'first_name' => $request->manager_first_name,
@@ -303,10 +304,11 @@ class FarmController extends Controller
             ]);
 
             if ($saveManager->save()) {
+                $imageName = $farmDetails->putImage($request->manager_card_image);
                 $managerDetails = new ManagerDetail([
                     'user_id' => $saveManager->id,
                     'identification_number' => $request->manager_id_card,
-                    'document' => $request->manager_card_image,
+                    'document' => $imageName,
                     'salary' => $request->salary,
                     'joining_date' => date('Y/m/d'),
                 ]);
@@ -338,6 +340,7 @@ class FarmController extends Controller
                     'farm_id' => 'required',
                     'manager_first_name' => 'required',
                     'manager_last_name' => 'required',
+                    'email' => 'required|string|email|unique:users,email,' . Auth::user()->id,
                     'manager_phone' => 'required',
                     'manager_address' => 'required',
                     'manager_city' => 'required',
@@ -359,16 +362,6 @@ class FarmController extends Controller
         $confirmed = 1;
         $manager = User::whereId($request->manager_id)->first();
         if ($request->email != '' && $request->email != null) {
-            $checkEmail = User::where('email', $request->email)->first();
-            if ($checkEmail !== null) {
-                if ($checkEmail->id !== $manager->id) {
-                    return response()->json([
-                                'status' => false,
-                                'message' => 'Email is already taken.',
-                                'data' => []
-                            ], 422);
-                }
-            }
             if ($manager->email !== $request->email) {
                 $confirmed = 0;
             }

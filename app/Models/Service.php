@@ -16,4 +16,8 @@ class Service extends Model
     protected $fillable = [
         'service_name', 'price', 'description', 'service_type', 'service_image', 'slot_type', 'slot_time', 'service_for', 'service_created_by'
     ];
+    
+    public function getSlotTypeAttribute($data) {
+        return json_decode($data);
+    }
 }

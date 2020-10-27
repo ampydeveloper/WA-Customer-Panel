@@ -34,7 +34,6 @@ class UpdateProfileRequest extends FormRequest
             'address' => 'required',
             'city' => 'required',
             'state' => 'required',
-            'country' => 'required',
             'zip_code' => 'required',
             'user_image' => 'sometimes|required|image|mimes:jpeg,png,jpg,gif,svg|max:5120'
         ];
