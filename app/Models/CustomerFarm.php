@@ -21,7 +21,7 @@ class CustomerFarm extends Model
 
     protected $hidden = ['deleted_at', 'updated_at'];
 
-    protected $appends = ['full_address', 'primary_manager', 'total_jobs'];
+    protected $appends = ['full_address', 'primary_manager', 'total_jobs', 'manager_details'];
 
     public function managers()
     {
@@ -72,4 +72,21 @@ class CustomerFarm extends Model
         return $this->jobs()->count();
     }
 
+    public function getManagerDetailsAttribute(){
+        $managersWPrefix = [];
+        foreach ($this->managers()->get() as $manager) {
+            $manager['manager_first_name'] = $manager['first_name'];
+            $manager['manager_last_name'] = $manager['last_name'];
+            $manager['manager_phone'] = $manager['phone'];
+            $manager['manager_address'] = $manager['address'];
+            $manager['manager_city'] = $manager['city'];
+            $manager['manager_province'] = $manager['state'];
+            $manager['manager_zipcode'] = $manager['zip_code'];
+            $manager['manager_id_card'] = $manager['managerDetails']['identification_number'];
+            $manager['salary'] = $manager['managerDetails']['salary'];
+            unset($manager['managerDetails']);
+            array_push($managersWPrefix, $manager);
+        }
+        return $managersWPrefix;
+    }
 }

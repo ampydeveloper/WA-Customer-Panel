@@ -23,6 +23,7 @@
     <!--<link href="css/owl.theme.css" rel="stylesheet">-->
     <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/@mdi/font@4.x/css/materialdesignicons.min.css" rel="stylesheet">
+    <script async src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCZ3PTWFGfTu4UYGIDiXJvMTxVcIpjWJGM&libraries=geometry,places"></script>
 </head>
 
 <body class="home-page">
@@ -37,7 +38,6 @@
     <script src="https://unpkg.com/feather-icons"></script>
     <script src='https://npmcdn.com/@turf/turf/turf.min.js'></script>
     <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.js'></script>
-    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCZ3PTWFGfTu4UYGIDiXJvMTxVcIpjWJGM&libraries=geometry,places"></script>
     <script>
         function openNav() {
             document.getElementById("mySidenav").style.width = "100%";

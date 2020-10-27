@@ -31,26 +31,27 @@
                 />
               </form>
             </div>
-            <button
+            <!-- <button
                 class="btn btn-success btn-lg btn-block"
                 style="width : 200px;"
                 @click="addNewManager"
                 v-if="!addManagers"
               >
                 Add New Manager
-              </button>
+              </button> -->
 
             <div class="basic-grey-box">
               <create-manager
+                :key='managerKey'
                 v-on:updatemanager="updateManager"
-                v-on:hideAddNewManager="hideAddNewManager"
+                v-on:cancelEditManager="cancelEditManager"
                 v-bind:new-manager="newManager"
                 v-bind:is-edit="isEdit"
               />
             </div>
 
             <div class="form-group" v-if="hasManager">
-              <ul class="list-group" style="display: none">
+              <ul class="list-group">
                 <li
                   class="list-group-item"
                   v-for="(manager, index) in model.manager_details"
@@ -119,6 +120,7 @@ const emptyFarmRequest = {
   farm_city: "",
   farm_province: "",
   farm_zipcode: "",
+  farm_place: "",
   farm_active: 1,
   latitude: "",
   longitude: "",
@@ -137,6 +139,7 @@ export default {
   },
   data() {
     return {
+      managerKey: Math.random().toString(36).substring(7),
       newManager: { ...emptyManager },
       model: emptyFarmRequest,
       fileContainer: [],
@@ -145,19 +148,25 @@ export default {
         styleClasses: "row",
         fields: [
           ...farmFormSchema.fields,
-          // {
-          //   type: "vueGoogleAutocomplete",
-          //   styleClasses:'col-md-12'  ,
-          //   onGetAddressData : ($event) => {
-
-          //   }
-          // },
+          {
+            label: 'Place',
+            type: "vueGoogleAutocomplete",
+            model: "farm_place",
+            // required: true,
+            // validator: ["required"],
+            styleClasses:'col-md-4'  ,
+            onGetAddressData : ($event) => {
+              console.log($event);
+            }
+          },
           {
             type: "filepond",
             onFilePondDrop: (fieldName, file, metadata, load) => {
               this.fileContainer.push(file);
               load(Date.now());
             },
+            required: true,
+            validator: ["required"],
             styleClasses: "col-md-4",
           },
           // {
@@ -205,8 +214,14 @@ export default {
         }
       }
 
-      this.model.manager_details.push(manager);
+      this.model.manager_details.push({ ...manager});
       this.addManagers = false;
+      this.newManager = { ...emptyManager };
+      this.refreshManagerKey();
+      this.isEdit = false;
+    },
+    refreshManagerKey(){
+      this.managerKey = Math.random().toString(36).substring(7);
     },
     createFarm: function () {
       const isValidated = this.$refs.form.validate();
@@ -276,8 +291,11 @@ export default {
       this.addManagers = true;
       this.isEdit = false;
     },
-    hideAddNewManager: function () {
-      this.addManagers = false;
+    cancelEditManager: function () {
+      this.newManager = { ...emptyManager };
+      this.refreshManagerKey();
+      this.addManagers = true;
+      this.isEdit = false;
     },
     onManagerDelete: function (manager) {
       this.model.manager_details = _.filter(
@@ -288,10 +306,12 @@ export default {
       );
     },
     onManagerEdit: function (manager, index) {
+      console.log(manager);
       this.newManager = { ...manager };
+      this.refreshManagerKey();
       this.addManagers = true;
       this.isEdit = index;
     },
-  },
+  }
 };
 </script>

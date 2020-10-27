@@ -194,7 +194,7 @@ class FarmController extends Controller
     }
 
     /*
-     * @method update : Function to update farm details.
+     * @method update : Function to update farm and manager details.
      * 
      */
     public function update(CustomerFarm $customerFarm, UpdateFarmRequest $request)
@@ -214,6 +214,42 @@ class FarmController extends Controller
                 'longitude' => $request->longitude,
                 'distance' => $distance
             ]);
+
+            foreach ($request->manager_details as $manager) {
+                $data = [
+                    'prefix' => (isset($manager['manager_prefix']) && $manager['manager_prefix'] != '' && $manager['manager_prefix'] != null) ? $manager['manager_prefix'] : null,
+                    'first_name' => $manager['manager_first_name'],
+                    'last_name' => $manager['manager_last_name'],
+                    'email' => $manager['email'],
+                    'phone' => $manager['manager_phone'],
+                    'address' => $manager['manager_address'],
+                    'city' => $manager['manager_city'],
+                    'state' => $manager['manager_province'],
+                    'zip_code' => $manager['manager_zipcode'],
+                    'user_image' => (isset($manager['manager_image']) && $manager['manager_image'] != '' && $manager['manager_image'] != null) ? $manager['manager_image'] : null,
+                    'farm_id' => $customerFarm->id
+                ];
+                if(!array_key_exists('id', $manager)){
+                    $newPassword = Str::random();
+                    $data['password'] = bcrypt($newPassword);
+                    $saveManger = new User($data);
+                    if ($saveManger->save()) {
+                        $mangerDetails = new ManagerDetail([
+                            'user_id' => $saveManger->id,
+                            'identification_number' => $manager['manager_id_card'],
+                            'document' => $manager['manager_card_image'],
+                            'salary' => $manager['salary'],
+                            'joining_date' => date('Y/m/d'),
+                        ]);
+                        if ($mangerDetails->save()) {
+                            $this->_confirmPassword($saveManger, $newPassword);
+                        }
+                    }
+                }else{
+                    User::where('id', $manager['id'])->update($data);
+                    ManagerDetail::where('user_id', $manager['id'])->update(['identification_number' => $manager['manager_id_card'], 'salary' => $manager['salary']]);
+                }
+            }
 
             return response()->json([
                         'status' => true,

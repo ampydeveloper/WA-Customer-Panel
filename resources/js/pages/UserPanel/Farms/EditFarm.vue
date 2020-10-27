@@ -33,11 +33,47 @@
             </div>
             <div class="basic-grey-box">
               <create-manager
+                :key="managerKey"
                 v-on:updatemanager="updateManager"
-                v-on:hideAddNewManager="hideAddNewManager"
+                v-on:cancelEditManager="cancelEditManager"
                 v-bind:new-manager="newManager"
                 v-bind:is-edit="isEdit"
               />
+            </div>
+
+            <div class="form-group" v-if="hasManager">
+              <ul class="list-group">
+                <li
+                  class="list-group-item"
+                  v-for="(manager, index) in model.manager_details"
+                  :key="index"
+                >
+                  {{ `${manager.manager_first_name} ${manager.manager_last_name}` }}
+                  / {{ manager.email }}
+
+                  <div style="display: inline; float: right">
+                    <button
+                      type="button"
+                      class="btn btn-sm btn-info"
+                      @click="onManagerEdit(manager, index)"
+                    >
+                      Edit
+                    </button>
+                    <button
+                      type="button"
+                      class="btn btn-sm btn-danger"
+                      @click="onManagerDelete(manager)"
+                    >
+                      Delete
+                    </button>
+                  </div>
+                </li>
+                <div class="basic-button-out clearfix">
+                  <button class="btn-full-green" @click="saveFarm">
+                    Save <i data-feather="arrow-right"></i>
+                  </button>
+                </div>
+              </ul>
             </div>
           </div>
         </div>
@@ -52,21 +88,47 @@ import FarmService from "../../../services/FarmService";
 import CreateManager from "./Managers/CreateManager";
 import router from "../../../router";
 
+const emptyManager = {
+  manager_first_name: "",
+  manager_last_name: "",
+  email: "",
+  manager_phone: "",
+  manager_address: "",
+  manager_city: "",
+  manager_province: "",
+  manager_zipcode: "",
+  manager_card_image: [],
+  manager_id_card: "",
+  salary: "",
+};
+
+const emptyFarmRequest = {
+  farm_address: "",
+  farm_city: "",
+  farm_province: "",
+  farm_zipcode: "",
+  farm_place: "",
+  farm_active: 1,
+  latitude: "",
+  longitude: "",
+  manager_details: [],
+};
+
 export default {
   components: {
     CreateManager,
   },
+  computed: {
+    hasManager: function () {
+      return this.model.manager_details.length > 0;
+    },
+  },
   data() {
     return {
-      model: {
-        farm_address: "",
-        farm_city: "",
-        farm_province: "",
-        farm_zipcode: "",
-        farm_active: 1,
-        latitude: "",
-        longitude: "",
-      },
+      managerKey: Math.random().toString(36).substring(7),
+      newManager: { ...emptyManager },
+      model: {... emptyFarmRequest},
+      isEdit: false,
       schema: {
         fields: [
           ...farmFormSchema.fields,
@@ -80,38 +142,49 @@ export default {
           //   ]
           // },
           {
-            type: "submit",
-            styleClasses: "submit-button",
-            label: "Create Farm",
-            caption: "Create Farm form",
-            validateBeforeSubmit: true,
-            disabled: () => this.isCreatingFarm,
-            onSubmit: (model, schema) => {
-              FarmService.update(this.$route.params.farmId, this.model)
-                .then(
-                  (response) => {
-                    this.$toast.open({
-                      message: response.data.message,
-                      type: "success",
-                      position: "top-right",
-                      dismissible: false,
-                    });
-                    router.push({ name: "farmsList" });
-                  },
-                  (error) => {
-                    this.$toast.open({
-                      message: error.response.data.message,
-                      type: "error",
-                      position: "bottom-right",
-                      dismissible: false,
-                    });
-                  }
-                )
-                .finally((_) => {
-                  this.isCreatingFarm = false;
-                });
-            },
+            label: 'Place',
+            type: "vueGoogleAutocomplete",
+            model: "farm_place",
+            // required: true,
+            // validator: ["required"],
+            styleClasses:'col-md-4'  ,
+            onGetAddressData : ($event) => {
+              console.log($event);
+            }
           },
+          // {
+          //   type: "submit",
+          //   styleClasses: "submit-button",
+          //   label: "Create Farm",
+          //   caption: "Create Farm form",
+          //   validateBeforeSubmit: true,
+          //   disabled: () => this.isCreatingFarm,
+          //   onSubmit: (model, schema) => {
+          //     FarmService.update(this.$route.params.farmId, this.model)
+          //       .then(
+          //         (response) => {
+          //           this.$toast.open({
+          //             message: response.data.message,
+          //             type: "success",
+          //             position: "top-right",
+          //             dismissible: false,
+          //           });
+          //           router.push({ name: "farmsList" });
+          //         },
+          //         (error) => {
+          //           this.$toast.open({
+          //             message: error.response.data.message,
+          //             type: "error",
+          //             position: "bottom-right",
+          //             dismissible: false,
+          //           });
+          //         }
+          //       )
+          //       .finally((_) => {
+          //         this.isCreatingFarm = false;
+          //       });
+          //   },
+          // },
         ],
       },
       formOptions: {
@@ -127,9 +200,74 @@ export default {
     this.model = { ...farmDetails };
   },
   methods: {
-    hideAddNewManager: function () {
+    updateManager: function (manager, isEdit) {
+      if (isEdit !== false) {
+        this.model.manager_details = _.filter(
+          this.model.manager_details,
+          function (v, k) {
+            return k != isEdit;
+          }
+        );
+      } else {
+        const existingManager = _.find(
+          this.model.manager_details,
+          (emanager) => emanager.email === manager.email
+        );
+
+        if (existingManager !== undefined) {
+          this.model.manager_details = _.filter(
+            this.model.manager_details,
+            (emanager) => emanager.email !== manager.email
+          );
+        }
+      }
+
+      this.model.manager_details.push({ ...manager});
       this.addManagers = false;
+      this.newManager = { ...emptyManager };
+      this.refreshManagerKey();
+      this.isEdit = false;
     },
+    refreshManagerKey(){
+      this.managerKey = Math.random().toString(36).substring(7);
+    },
+    cancelEditManager: function () {
+      this.newManager = { ...emptyManager };
+      this.refreshManagerKey();
+      this.addManagers = true;
+      this.isEdit = false;
+    },
+    onManagerEdit: function (manager, index) {
+      this.newManager = { ...manager };
+      this.refreshManagerKey();
+      this.addManagers = true;
+      this.isEdit = index;
+    },
+    saveFarm(){
+       FarmService.update(this.$route.params.farmId, this.model)
+          .then(
+            (response) => {
+              this.$toast.open({
+                message: response.data.message,
+                type: "success",
+                position: "top-right",
+                dismissible: false,
+              });
+              router.push({ name: "farmsList" });
+            },
+            (error) => {
+              this.$toast.open({
+                message: error.response.data.message,
+                type: "error",
+                position: "bottom-right",
+                dismissible: false,
+              });
+            }
+          )
+          .finally((_) => {
+            this.isCreatingFarm = false;
+          });
+    }
   },
 };
 </script>

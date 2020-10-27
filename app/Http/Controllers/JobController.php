@@ -262,7 +262,7 @@ class JobController extends Controller
         ], 200);
     }
 
-    public function update(Request $request)
+    public function update($job_id, Request $request)
     {
         $checkIfEdittingAllowed = Job::where('id', $request->job_id)->first();
         if (round((strtotime($checkIfEdittingAllowed->job_providing_date) - strtotime(date('Y/m/d'))) / 3600, 1)) {

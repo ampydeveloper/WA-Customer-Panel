@@ -120,19 +120,19 @@
                       </v-radio-group> -->
 
                       <div class="pretty p-default p-round">
-                        <input type="radio" name="slot_type" value="1" />
+                        <input type="radio" name="slot_type" v-model="jobRequest.time_slots_id" value="1" />
                         <div class="state">
                           <label>Morning</label>
                         </div>
                       </div>
                       <div class="pretty p-default p-round">
-                        <input type="radio" name="slot_type" value="2" />
+                        <input type="radio" name="slot_type" v-model="jobRequest.time_slots_id" value="2" />
                         <div class="state">
                           <label>Afternoon</label>
                         </div>
                       </div>
                       <div class="pretty p-default p-round">
-                        <input type="radio" name="slot_type" value="3" />
+                        <input type="radio" name="slot_type" v-model="jobRequest.time_slots_id" value="3" />
                         <div class="state">
                           <label>Evening</label>
                         </div>
@@ -146,6 +146,7 @@
                     </div>
                     <div class="pt-0 pb-0">
                       <v-switch
+                        color="success"
                         v-model="jobRequest.is_repeating_job"
                         :label="`${
                           jobRequest.is_repeating_job === true ? 'Yes' : 'No'
@@ -154,25 +155,25 @@
 
                       <v-row v-if="jobRequest.is_repeating_job">
                         <v-col cols="12" sm="2" md="2">
-                          <v-checkbox v-model="jobRequest.repeating_days" label="Monday" value="monday"></v-checkbox>
+                          <v-checkbox color="success" v-model="jobRequest.repeating_days" label="Monday" value="monday"></v-checkbox>
                         </v-col>
                         <v-col cols="12" sm="2" md="2">
-                          <v-checkbox v-model="jobRequest.repeating_days" label="Tuesday" value="tuesday" hide-details></v-checkbox>
+                          <v-checkbox color="success" v-model="jobRequest.repeating_days" label="Tuesday" value="tuesday" hide-details></v-checkbox>
                         </v-col>
                         <v-col cols="12" sm="2" md="2">
-                          <v-checkbox v-model="jobRequest.repeating_days" label="Wednesday" value="wednesday" hide-details></v-checkbox>
+                          <v-checkbox color="success" v-model="jobRequest.repeating_days" label="Wednesday" value="wednesday" hide-details></v-checkbox>
                         </v-col>
                         <v-col cols="12" sm="2" md="2">
-                          <v-checkbox v-model="jobRequest.repeating_days" label="Thursday" value="thursday" hide-details></v-checkbox>
+                          <v-checkbox color="success" v-model="jobRequest.repeating_days" label="Thursday" value="thursday" hide-details></v-checkbox>
                         </v-col>
                         <v-col cols="12" sm="2" md="2">
-                          <v-checkbox v-model="jobRequest.repeating_days" label="Friday" value="friday" hide-details></v-checkbox>
+                          <v-checkbox color="success" v-model="jobRequest.repeating_days" label="Friday" value="friday" hide-details></v-checkbox>
                         </v-col>
                         <v-col cols="12" sm="2" md="2">
-                          <v-checkbox v-model="jobRequest.repeating_days" label="Saturday" value="saturday" hide-details></v-checkbox>
+                          <v-checkbox color="success" v-model="jobRequest.repeating_days" label="Saturday" value="saturday" hide-details></v-checkbox>
                         </v-col>
                         <v-col cols="12" sm="3" md="3">
-                          <v-checkbox v-model="jobRequest.repeating_days" label="Sunday" value="sunday" hide-details></v-checkbox>
+                          <v-checkbox color="success" v-model="jobRequest.repeating_days" label="Sunday" value="sunday" hide-details></v-checkbox>
                         </v-col>
                       </v-row>
 
@@ -506,6 +507,7 @@ export default {
         farm_id: "",
         service_id: "",
         job_providing_date: moment().format("YYYY-MM-DD"),
+        time_slots_id: "",
         weight: 1,
         gate_no: "",
         amount: 0,
@@ -553,7 +555,6 @@ export default {
           id: serviceId,
         }
       );
-      console.log(slot_type);
       /** Clear any existing slots */
       this.serviceTimeSlotMap = {};
       /** Clear any existing time durations */
