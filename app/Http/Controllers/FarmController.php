@@ -66,6 +66,7 @@ class FarmController extends Controller
     public function create(CreateFarmRequest $request)
     {
         try {
+            dd($request->all());
             $customer = $request->user();
             DB::beginTransaction();
             $distance =  $this->getDistance($request->latitude, $request->longitude, null, null, 'M');
@@ -199,6 +200,7 @@ class FarmController extends Controller
     public function update(CustomerFarm $customerFarm, UpdateFarmRequest $request)
     {
         try {
+            // dd($request->all());
             $distance =  $this->getDistance($request->latitude, $request->longitude, null, null, 'M');
             $customerFarm->update([
                 'farm_address' => $request->farm_address,
@@ -206,12 +208,16 @@ class FarmController extends Controller
                 'farm_city' => $request->farm_city,
                 'farm_province' => $request->farm_province,
                 'farm_zipcode' => $request->farm_zipcode,
-                'farm_image' => (isset($request->farm_images) && $request->farm_images != '' && $request->farm_images != null) ? json_encode($request->farm_images) : null,
+                // 'farm_image' => (isset($request->farm_images) && $request->farm_images != '' && $request->farm_images != null) ? json_encode($request->farm_images) : null,
                 'farm_active' => $request->farm_active,
                 'latitude' => $request->latitude,
                 'longitude' => $request->longitude,
                 'distance' => $distance
             ]);
+            if ($request->farm_image) {
+                $farmImage = $customerFarm->putImage($request->farm_image);
+                $customerFarm->update(['farm_image' => json_encode([$farmImage])]);
+            }
 
             foreach ($request->manager_details as $manager) {
                 $data = [

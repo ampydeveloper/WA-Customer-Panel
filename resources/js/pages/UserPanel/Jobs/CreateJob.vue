@@ -230,7 +230,7 @@
                     </div>
                   </v-col>
 
-                  <v-col cols="12" md="12" class="pt-0 pb-0" v-if="isCustomer">
+                  <v-col cols="6" md="6" v-if="isCustomer">
                     <div class="label-align pt-0">
                       <label>Farms</label>
                     </div>
@@ -241,7 +241,24 @@
                         placeholder="Select Farm"
                         :rules="[(v) => !!v || 'Farms is required.']"
                       ></v-select>
-                      <div
+                     
+                    </div>
+                  </v-col>
+                  <v-col cols="6" md="6" v-if="isCustomer">
+                      <div class="label-align pt-0">
+                        <label>Manager</label>
+                      </div>
+                      <div class="pt-0 pb-0 farm-conatiner">
+                        <v-select
+                          v-model="jobRequest.manager_id"
+                          :items="managerList"
+                          placeholder="Select Manager"
+                          :rules="[(v) => !!v || 'Manager is required.']"
+                        ></v-select>
+                      </div>
+                    </v-col>
+                    <v-col cols="12" md="12" class="pt-0 pb-0" v-if="isCustomer">
+                       <div
                         id="farm_map"
                         class="contain"
                         style="
@@ -251,8 +268,7 @@
                           height: 300px;
                         "
                       ></div>
-                    </div>
-                  </v-col>
+                    </v-col>
                 </div>
               </div>
 
@@ -510,6 +526,8 @@ export default {
         time_slots_id: "",
         weight: 1,
         gate_no: "",
+        manager_id: null,
+        payment_mode: null,
         amount: 0,
         notes: "",
         is_repeating_job: false,
@@ -531,6 +549,7 @@ export default {
       serviceList: [],
       farmList: [],
       allServices: [],
+      managerList: [],
       menu2: false,
       weightShow: false,
       servicePrice: 0,
@@ -548,7 +567,7 @@ export default {
   },
   watch: {
     "jobRequest.service_id": function (serviceId) {
-      
+
       const { timeSlots, service_type, slot_type, price } = _.find(
         this.allServices,
         {
@@ -577,7 +596,7 @@ export default {
       $(".service-time-timing-outer").show();
       $(".service-time-timing-out .pretty").hide();
 
-      $.each(JSON.parse(slot_type), function (index, value) {
+      $.each(slot_type, function (index, value) {
         console.log(value);
         $(".service-time-timing-out :input[value='" + value + "']")
           .parent()
@@ -624,10 +643,26 @@ export default {
             speed: 1,
           });
         }
+        let self = this;
+        FarmService.listManagers(farmId).then(function(managers){
+          managers = managers.data.data;
+          if(managers != undefined && managers.length > 0){
+            self.managerList = [...managers].map(manager => {
+              return {
+                text: manager.full_name,
+                value: manager.id
+              };
+            });
+          }
+        });
       }
     },
   },
   created: async function () {
+    const user = JSON.parse(window.localStorage.getItem('user'));
+    if(user.role_id == 4){
+      this.jobRequest.payment_mode = user.payment_mode;
+    }
     this.expiryMonths = [...this.expiryMonths].map((month) => {
       return month < 10 ? `0${month}` : month;
     });

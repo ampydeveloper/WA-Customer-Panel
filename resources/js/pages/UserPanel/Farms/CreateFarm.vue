@@ -79,7 +79,7 @@
                 </li>
               </ul>
 
-              <div class="basic-button-out clearfix">
+              <div class="basic-button-out clearfix mt-3">
                 <button class="btn-full-green" @click="createFarm">
                   Create Farm <i data-feather="arrow-right"></i>
                 </button>
@@ -147,18 +147,18 @@ export default {
       schema: {
         styleClasses: "row",
         fields: [
-          ...farmFormSchema.fields,
           {
-            label: 'Place',
+            label: 'Address',
             type: "vueGoogleAutocomplete",
-            model: "farm_place",
-            // required: true,
-            // validator: ["required"],
+            model: "farm_address",
+            required: true,
+            validator: ["required", "string"],
             styleClasses:'col-md-4'  ,
             onGetAddressData : ($event) => {
               console.log($event);
             }
           },
+          ...farmFormSchema.fields,
           {
             type: "filepond",
             onFilePondDrop: (fieldName, file, metadata, load) => {

@@ -214,10 +214,48 @@
                       </div>
                     </v-col>
 
-                    <!-- <v-col cols="12" md="12" class="job-p-inner pt-0 pb-0">
+                    <v-col cols="12" md="12" class="job-p-inner pt-0 pb-0">
                       <div class="label-align pt-0">
                         <label class="label_text">Job Photos</label>
                       </div>
+                      <v-row v-if='jobRequest.existingImages != null && jobRequest.existingImages.length > 0'>
+                        <v-col
+                          v-for="(src, n) in jobRequest.existingImages"
+                          :key="n"
+                          class="d-flex child-flex"
+                          cols="2"
+                        >
+                          <v-img
+                            max-height="150"
+                            max-width="150"
+                            :src="src.replace('/storage/', '/storage/user_images/')"
+                            aspect-ratio="1"
+                            class="grey lighten-2"
+                          >
+                             <template v-slot:default>
+                              <v-row
+                                class="fill-height ma-0"
+                                align="start"
+                                justify="end"
+                              >
+                              <v-btn @click="removeExisting(n)" icon color="error" small><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-x-circle"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg></v-btn>
+                              </v-row>
+                            </template>
+                            <template v-slot:placeholder>
+                              <v-row
+                                class="fill-height ma-0"
+                                align="center"
+                                justify="center"
+                              >
+                                <v-progress-circular
+                                  indeterminate
+                                  color="grey lighten-5"
+                                ></v-progress-circular>
+                              </v-row>
+                            </template>
+                          </v-img>
+                        </v-col>
+                      </v-row>
                       <div class="pt-0 pb-0">
                         <file-pond
                           name="jobImage"
@@ -228,9 +266,9 @@
                           v-bind:server="filePondServer"
                         />
                       </div>
-                    </v-col> -->
+                    </v-col>
 
-                    <v-col cols="12" md="12" class="pt-0 pb-0" v-if="isCustomer">
+                    <v-col cols="6" md="6" v-if="isCustomer">
                       <div class="label-align pt-0">
                         <label>Farms</label>
                       </div>
@@ -241,6 +279,22 @@
                           placeholder="Select Farm"
                           :rules="[(v) => !!v || 'Farms is required.']"
                         ></v-select>
+                      </div>
+                    </v-col>
+                    <v-col cols="6" md="6" v-if="isCustomer">
+                      <div class="label-align pt-0">
+                        <label>Manager</label>
+                      </div>
+                      <div class="pt-0 pb-0 farm-conatiner">
+                        <v-select
+                          v-model="jobRequest.manager_id"
+                          :items="managerList"
+                          placeholder="Select Manager"
+                          :rules="[(v) => !!v || 'Manager is required.']"
+                        ></v-select>
+                      </div>
+                    </v-col>
+                    <v-col cols="12" md="12" class="pt-0 pb-0" v-if="isCustomer">
                         <div
                           id="farm_map"
                           class="contain"
@@ -251,7 +305,6 @@
                             height: 300px;
                           "
                         ></div>
-                      </div>
                     </v-col>
                   </div>
                 </div>
@@ -336,7 +389,9 @@ export default {
       coordinates: [],
       jobRequest: {
         farm_id: "",
+        manager_id: "",
         service_id: "",
+        payment_mode: null,
         time_slots_id: "",
         job_providing_date: "2020-01-01",
         weight: 1,
@@ -344,7 +399,8 @@ export default {
         amount: 0,
         notes: "",
         is_repeating_job: false,
-        repeating_days: 0
+        repeating_days: 0,
+        existingImages: null
       },
       requiredRules: [v => !!v || "This field is required."],
       submitted: false,
@@ -354,6 +410,7 @@ export default {
       serviceList: [],
       farmList: [],
       allServices: [],
+      managerList: [],
       menu2: false,
       weightShow: false,
       servicePrice: 0,
@@ -363,7 +420,6 @@ export default {
       slotsForPeriod: [{ id: 1, time: "12AM - 12AM" }],
       filePondServer: {
         process: (fieldName, file, metadata, load) => {
-          console.log(file);
           this.fileContainer.push(file);
           load(Date.now());
         },
@@ -396,7 +452,7 @@ export default {
       $(".service-time-timing-outer").show();
       $(".service-time-timing-out .pretty").hide();
 
-      console.log(slot_type);
+      // console.log(slot_type);
       // $.each(JSON.parse(slot_type), function (index, value) {
         // console.log(value);
         // $(".service-time-timing-out :input[value='" + value + "']")
@@ -444,6 +500,18 @@ export default {
             speed: 1,
           });
         }
+        let self = this;
+        FarmService.listManagers(farmId).then(function(managers){
+          managers = managers.data.data;
+          if(managers != undefined && managers.length > 0){
+            self.managerList = [...managers].map(manager => {
+              return {
+                text: manager.full_name,
+                value: manager.id
+              };
+            });
+          }
+        });
       }
     },
   },
@@ -488,10 +556,13 @@ export default {
         amount: job.amount,
         weight: job.weight,
         gate_no: job.gate_no,
+        manager_id: job.manager_id,
+        payment_mode: payment_mode,
         job_providing_date: job.job_providing_date,
         is_repeating_job: job.is_repeating_job,
         repeating_days: job.repeating_days != null ? JSON.parse(job.repeating_days) : job.repeating_days,
-        time_slots_id: job.time_slots_id
+        time_slots_id: job.time_slots_id,
+        existingImages: job.images != null ? JSON.parse(job.images) : job.images,
       }
     };
     this.selectedTimePeriod = 1;
@@ -501,9 +572,30 @@ export default {
       const isValidated = this.$refs.form.validate();
       if (isValidated === true) {
         try {
+          var editJobRequest = new FormData();
+
+          /**
+           * Adding form values to Request
+           * except of user_image
+           */
+          for (var key in this.jobRequest) {
+            let val = this.jobRequest[key];
+            if(key == 'repeating_days'){
+              val = (this.jobRequest[key]).join(",")
+            }
+            editJobRequest.append(key, this.jobRequest[key]);
+          }
+          /**
+           * If user image is uploaded then add it to form data
+           */
+          if (this.fileContainer.length > 0) {
+            this.fileContainer.forEach((file, ind) => {
+              editJobRequest.append(`images[${ind}]`, file, file.name);
+            });
+          }
           const response = await JobService.update(
             this.$route.params.jobId,
-            this.jobRequest
+            editJobRequest
           );
           this.$toast.open({
             message: response.data.message,
@@ -561,6 +653,9 @@ export default {
           },
         });
       });
+    },
+    removeExisting(n){
+      this.jobRequest.existingImages.splice(this.jobRequest.existingImages.indexOf(n), 1)
     }
   }
 };

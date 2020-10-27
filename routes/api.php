@@ -54,7 +54,7 @@ Route::group(['middleware' => 'auth:api', 'prefix' => 'customer', 'as' => 'custo
         //Done
         Route::post('', 'FarmController@create')->name('create');
         //done
-        Route::patch('{customer_farm}', 'FarmController@update')->name('update');
+        Route::post('{customer_farm}', 'FarmController@update')->name('update');
         //done
         Route::get('{customer_farm}', 'FarmController@get')->name('get');
         //done
@@ -84,7 +84,7 @@ Route::group(['middleware' => 'auth:api', 'prefix' => 'customer', 'as' => 'custo
     Route::group(['prefix' => 'job', 'as' => 'job'], function () {
         //done
         Route::post('', 'JobController@create')->name('create');
-        Route::patch('{job_id}', 'JobController@update')->name('update');
+        Route::post('{job_id}', 'JobController@update')->name('update');
         Route::get('{job}/cancel', 'JobController@cancelJob')->name('cancel');
         //done
         Route::get('{job}', 'JobController@get')->name('get');

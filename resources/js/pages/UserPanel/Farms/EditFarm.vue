@@ -30,6 +30,41 @@
                   :model="model"
                 />
               </form>
+                <v-col cols="4" md="4" class="pt-0 pb-0" v-if='model.farm_image != null && model.farm_image.length > 0'>
+                  <div class="label-align pt-0">
+                    <label class="label_text">Existing Photo <small>(Uploading new one will replace following existing one!)</small></label>
+                  </div>
+                  <v-row>
+                    <v-col
+                      v-for="(src, n) in model.farm_image"
+                      :key="n"
+                      class="d-flex child-flex"
+                      cols="4"
+                    >
+                    <v-img
+                      max-height="300"
+                      max-width="300"
+                      :src="src.replace('/storage/', '/storage/user_images/')"
+                      aspect-ratio="1"
+                      class="grey lighten-2"
+                    >
+                      <template v-slot:placeholder>
+                        <v-row
+                          class="fill-height ma-0"
+                          align="center"
+                          justify="center"
+                        >
+                          <v-progress-circular
+                            indeterminate
+                            color="grey lighten-5"
+                          ></v-progress-circular>
+                        </v-row>
+                      </template>
+                    </v-img>
+                    <!-- <img width="200" :src="src.replace('/storage/', '/storage/user_images/')"/> -->
+                    </v-col>
+                  </v-row>
+                </v-col>
             </div>
             <div class="basic-grey-box">
               <create-manager
@@ -68,7 +103,7 @@
                     </button>
                   </div>
                 </li>
-                <div class="basic-button-out clearfix">
+                <div class="basic-button-out clearfix mt-3">
                   <button class="btn-full-green" @click="saveFarm">
                     Save <i data-feather="arrow-right"></i>
                   </button>
@@ -128,10 +163,35 @@ export default {
       managerKey: Math.random().toString(36).substring(7),
       newManager: { ...emptyManager },
       model: {... emptyFarmRequest},
+      fileContainer: [],
       isEdit: false,
       schema: {
         fields: [
+          {
+            label: 'Address',
+            type: "vueGoogleAutocomplete",
+            required: false,
+            placeHolder: 'farm_address',
+            // validator: ["required", "string"],
+            styleClasses:'col-md-4'  ,
+            onPlaceChanged : (addressData) => {
+              this.model.farm_address = addressData;
+              console.log($event);
+            }
+          },
           ...farmFormSchema.fields,
+          {
+            type: "filepond",
+            onFilePondDrop: (fieldName, file, metadata, load) => {
+              this.fileContainer.push(file);
+              load(Date.now());
+            },
+            required: false,
+            validator: ["required", (value, field, model) => {
+              console.log(value, field, model);
+            }],
+            styleClasses: "col-md-4",
+          },
           // {
           //   type: "radios",
           //   label: "Active Status",
@@ -141,17 +201,17 @@ export default {
           //     { name: "Inactive", value: 0 }
           //   ]
           // },
-          {
-            label: 'Place',
-            type: "vueGoogleAutocomplete",
-            model: "farm_place",
-            // required: true,
-            // validator: ["required"],
-            styleClasses:'col-md-4'  ,
-            onGetAddressData : ($event) => {
-              console.log($event);
-            }
-          },
+          // {
+          //   label: 'Place',
+          //   type: "vueGoogleAutocomplete",
+          //   model: "farm_place",
+          //   // required: true,
+          //   // validator: ["required"],
+          //   styleClasses:'col-md-4'  ,
+          //   onGetAddressData : ($event) => {
+          //     console.log($event);
+          //   }
+          // },
           // {
           //   type: "submit",
           //   styleClasses: "submit-button",
@@ -198,6 +258,9 @@ export default {
       data: { data: farmDetails },
     } = await FarmService.get(this.$route.params.farmId);
     this.model = { ...farmDetails };
+    if(this.model.farm_image != null){
+      this.model.farm_image = JSON.parse(this.model.farm_image);
+    }
   },
   methods: {
     updateManager: function (manager, isEdit) {
@@ -244,7 +307,41 @@ export default {
       this.isEdit = index;
     },
     saveFarm(){
-       FarmService.update(this.$route.params.farmId, this.model)
+      const isValidated = this.$refs.form.validate();
+      if (isValidated !== true) {
+        return false;
+      }
+      var saveFarmRequest = new FormData();
+
+      /**
+       * Adding form values to Request
+       * except of user_image
+       */
+      for (var key in this.model) {
+        if (key !== "manager_details") {
+          saveFarmRequest.append(key, this.model[key]);
+        }else {
+          if (this.model.manager_details.length > 0) {
+            this.model.manager_details.forEach((manager, ind) => {
+              Object.keys(manager).forEach((k) => {
+                saveFarmRequest.append(
+                  `manager_details[${ind}][${k}]`,
+                  manager[k]
+                );
+              });
+            });
+          }
+        }
+      }
+
+      /**
+       * If user image is uploaded then add it to form data
+       */
+      if (this.fileContainer.length > 0) {
+        let fl = this.fileContainer[0];
+        saveFarmRequest.append('farm_image', fl, fl.name)
+      }
+       FarmService.update(this.$route.params.farmId, saveFarmRequest)
           .then(
             (response) => {
               this.$toast.open({

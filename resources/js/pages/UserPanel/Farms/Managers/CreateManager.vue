@@ -61,6 +61,7 @@ export default {
             allowMultiple: false,
             onFilePondDrop: (fieldName, file, metadata, load) => {
               this.model.manager_card_image = [];
+              console.log(file);
               this.model.manager_card_image.push(file);
               window.ttt=file;
               load(Date.now());
@@ -111,6 +112,9 @@ export default {
   methods: {
     cancel: function() {
       this.$emit("cancelEditManager");
+    },
+    removeExisting: function(){
+      this.model.manager_card_image = []
     }
   }
 };

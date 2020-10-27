@@ -30,7 +30,7 @@ class JobController extends Controller
     public function create(CreateJobRequest $createJobRequest)
     {
         
-//        dd($createJobRequest->all());
+
         $validator = Validator::make($createJobRequest->all(), [
                     'manager_id' => 'required',
                     'service_id' => 'required',
@@ -284,13 +284,13 @@ class JobController extends Controller
 
     public function update($job_id, Request $request)
     {
-        $validator = Validator::make($request->all(), [
+        $validator = Validator::make(array_merge(['job_id' => $job_id], $request->all()), [
                     'job_id' => 'required',
                     'manager_id' => 'required',
                     'service_id' => 'required',
                     'job_providing_date' => 'required',
                     'is_repeating_job' => 'required',
-                    'payment_mode' => 'required',
+                    // 'payment_mode' => 'required',
                     'repeating_days' => 'required_if:is_repeating_job,==,true',
         ]);
         if ($validator->fails()) {
@@ -304,6 +304,25 @@ class JobController extends Controller
         $checkIfEdittingAllowed = Job::where('id', $request->job_id)->first();
         if ($checkIfEdittingAllowed->job_status == config('constant.job_status.open')) {
             try {
+                $images = null;
+                if(isset($request->existingImages) && $request->existingImages && strlen($request->existingImages) > 0){
+                    $images = explode(',', $request->existingImages);
+                }
+                if (isset($request->images) && $request->images && count($request->images) > 0) {
+                    $jobImages = [];
+                    $job = Job::whereId($request->job_id)->first();
+                    foreach ($request->images as $image) {
+                        $imageName = $job->putImage($image);
+                        if ($imageName) {
+                            $jobImages[] = $imageName;
+                        }
+                    }
+                    if($images != null){
+                        $jobImages = array_merge($images, $jobImages);
+                    }
+                    $images = json_encode($jobImages);
+                    // $job->update(['images' => json_encode($jobImages)]);
+                }
                 Job::whereId($request->job_id)->update([
                     'manager_id' => (isset($request->manager_id) && $request->manager_id != '' && $request->manager_id != null) ? $request->manager_id : null,
                     'farm_id' => (isset($request->farm_id) && $request->farm_id != '' && $request->farm_id != null) ? $request->farm_id : null,
@@ -318,6 +337,7 @@ class JobController extends Controller
                     'images' => (isset($request->images) && $request->images != '' && $request->images != null) ? $request->images : null,
                     'notes' => (isset($request->notes) && $request->notes != '' && $request->notes != null) ? $request->notes : null,
                     'amount' => $request->amount,
+                    'images' => $images
                 ]);
                 $mailData = [
                     'job_id' => $request->job_id,
