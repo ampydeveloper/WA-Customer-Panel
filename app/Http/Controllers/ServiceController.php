@@ -48,7 +48,7 @@ class ServiceController extends Controller
     public function serviceList() {
         $user = request()->user();
         
-        if ($user->role_id != config('constant.roles.Customer') && $user->role_id != config('constant.roles.Haulers') && $user->role_id != config('constant.roles.Customer_Manager')) {
+        if ($user->role_id != config('constant.roles.Customer') && $user->role_id != config('constant.roles.Haulers') && $user->role_id != config('constant.roles.Customer_Manager') && $user->role_id != config('constant.roles.Hauler_driver')) {
             return response()->json([
                         'status' => false,
                         'message' => 'unauthorized access.',
@@ -58,12 +58,8 @@ class ServiceController extends Controller
         if ($user->role_id == config('constant.roles.Customer') || $user->role_id == config('constant.roles.Haulers')) {
             $getAllServices = Service::where('service_for', $user->role_id)->get();
         } else {
-            if ($user->managerOf) {
-                $customer = User::find($user->managerOf->customer_id);
-                $getAllServices = Service::where('service_for', $customer->role_id)->get();
-            } else {
-                $getAllServices = [];
-            }
+            $customer = User::find($user->created_by);
+            $getAllServices = Service::where('service_for', $customer->role_id)->get();
         }
         return response()->json([
                     'status' => true,

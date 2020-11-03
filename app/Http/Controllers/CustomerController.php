@@ -2,26 +2,48 @@
 
 namespace App\Http\Controllers;
 
+use Auth;
+use Mail;
+use App\Job;
+use App\Payment;
+use App\Service;
+use Carbon\Carbon;
+use App\TimeSlots;
+use App\Models\User;
+use App\CustomerFarm;
+use App\ManagerDetail;
+use App\ServicesTimeSlot;
+use App\CustomerCardDetail;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
-use Mail;
-use App\Service;
-use App\TimeSlots;
-use App\ServicesTimeSlot;
-use App\Models\User;
-use App\ManagerDetail;
-use App\CustomerFarm;
-use App\CustomerCardDetail;
-use App\Payment;
-use App\Job;
-use Carbon\Carbon;
-use Auth;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Validator;
 
 class CustomerController extends Controller {
+    
+    public function myFarms() {
+        if(Auth::user()->role_id == config('constant.roles.Customer')) {
+            return response()->json([
+                    'status' => true,
+                    'message' => 'Customer farms details',
+                    'farms' => Auth::user()->farms
+                ], 200);
+        } elseif(Auth::user()->role_id == config('constant.roles.Customer_Manager')) {
+            return response()->json([
+                    'status' => true,
+                    'message' => 'Customer farms details',
+                    'farms' => CustomerFarm::whereId(Auth::user()->created_by)->get()
+                ], 200);
+        } else {
+            return response()->json([
+                'status' => false,
+                'message' => 'Unauthorized access.',
+                'data' => []
+            ], 421);
+        }
+    }
     
     public function listCustomerMobile(Request $request) {
         $validator = Validator::make($request->all(), [
@@ -295,13 +317,7 @@ class CustomerController extends Controller {
     /**
      * @method myFarms : Function to get logged in customer's farms.
      */
-    public function myFarms() {
-        return response()->json([
-                    'status' => true,
-                    'message' => 'Customer farms details',
-                    'farms' => Auth::user()->farms
-                ], 200);
-    }
+    
 
     /**
      * get manager details

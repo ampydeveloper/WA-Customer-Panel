@@ -58,35 +58,16 @@ trait UserMethods
         if ($this->isCustomer()) {
             return Job::where('customer_id', $this->id)->with('farm','customer', 'manager', 'service')->get();
         } else {
-            $farm = $this->managerOf;
-            if (!$farm) {
-                return [];
-            }
-
-            return Job::where('farm_id', $farm->id)->with('farm','customer', 'manager', 'service')->get();
+            return Job::where('customer_id', $this->created_by)->with('farm','customer', 'manager', 'service')->get();
         }
     }
     
     public function myUpcomingJobs()
     {
         if ($this->isCustomer()) {
-            return Job::where([
-                'customer_id' => $this->id
-            ])->where('job_providing_date', '>', Carbon::now())
-            ->with('farm','customer', 'manager', 'service')
-            ->get();
+            return Job::where('customer_id', $this->id)->where('job_providing_date', '>', Carbon::now())->with('farm','customer', 'manager', 'service')->get();
         } else {
-            $farm = $this->managerOf;
-            if (!$farm) {
-                return [];
-            }
-
-            return Job::where([
-                'farm_id' => $farm->id
-            ])->where('job_providing_date', '>', Carbon::now())
-            ->with('farm','customer', 'manager', 'service')
-            ->get();
+            return Job::where('manager_id', $this->id)->where('job_providing_date', '>', Carbon::now())->with('farm','customer', 'manager', 'service')->get();
         }
-        
     }
 }

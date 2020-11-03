@@ -29,62 +29,40 @@ class JobController extends Controller
      */
     public function create(CreateJobRequest $createJobRequest)
     {
-        
-
-        $validator = Validator::make($createJobRequest->all(), [
-                    'manager_id' => 'required',
-                    'service_id' => 'required',
-                    'job_providing_date' => 'required',
-                    'is_repeating_job' => 'required',
-                    'payment_mode' => 'required',
-                    'repeating_days' => 'required_if:is_repeating_job,==,true',
-        ]);
-        if ($validator->fails()) {
-            return response()->json([
-                        'status' => false,
-                        'message' => 'The given data was invalid.',
-                        'data' => $validator->errors()
-                            ], 422);
-        }
-        
-        
-        
-        if (Auth::user()->role_id != config('constant.roles.Haulers')) {
-            $farm = CustomerFarm::find($createJobRequest->farm_id);
-            if (!$farm->isOwner()) {
-                return response()->json([
-                'status' => false,
-                'message' => 'Unauthorized access.',
-            ], 421);
-            }
-        }
-
+        $user = Auth::user();
         DB::beginTransaction();
         try {
             $data = [
-                'job_created_by' => $createJobRequest->user()->id,
+                'job_created_by' => $user->id,
                 'card_id' => null,
                 'service_id' => $createJobRequest->service_id,
                 'gate_no' => (isset($createJobRequest->gate_no) && $createJobRequest->gate_no != '' && $createJobRequest->gate_no != null) ? $createJobRequest->gate_no : null,
                 'time_slots_id' => (isset($createJobRequest->time_slots_id) && $createJobRequest->time_slots_id != '' && $createJobRequest->time_slots_id != null) ? $createJobRequest->time_slots_id : null,
                 'job_providing_date' => $createJobRequest->job_providing_date,
                 'weight' => (isset($createJobRequest->weight) && $createJobRequest->weight != '' && $createJobRequest->weight != null) ? $createJobRequest->weight : null,
-                'is_repeating_job' => ($createJobRequest->is_repeating_job) ? 2 : 1,
+                'is_repeating_job' => ($createJobRequest->is_repeating_job == false) ? 1 : 2,
                 'repeating_days' => (isset($createJobRequest->repeating_days) && $createJobRequest->repeating_days != '' && $createJobRequest->repeating_days != null) ? json_encode(explode(',', $createJobRequest->repeating_days)) : null,
-                'payment_mode' => (isset($createJobRequest->payment_mode) && $createJobRequest->payment_mode != '' && $createJobRequest->payment_mode != null) ? $createJobRequest->payment_mode : 3,
-                'images' => null,
+                'payment_mode' => $createJobRequest->payment_mode,
                 'notes' => (isset($createJobRequest->notes) && $createJobRequest->notes != '' && $createJobRequest->notes != null) ? $createJobRequest->notes : null,
                 'amount' => $createJobRequest->amount,
             ];
             
-            if (Auth::user()->role_id != config('constant.roles.Haulers')) {
-                $data['farm_id'] = (isset($createJobRequest->farm_id) && $createJobRequest->farm_id != '' && $createJobRequest->farm_id != null) ? $createJobRequest->farm_id : null;
-                $data['customer_id'] = $farm->customer_id;
-                $data['manager_id'] = (isset($createJobRequest->manager_id) && $createJobRequest->manager_id != '' && $createJobRequest->manager_id != null) ? $createJobRequest->manager_id : $farm->primary_manager->id;
+            if($user->role_id == config('constant.roles.Customer')) {
+                $data['farm_id'] = $createJobRequest->farm_id;
+                $data['customer_id'] = $user->id;
+                $data['manager_id'] = $createJobRequest->manager_id;
+            } else if($user->role_id == config('constant.roles.Customer_Manager')) {
+                $data['farm_id'] = $createJobRequest->farm_id;
+                $data['customer_id'] = $user->created_by;
+                $data['manager_id'] = $user->id;
+            } else if($user->role_id == config('constant.roles.Hauler')) {
+                $data['farm_id'] = null;
+                $data['customer_id'] = $user->id;
+                $data['manager_id'] = $createJobRequest->manager_id;
             } else {
                 $data['farm_id'] = null;
-                $data['customer_id'] = Auth::user()->id;
-                $data['manager_id'] = (isset($createJobRequest->manager_id) && $createJobRequest->manager_id != '' && $createJobRequest->manager_id != null) ? $createJobRequest->manager_id : null;
+                $data['customer_id'] = $user->created_by;
+                $data['manager_id'] = $user->id;
             }
 
             $job = new Job($data);
@@ -188,7 +166,7 @@ class JobController extends Controller
 
         return response()->json([
             'status' => true,
-            'message' => 'Job List',
+            'message' => 'Job List Of Farm',
             'data' => $customerFarm->jobs
         ], 200);
     }
@@ -266,6 +244,7 @@ class JobController extends Controller
      */
     public function upcomingJobs(CustomerFarm $customerFarm)
     {
+//        dd('here');
         if (!Auth::user()->canAccessFarm($customerFarm)) {
             return response()->json([
                 'status' => false,
@@ -276,7 +255,7 @@ class JobController extends Controller
 
         return response()->json([
             'status' => true,
-            'message' => 'Customer Details',
+            'message' => 'Upcoming Jobs',
             'now' => Carbon::now()->format('Y-m-d'),
             'data' => Job::Where('farm_id', $customerFarm->id)->where('job_providing_date', '>', Carbon::now())->with('truck_driver', 'truck')->get()
         ], 200);
@@ -284,14 +263,15 @@ class JobController extends Controller
 
     public function update($job_id, Request $request)
     {
+//        dump($job_id);
         $validator = Validator::make(array_merge(['job_id' => $job_id], $request->all()), [
-                    'job_id' => 'required',
                     'manager_id' => 'required',
                     'service_id' => 'required',
                     'job_providing_date' => 'required',
                     'is_repeating_job' => 'required',
-                    // 'payment_mode' => 'required',
+                    'payment_mode' => 'required',
                     'repeating_days' => 'required_if:is_repeating_job,==,true',
+            
         ]);
         if ($validator->fails()) {
             return response()->json([
@@ -301,7 +281,8 @@ class JobController extends Controller
                             ], 422);
         }
         
-        $checkIfEdittingAllowed = Job::where('id', $request->job_id)->first();
+//        dump($request->all());
+        $checkIfEdittingAllowed = Job::where('id', $job_id)->first();
         if ($checkIfEdittingAllowed->job_status == config('constant.job_status.open')) {
             try {
                 $images = null;
@@ -321,9 +302,8 @@ class JobController extends Controller
                         $jobImages = array_merge($images, $jobImages);
                     }
                     $images = json_encode($jobImages);
-                    // $job->update(['images' => json_encode($jobImages)]);
                 }
-                Job::whereId($request->job_id)->update([
+                $jobUpdate = [
                     'manager_id' => (isset($request->manager_id) && $request->manager_id != '' && $request->manager_id != null) ? $request->manager_id : null,
                     'farm_id' => (isset($request->farm_id) && $request->farm_id != '' && $request->farm_id != null) ? $request->farm_id : null,
                     'gate_no' => (isset($request->gate_no) && $request->gate_no != '' && $request->gate_no != null) ? $request->gate_no : null,
@@ -331,16 +311,17 @@ class JobController extends Controller
                     'time_slots_id' => (isset($request->time_slots_id) && $request->time_slots_id != '' && $request->time_slots_id != null) ? $request->time_slots_id : null,
                     'job_providing_date' => $request->job_providing_date,
                     'weight' => (isset($request->weight) && $request->weight != '' && $request->weight != null) ? $request->weight : null,
-                    'is_repeating_job' => $request->is_repeating_job,
+                    'is_repeating_job' => ($request->is_repeating_job == false) ? 1 : 2,
                     'repeating_days' => (isset($request->repeating_days) && $request->repeating_days != '' && $request->repeating_days != null) ? json_encode(explode(',', $request->repeating_days)) : null,
                     'payment_mode' => (isset($request->payment_mode) && $request->payment_mode != '' && $request->payment_mode != null) ? $request->payment_mode : 3,
                     'images' => (isset($request->images) && $request->images != '' && $request->images != null) ? $request->images : null,
                     'notes' => (isset($request->notes) && $request->notes != '' && $request->notes != null) ? $request->notes : null,
                     'amount' => $request->amount,
                     'images' => $images
-                ]);
+                ];
+                Job::whereId($job_id)->update($jobUpdate);
                 $mailData = [
-                    'job_id' => $request->job_id,
+                    'job_id' => $job_id,
                     'customer_id' => $checkIfEdittingAllowed->customer_id,
                     'manager_id' => isset($request->manager_id) ? $request->manager_id : null
                 ];
@@ -360,7 +341,7 @@ class JobController extends Controller
         }
         return response()->json([
                     'status' => false,
-                    'message' => 'You cannot cancel the job.',
+                    'message' => 'You cannot edit the job.',
                     'data' => []
                 ], 500);
     }

@@ -8,6 +8,8 @@ return [
         'Customer' => 4,
         'Customer_Manager' => 5,
         'Haulers' => 6,
+        'Hauler_driver' => 7,
+        'Mechanic' => 8
     ],
     'vehicle_type' => [
         'truck' => 1,
@@ -47,6 +49,7 @@ return [
     'service_type' => [
         'by_weight' => 1,
         'by_round' => 2,
+        'by_bucket' => 3
     ],
     'service_for' => [
         'customer' => 4,
@@ -70,7 +73,7 @@ return [
     ],
     'quick_book' => [
         'Not_Sync' => 0,
-        'Sync' => 0,
+        'Sync' => 1,
     ],
     'driver_type' => [
         'truck_driver' => 1,
@@ -85,6 +88,43 @@ return [
     ],
     'range_cover' => [
         'distance' => 4
+    ],
+    'service_slot_type' => [
+        'morning' => 1,
+        'afternoon' => 2,
+        'evening' => 3
+    ],
+    'time_taken_to_complete_service' => [
+        '15_mins' => 1,
+        '30_mins' => 2,
+        '45_mins' => 3,
+        '60_mins' => 4,
+        '75_mins' => 5,
+        '90_mins' => 6,
+    ],
+    'time_taken_to_complete_service_reverse' => [
+        1 =>'15',
+        2 =>'30',
+        3 =>'45',
+        4 =>'60',
+        5 =>'75',
+        6 =>'90',
+    ],'zipcodes' => [
+        0 => '62365',
+        1 => '52869',
+        2 => '12345',
+        3 => '12234',
+        4 => '78451',
+        5 => '16006',
+    ],
+    'days' => [
+        1 => 'monday',
+        2 => 'tuesday',
+        3 => 'wednesday',
+        4 => 'thusday',
+        5 => 'friday',
+        6 => 'saturday',
+        7 => 'sunday',
     ],
     'warehouse' => [
         'lat' => '31.23',

@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::group(['prefix' => 'auth'], function () {
+    //done
     Route::post('signup', 'AuthController@signup')->name('signup');
     Route::get('confirm-email/{decode_code}', 'AuthController@confirmEmail')->name('confirm.email');
     Route::post('social-signup', 'AuthController@SocialSignup')->name('social.login');
@@ -31,15 +32,32 @@ Route::group(['prefix' => 'auth'], function () {
     });
 });
 
+Route::group(['middleware' => 'auth:api'], function () {
+    Route::post('uploadImage', 'ImageController@uploadImage');
+        Route::delete('deleteImage', 'ImageController@deleteImage');
+});
+
 Route::group(['middleware' => 'auth:api', 'prefix' => 'my', 'as' => 'my'], function () {
-    //done
-    Route::get('farms', 'CustomerController@myFarms')->name('farms');
     //done
     Route::get('jobs', 'JobController@myJobs')->name('jobs');
     //done
     Route::get('jobs/upcoming', 'JobController@myUpcomingJobs')->name('upcoming.jobs');
+    //done
+    Route::get('farms', 'CustomerController@myFarms')->name('farms');
 });
 Route::group(['middleware' => 'auth:api', 'prefix' => 'customer', 'as' => 'customer'], function () {
+    
+    // Job related apis
+    Route::group(['prefix' => 'job', 'as' => 'job'], function () {
+        //done
+        Route::post('', 'JobController@create')->name('create');
+        //done
+        Route::post('{job_id}', 'JobController@update')->name('update');
+        //done
+        Route::get('{job}/cancel', 'JobController@cancelJob')->name('cancel');
+        //done
+        Route::get('{job}', 'JobController@get')->name('get');
+    });
 
     // Services related routes
     Route::group(['prefix' => 'service', 'as' => 'service'], function () {
@@ -51,6 +69,16 @@ Route::group(['middleware' => 'auth:api', 'prefix' => 'customer', 'as' => 'custo
 
     // Farm related apis
     Route::group(['prefix' => 'farm', 'as' => 'farm'], function () {
+        
+        Route::group(['prefix' => '{customer_farm}', 'as' => 'jobs'], function () {
+            //done
+            Route::get('jobs', 'JobController@getJobsOfFram')->name('list');
+            //done
+            Route::get('jobs/upcoming', 'JobController@upcomingJobs')->name('list');
+        });
+        
+        
+        
         //Done
         Route::post('', 'FarmController@create')->name('create');
         //done
@@ -72,22 +100,16 @@ Route::group(['middleware' => 'auth:api', 'prefix' => 'customer', 'as' => 'custo
             Route::patch('manager', 'FarmController@updateFarmManager')->name('update');
             Route::delete('manager/{user}', 'FarmController@deleteFarmManager')->name('delete');
         });
-        Route::group(['prefix' => '{customer_farm}', 'as' => 'jobs'], function () {
-            //done
-            Route::get('jobs', 'JobController@getJobsOfFram')->name('list');
-            //done
-            Route::get('jobs/upcoming', 'JobController@upcomingJobs')->name('list');
-        });
+        
     });
 
-    // Job related apis
-    Route::group(['prefix' => 'job', 'as' => 'job'], function () {
-        //done
-        Route::post('', 'JobController@create')->name('create');
-        Route::post('{job_id}', 'JobController@update')->name('update');
-        Route::get('{job}/cancel', 'JobController@cancelJob')->name('cancel');
-        //done
-        Route::get('{job}', 'JobController@get')->name('get');
+    
+    
+    Route::group(['prefix' => 'driver', 'as' => 'driver'], function () {
+        Route::post('', 'DriverController@create')->name('create');
+        Route::post('{driver_id}', 'DriverController@update')->name('update');
+        Route::get('{driver_id}', 'DriverController@get')->name('get');
+        Route::delete('{driver_id}', 'DriverController@deleteDriver')->name('delete');
     });
 });
 

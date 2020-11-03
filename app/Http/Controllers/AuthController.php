@@ -35,10 +35,11 @@ class AuthController extends Controller
      */
     public function signup(SignUpRequest $request)
     {
+//        dd($request->all());
         if ($request->role_id == config('constant.roles.Customer') || $request->role_id == config('constant.roles.Haulers')) {
             try {
                 $user = new User([
-                    'prefix' => (isset($request->prefix) && $request->prefix != '' && $request->prefix != null) ? $request->prefix : null,
+//                    'prefix' => $request->prefix,
                     'first_name' => $request->first_name,
                     'last_name' => $request->last_name,
                     'email' => $request->email,
@@ -47,7 +48,6 @@ class AuthController extends Controller
                     'city' => $request->city,
                     'state' => $request->province,
                     'zip_code' => $request->zipcode,
-                    'user_image' => (isset($request->hauler_image) && $request->hauler_image != '' && $request->hauler_image != null) ? $request->hauler_image : null,
                     'role_id' => $request->role_id,
                     'is_active' => 1,
                     'password' => bcrypt($request->password),
@@ -55,7 +55,6 @@ class AuthController extends Controller
                 ]);
                 if ($user->save()) {
                     $this->_welcomeEmail($user);
-                    // $this->_saveUserToHubSpot($user);
                 }
 
                 return response()->json([
@@ -187,60 +186,60 @@ class AuthController extends Controller
     /**
      * save user to hubspot
      */
-    public function _saveUserToHubSpot($request)
-    {
-        if ($request->role_id == config('constant.roles.Customer')) {
-            $userType = 'Customer';
-        } else {
-            $userType = 'Hauler';
-        }
-        $arr = [
-            'properties' => [
-                [
-                    'property' => 'firstname',
-                    'value' => $request->first_name
-                ],
-                [
-                    'property' => 'lastname',
-                    'value' => $request->last_name
-                ],
-                [
-                    'property' => 'email',
-                    'value' => $request->email
-                ],
-                [
-                    'property' => 'phone',
-                    'value' => $request->phone
-                ],
-                [
-                    'property' => 'address',
-                    'value' => $request->address
-                ],
-                [
-                    'property' => 'province',
-                    'value' => $request->province
-                ],
-                [
-                    'property' => 'zipcode',
-                    'value' => $request->zipcode
-                ],
-                [
-                    'property' => 'User type',
-                    'value' => $userType
-                ],
-            ]
-        ];
-        $post_json = json_encode($arr);
-        $endpoint = config('constant.hubspot.api_url') . env('HUBSPOT_API_KEY');
-        $client = new Client();
-        $res = $client->request('POST', $endpoint, [
-            'headers' => [
-                'Content-Type' => 'application/json'
-            ],
-            'body' => $post_json
-        ]);
-        return true;
-    }
+//    public function _saveUserToHubSpot($request)
+//    {
+//        if ($request->role_id == config('constant.roles.Customer')) {
+//            $userType = 'Customer';
+//        } else {
+//            $userType = 'Hauler';
+//        }
+//        $arr = [
+//            'properties' => [
+//                [
+//                    'property' => 'firstname',
+//                    'value' => $request->first_name
+//                ],
+//                [
+//                    'property' => 'lastname',
+//                    'value' => $request->last_name
+//                ],
+//                [
+//                    'property' => 'email',
+//                    'value' => $request->email
+//                ],
+//                [
+//                    'property' => 'phone',
+//                    'value' => $request->phone
+//                ],
+//                [
+//                    'property' => 'address',
+//                    'value' => $request->address
+//                ],
+//                [
+//                    'property' => 'province',
+//                    'value' => $request->province
+//                ],
+//                [
+//                    'property' => 'zipcode',
+//                    'value' => $request->zipcode
+//                ],
+//                [
+//                    'property' => 'User type',
+//                    'value' => $userType
+//                ],
+//            ]
+//        ];
+//        $post_json = json_encode($arr);
+//        $endpoint = config('constant.hubspot.api_url') . env('HUBSPOT_API_KEY');
+//        $client = new Client();
+//        $res = $client->request('POST', $endpoint, [
+//            'headers' => [
+//                'Content-Type' => 'application/json'
+//            ],
+//            'body' => $post_json
+//        ]);
+//        return true;
+//    }
 
     /**
      * @method login: Login user and create token.
@@ -466,8 +465,9 @@ class AuthController extends Controller
      */
     public function updateProfile(UpdateProfileRequest $request)
     {
+//        dd($request->all());
         $user = Auth::user();
-        if ($user->role_id == config('constant.roles.Customer') || $user->role_id == config('constant.roles.Haulers')) {
+        if ($user->role_id == config('constant.roles.Customer') || $user->role_id == config('constant.roles.Customer_Manager') || $user->role_id == config('constant.roles.Haulers') || $user->role_id == config('constant.roles.Hauler_driver')) {
             
             if ($request->email != '' && $request->email != null) {
                 if ($user->email !== $request->email) {
@@ -497,7 +497,7 @@ class AuthController extends Controller
                     $data['password'] = bcrypt($request->password);
                 }
 
-//                $user->update($data);
+                $user->update($data);
                 if (isset($confirmed)) {
                     $this->_updateEmail($user, $request->email);
                         $request->user()->token()->revoke();
