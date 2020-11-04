@@ -84,8 +84,7 @@ class PaymentController extends Controller
         if ($user->role_id == config('constant.roles.Customer') || $user->role_id == config('constant.roles.Haulers')) {
             $customer = $user;
         } else {
-            $farms = $user->farms;
-            $customer = $farms[0]->user;
+            $customer = User::whereId($user->created_by)->first();
         }
         if ($this->checkCardExist($cardData['card_number'], $customer->id)) {
             return [
@@ -294,12 +293,25 @@ class PaymentController extends Controller
      */
     function getCustomerPaymentProfileList()
     {
-        $cards = CustomerCardDetail::where('customer_id', Auth::user()->id)->get();
-
-        return response()->json([
+        $user = Auth::user();
+        if($user->role_id == config('constant.roles.Customer') || $user->role_id == config('constant.roles.Haulers')) {
+            $cards = CustomerCardDetail::where('customer_id', $user->id)->get();
+            return response()->json([
             'status' => true,
             'data' => $cards
         ], 200);
+        } elseif($user->role_id == config('constant.roles.Customer_Manager')) {
+            $cards = CustomerCardDetail::where('customer_id', $user->created_by)->get();
+            return response()->json([
+                        'status' => true,
+                        'data' => $cards
+                            ], 200);
+        } else {
+            return response()->json([
+                    'status' => false,
+                    'message' => 'Unauthorized access.',
+                        ], 421);
+        }
     }
 
     /**
@@ -308,23 +320,31 @@ class PaymentController extends Controller
      */
     function deleteCustomerPaymentProfile(CustomerCardDetail $customerCardDetails)
     {
+//        dd($customerCardDetails->toArray());
         if ($customerCardDetails->card_primary == 1) {
             return response()->json([
                 'status' => false,
                 'message' => 'Can not delete a default card.',
             ], 421);
         }
+        
         $user = Auth::user();
+        if($user->role_id == config('constant.roles.Customer_Manager')) {
+            $user = User::whereId(Auth::user()->created_by)->first();
+        }
+        $customerProfileId = $user->authorize_net_id;
+        
+//        $user = Auth::user();
         // dd($customerCardDetails->customer);
         // if (!$user->canAccessFarm()) {
 
         // }
-        if ($user->role_id == config('constant.roles.Customer') || $user->role_id == config('constant.roles.Haulers')) {
-            $customerProfileId = ($user->authorize_net_id) ? $user->authorize_net_id : null;
-        } else {
-            $farms = $user->farms;
-            $customerProfileId = ($farms[0] && $farms[0]->user && $farms[0]->user->authorize_net_id ) ? $farms[0]->user->authorize_net_id : null;
-        }
+//        if ($user->role_id == config('constant.roles.Customer') || $user->role_id == config('constant.roles.Haulers')) {
+//            $customerProfileId = ($user->authorize_net_id) ? $user->authorize_net_id : null;
+//        } else {
+//            $farms = $user->farms;
+//            $customerProfileId = ($farms[0] && $farms[0]->user && $farms[0]->user->authorize_net_id ) ? $farms[0]->user->authorize_net_id : null;
+//        }
 
         if (!$customerProfileId) {
             return response()->json([
@@ -362,12 +382,23 @@ class PaymentController extends Controller
      */
     function updateCustomerPaymentProfile(CustomerCardDetail $customerCardDetails)
     {
+//        dd($customerCardDetails->toArray());
+        if($customerCardDetails->card_primary == 1) {
+            return response()->json([
+                    'status' => true,
+                    'message' => 'Card is already a primary card.'
+                ], 200);
+        }
         $user = Auth::user();
         if ($user->role_id == config('constant.roles.Customer') || $user->role_id == config('constant.roles.Haulers')) {
             $customer = $user;
+        } elseif($user->role_id == config('constant.roles.Customer_Manager')) {
+            $customer = User::whereId($user->created_by)->first();
         } else {
-            $farms = $user->farms;
-            $customer = $farms[0]->user;
+            return response()->json([
+                    'status' => false,
+                    'message' => 'Unauthorized access.',
+                        ], 421);
         }
 
         $request = new AnetAPI\GetCustomerPaymentProfileRequest();
@@ -430,6 +461,7 @@ class PaymentController extends Controller
      */
     function chargeCustomerProfile(ChargeCustomerProfileRequest $request)
     {
+        dd($request->all());
         $amount = $request->amount;
         $customer = User::find($request->customer_id);
 

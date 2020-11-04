@@ -2,23 +2,24 @@
 
 namespace App\Http\Controllers;
 
+use Mail;
+use Auth;
+use App\Service;
+use Carbon\Carbon;
+use App\TimeSlots;
+use App\Models\Job;
+use App\Models\User;
+use App\Models\Payment;
+use App\ServicesTimeSlot;
+use Illuminate\Support\Str;
+use App\Models\CustomerFarm;
 use Illuminate\Http\Request;
+use App\Models\ManagerDetail;
+use Illuminate\Validation\Rule;
+use App\Models\CustomerCardDetail;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Validation\Rule;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
-use Mail;
-use App\Service;
-use App\TimeSlots;
-use App\ServicesTimeSlot;
-use App\Models\User;
-use App\Models\ManagerDetail;
-use App\Models\CustomerFarm;
-use App\Models\CustomerCardDetail;
-use App\Models\Payment;
-use App\Models\Job;
-use Carbon\Carbon;
 use App\Http\Requests\Farm\{
     CreateFarmRequest,
     UpdateFarmRequest
@@ -66,10 +67,9 @@ class FarmController extends Controller
     public function create(CreateFarmRequest $request)
     {
         try {
-            dd($request->all());
+//            dd($request->all());
             $customer = $request->user();
             DB::beginTransaction();
-            $distance =  $this->getDistance($request->latitude, $request->longitude, null, null, 'M');
             $farmDetails = new CustomerFarm([
                 'customer_id' => $customer->id,
                 'farm_address' => $request->farm_address,
@@ -77,26 +77,24 @@ class FarmController extends Controller
                 'farm_city' => $request->farm_city,
                 'farm_province' => $request->farm_province,
                 'farm_zipcode' => $request->farm_zipcode,
-                'farm_image' => (isset($request->farm_images) && $request->farm_images != '' && $request->farm_images != null) ? json_encode($request->farm_images) : null,
-                'farm_active' => ($request->farm_active) ? $request->farm_active : 1,
+                'farm_active' => 1,
                 'latitude' => $request->latitude,
                 'longitude' => $request->longitude,
-                'created_by' => $request->user()->id,
-                'distance' => $distance
+                'created_by' => $customer->id,
+                'distance' => $this->getDistance($request->latitude, $request->longitude, null, null, 'M')
             ]);
-            if ($farmDetails->save()) {
-                if ($request->farm_image && count($request->farm_image) > 0) {  
+            if ($request->farm_image && count($request->farm_image) > 0) {  
                     $farmImages = [];
-                    foreach($request->farm_image as $image)
-                    {
-                        $imageName = $farmDetails->putImage($image);
-                        if ($imageName) {
-                            $farmImages[] = $imageName;
-                        }
+                foreach ($request->farm_image as $image) {
+                    $imageName = $farmDetails->putImage($image);
+                    if ($imageName) {
+                        $farmImages[] = $imageName;
                     }
-                    $farmDetails->update(['farm_image' => json_encode($farmImages)]);
                 }
+                $farmDetails['farm_image'] = json_encode($farmImages);
+            }
 
+            if ($farmDetails->save()) {
                 foreach ($request->manager_details as $manager) {
                     $newPassword = Str::random();
                     $saveManger = new User([
@@ -109,28 +107,20 @@ class FarmController extends Controller
                         'city' => $manager['manager_city'],
                         'state' => $manager['manager_province'],
                         'zip_code' => $manager['manager_zipcode'],
-                        'user_image' => (isset($manager['manager_image']) && $manager['manager_image'] != '' && $manager['manager_image'] != null) ? $manager['manager_image'] : null,
                         'role_id' => config('constant.roles.Customer_Manager'),
-                        'created_from_id' => $request->user()->id,
+                        'created_from_id' => $customer->id,
                         'is_confirmed' => 1,
                         'is_active' => 1,
-                        'created_by' => $request->customer_id,
+                        'created_by' => $customer->id,
                         'farm_id' => $farmDetails->id,
                         'password' => bcrypt($newPassword)
                     ]);
-
+                    if ($manager['manager_image']) {
+                        $imageName = $saveManger->putImage($manager['manager_image']);
+                        $saveManger['user_image'] = json_encode($imageName);
+                    }
                     if ($saveManger->save()) {
-                        $imageName = $farmDetails->putImage($manager['manager_card_image']);
-                        $mangerDetails = new ManagerDetail([
-                            'user_id' => $saveManger->id,
-                            'identification_number' => $manager['manager_id_card'],
-                            'document' => $imageName,
-                            'salary' => $manager['salary'],
-                            'joining_date' => date('Y/m/d'),
-                        ]);
-                        if ($mangerDetails->save()) {
-                            $this->_confirmPassword($saveManger, $newPassword);
-                        }
+                        $this->_confirmPassword($saveManger, $newPassword);
                     }
                 }
                 DB::commit();
@@ -178,19 +168,18 @@ class FarmController extends Controller
      */
     public function getFarmManagers(CustomerFarm $customer_farm)
     {
-        if (!$customer_farm->isOwner()) {
+        if(Auth::user()->role_id == config('constant.roles.Customer') || Auth::user()->role_id == config('constant.roles.Customer_Manager')) {
             return response()->json([
-                    'status' => false,
-                    'message' => 'Unauthorized access.',
-                    'data' => []
-                ], 421);
-        }
-
-        return response()->json([
                 'status' => true,
                 'message' => 'Farm manager details.',
                 'data' => $customer_farm->managers
             ], 200);
+        }
+        return response()->json([
+                    'status' => false,
+                    'message' => 'Unauthorized access.',
+                    'data' => []
+                ], 421);
     }
 
     /*
@@ -200,26 +189,46 @@ class FarmController extends Controller
     public function update(CustomerFarm $customerFarm, UpdateFarmRequest $request)
     {
         try {
-            // dd($request->all());
-            $distance =  $this->getDistance($request->latitude, $request->longitude, null, null, 'M');
             $customerFarm->update([
                 'farm_address' => $request->farm_address,
                 'farm_unit' => (isset($request->farm_unit) && $request->farm_unit != '' && $request->farm_unit != null) ? ($request->farm_unit) : null,
                 'farm_city' => $request->farm_city,
                 'farm_province' => $request->farm_province,
                 'farm_zipcode' => $request->farm_zipcode,
-                // 'farm_image' => (isset($request->farm_images) && $request->farm_images != '' && $request->farm_images != null) ? json_encode($request->farm_images) : null,
                 'farm_active' => $request->farm_active,
                 'latitude' => $request->latitude,
                 'longitude' => $request->longitude,
-                'distance' => $distance
+                'distance' => $this->getDistance($request->latitude, $request->longitude, null, null, 'M')
             ]);
-            if ($request->farm_image) {
-                $farmImage = $customerFarm->putImage($request->farm_image);
-                $customerFarm->update(['farm_image' => json_encode([$farmImage])]);
+            if ($request->farm_image && count($request->farm_image) > 0) {  
+                $farmImages = [];
+                foreach ($request->farm_image as $image) {
+                    $imageName = $customerFarm->putImage($image);
+                    if ($imageName) {
+                        $farmImages[] = $imageName;
+                    }
+                }
+                $customerFarm->update(['farm_image' => json_encode($farmImages)]);
             }
 
             foreach ($request->manager_details as $manager) {
+                
+                $managerCheck = User::whereId($manager['id'])->first();
+                if ($manager['email'] != '' && $manager['email'] != null) {
+                    if ($managerCheck->email !== $manager['email']) {
+                        $checkEmail = User::where('email', $manager['email'])->first();
+                        if ($checkEmail !== null) {
+                            if ($checkEmail->id !== $managerCheck->id) {
+                                return response()->json([
+                                            'status' => false,
+                                            'message' => 'Email is already taken.',
+                                            'data' => []
+                                                ], 422);
+                            }
+                        }
+                        $confirmed = 0;
+                    }
+                }
                 $data = [
                     'prefix' => (isset($manager['manager_prefix']) && $manager['manager_prefix'] != '' && $manager['manager_prefix'] != null) ? $manager['manager_prefix'] : null,
                     'first_name' => $manager['manager_first_name'],
@@ -230,28 +239,21 @@ class FarmController extends Controller
                     'city' => $manager['manager_city'],
                     'state' => $manager['manager_province'],
                     'zip_code' => $manager['manager_zipcode'],
-                    'user_image' => (isset($manager['manager_image']) && $manager['manager_image'] != '' && $manager['manager_image'] != null) ? $manager['manager_image'] : null,
-                    'farm_id' => $customerFarm->id
+                    'farm_id' => $customerFarm->id,
+                    'is_active' => $manager['is_active']
                 ];
-                if(!array_key_exists('id', $manager)){
-                    $newPassword = Str::random();
-                    $data['password'] = bcrypt($newPassword);
-                    $saveManger = new User($data);
-                    if ($saveManger->save()) {
-                        $mangerDetails = new ManagerDetail([
-                            'user_id' => $saveManger->id,
-                            'identification_number' => $manager['manager_id_card'],
-                            'document' => $manager['manager_card_image'],
-                            'salary' => $manager['salary'],
-                            'joining_date' => date('Y/m/d'),
-                        ]);
-                        if ($mangerDetails->save()) {
-                            $this->_confirmPassword($saveManger, $newPassword);
-                        }
+                if (isset($confirmed)) {
+                    $data['is_confirmed'] = $confirmed;
+                }
+
+                if ($manager['manager_image']) {
+                    $imageName = $request->user()->putImage($manager['manager_image']);
+                    $data['user_image'] = json_encode($imageName);
+                }
+                if(User::where('id', $manager['id'])->update($data)) {
+                    if (isset($confirmed)) {
+                        $this->_updateEmail($manager, $request->email);
                     }
-                }else{
-                    User::where('id', $manager['id'])->update($data);
-                    ManagerDetail::where('user_id', $manager['id'])->update(['identification_number' => $manager['manager_id_card'], 'salary' => $manager['salary']]);
                 }
             }
 
@@ -275,21 +277,109 @@ class FarmController extends Controller
      */
     public function createFarmManager(CustomerFarm $customerFarm, CreateFarmManagerRequest $request)
     {
-        if (!$customerFarm->isOwner()) {
+        if (Auth::user()->role_id == config('constant.roles.Customer') || Auth::user()->role_id == config('constant.roles.Customer_Manager')) {
+            try {
+                DB::beginTransaction();
+                $newPassword = Str::random();
+                $saveManager = new User([
+                    'prefix' => (isset($request->manager_prefix) && $request->manager_prefix != '' && $request->manager_prefix != null) ? $request->manager_prefix : null,
+                    'first_name' => $request->manager_first_name,
+                    'last_name' => $request->manager_last_name,
+                    'email' => $request->email,
+                    'phone' => $request->manager_phone,
+                    'address' => $request->manager_address,
+                    'city' => $request->manager_city,
+                    'state' => $request->manager_province,
+                    'zip_code' => $request->manager_zipcode,
+                    'role_id' => config('constant.roles.Customer_Manager'),
+                    'created_from_id' => Auth::user()->id,
+                    'is_confirmed' => 1,
+                    'is_active' => 1,
+                    'created_by' => Auth::user()->id,
+                    'farm_id' => $customerFarm->id,
+                    'password' => bcrypt($newPassword)
+                ]);
+                if ($request->manager_image) {
+                    $imageName = $saveManager->putImage($request->manager_image);
+                    $saveManager['user_image'] = json_encode($imageName);
+                }
+                if ($saveManager->save()) {
+                    $this->_confirmPassword($saveManager, $newPassword);
+                    DB::commit();
+                    return response()->json([
+                                'status' => true,
+                                'message' => 'Manager created successfully.',
+                                'data' => []
+                                    ], 200);
+                }
+            } catch (\Exception $e) {
+                DB::rollBack();
+                return response()->json([
+                            'status' => false,
+                            'message' => $e->getMessage(),
+                            'data' => []
+                                ], 500);
+            }
+        } else {
             return response()->json([
+                        'status' => false,
+                        'message' => 'Unauthorized access.',
+                        'data' => []
+                            ], 421);
+        }
+    }
+    
+    public function getFarmManager(CustomerFarm $customerFarm,User $manager) {
+        if(Auth::user()->role_id == config('constant.roles.Customer') || Auth::user()->role_id == config('constant.roles.Customer_Manager')) {
+            return response()->json([
+                'status' => true,
+                'message' => 'Farm manager details.',
+                'data' => $manager
+            ], 200);
+        }
+        return response()->json([
                     'status' => false,
                     'message' => 'Unauthorized access.',
                     'data' => []
                 ], 421);
-        }
+    }
 
+    public function updateFarmManager(CustomerFarm $customerFarm, Request $request, User $manager)
+    {
+        $validator = Validator::make($request->all(), [
+                    'manager_first_name' => 'required',
+                    'manager_last_name' => 'required',
+                    'email' => 'required|email',
+                    'manager_phone' => 'required',
+                    'manager_address' => 'required',
+                    'manager_city' => 'required',
+                    'manager_province' => 'required',
+                    'manager_zipcode' => 'required',
+                    'manager_is_active' => 'required',
+        ]);
+        if ($validator->fails()) {
+            return response()->json([
+                        'status' => false,
+                        'message' => 'The given data was invalid.',
+                        'data' => $validator->errors()
+                            ], 422);
+        }
         try {
             DB::beginTransaction();
-            $newPassword = Str::random();
-            if(isset($request->manager_image)) {
-                
+            if ($request->email != '' && $request->email != null) {
+                if ($manager->email !== $request->email) {
+                    $checkEmail = User::where('email', $request->email)->first();
+                    if ($checkEmail !== null) {
+                        return response()->json([
+                                    'status' => false,
+                                    'message' => 'Email is already taken.',
+                                    'data' => []
+                                        ], 422);
+                    }
+                    $confirmed = 0;
+                }
             }
-            $saveManager = new User([
+            $data = [
                 'prefix' => (isset($request->manager_prefix) && $request->manager_prefix != '' && $request->manager_prefix != null) ? $request->manager_prefix : null,
                 'first_name' => $request->manager_first_name,
                 'last_name' => $request->manager_last_name,
@@ -299,114 +389,27 @@ class FarmController extends Controller
                 'city' => $request->manager_city,
                 'state' => $request->manager_province,
                 'zip_code' => $request->manager_zipcode,
-                'user_image' => (isset($request->manager_image) && $request->manager_image != '' && $request->manager_image != null) ? $request->manager_image : null,
-                'role_id' => config('constant.roles.Customer_Manager'),
-                'created_from_id' => $request->user()->id,
-                'is_confirmed' => 1,
-                'is_active' => 1,
-                'created_by' => $request->user()->id,
                 'farm_id' => $customerFarm->id,
-                'password' => bcrypt($newPassword)
-            ]);
+                'is_active' => $request->manager_is_active,
+            ];
+            if (isset($confirmed)) {
+                $data['is_confirmed'] = $confirmed;
+            }
 
-            if ($saveManager->save()) {
-                $imageName = $farmDetails->putImage($request->manager_card_image);
-                $managerDetails = new ManagerDetail([
-                    'user_id' => $saveManager->id,
-                    'identification_number' => $request->manager_id_card,
-                    'document' => $imageName,
-                    'salary' => $request->salary,
-                    'joining_date' => date('Y/m/d'),
-                ]);
-                if ($managerDetails->save()) {
-                    $this->_confirmPassword($saveManager, $newPassword);
-                    DB::commit();
-                    return response()->json([
-                                'status' => true,
-                                'message' => 'Manager created successfully.',
-                                'data' => []
-                            ], 200);
+            if ($request->manager_image) {
+                $imageName = $manager->putImage($request->manager_image);
+                $data['user_image'] = json_encode($imageName);
+            }
+            if (User::where('id', $manager->id)->update($data)) {
+                DB::commit();
+                if (isset($confirmed)) {
+                    $this->_updateEmail($manager, $request->email);
                 }
-            }
-        } catch (\Exception $e) {
-            DB::rollBack();
-            return response()->json([
-                        'status' => false,
-                        'message' => $e->getMessage(),
-                        'data' => []
-                    ], 500);
-        }
-    }
-
-    public function updateFarmManager(Request $request)
-    {
-        die('In progress.');
-        $validator = Validator::make($request->all(), [
-                    'manager_id' => 'required',
-                    'farm_id' => 'required',
-                    'manager_first_name' => 'required',
-                    'manager_last_name' => 'required',
-                    'email' => 'required|string|email|unique:users,email,' . Auth::user()->id,
-                    'manager_phone' => 'required',
-                    'manager_address' => 'required',
-                    'manager_city' => 'required',
-                    'manager_province' => 'required',
-                    'manager_zipcode' => 'required',
-                    'manager_is_active' => 'required',
-                    'manager_card_image' => 'required',
-                    'manager_id_card' => 'required',
-                    'salary' => 'required',
-                    'joining_date' => 'required',
-        ]);
-        if ($validator->fails()) {
-            return response()->json([
-                        'status' => false,
-                        'message' => 'The given data was invalid.',
-                        'data' => $validator->errors()
-                    ], 422);
-        }
-        $confirmed = 1;
-        $manager = User::whereId($request->manager_id)->first();
-        if ($request->email != '' && $request->email != null) {
-            if ($manager->email !== $request->email) {
-                $confirmed = 0;
-            }
-        }
-        try {
-            DB::beginTransaction();
-            if ($request->password != '' && $request->password != null) {
-                $manager->password = bcrypt($request->password);
-            }
-            $manager->prefix = (isset($request->manager_prefix) && $request->manager_prefix != '' && $request->manager_prefix != null) ? $request->manager_prefix : null;
-            $manager->first_name = $request->manager_first_name;
-            $manager->last_name = $request->manager_last_name;
-            $manager->email = $request->email;
-            $manager->phone = $request->manager_phone;
-            $manager->address = $request->manager_address;
-            $manager->city = $request->manager_city;
-            $manager->state = $request->manager_province;
-            $manager->zip_code = $request->manager_zipcode;
-            $manager->user_image = (isset($request->manager_image) && $request->manager_image != '' && $request->manager_image != null) ? $request->manager_image : null;
-            $manager->is_active = $request->manager_is_active;
-            $manager->farm_id = $request->farm_id;
-            if ($manager->save()) {
-                $managerDetail = ManagerDetail::where('user_id', $request->manager_id)->first();
-                $managerDetail->salary = $request->salary;
-                $managerDetail->identification_number = $request->manager_id_card;
-                $managerDetail->joining_date = $request->joining_date;
-                $managerDetail->releaving_date = isset($request->releaving_date) ? $request->releaving_date : null;
-                $managerDetail->document = $request->manager_card_image;
-                if ($managerDetail->save()) {
-                    DB::commit();
-                    if ($confirmed == 0) {
-                        $this->_updateEmail($manager, $request->email);
-                    }
-                    return response()->json([
-                                'status' => true,
-                                'message' => 'Manager updated successfully.',
-                                'data' => []
-                            ], 200);
-                }
+                return response()->json([
+                            'status' => true,
+                            'message' => 'Manager updated successfully.',
+                            'data' => []
+                                ], 200);
             }
         } catch (\Exception $e) {
             DB::rollBack();
@@ -415,7 +418,7 @@ class FarmController extends Controller
                         'status' => false,
                         'message' => $e->getMessage(),
                         'data' => []
-                    ], 500);
+                            ], 500);
         }
     }
 
@@ -514,26 +517,48 @@ class FarmController extends Controller
         });
     }
     
+    public function changeManager(CustomerFarm $customerFarm, User $user) {
+        if(Auth::user()->role_id == config('constant.roles.Customer')) {
+            try {
+                $user->update(['farm_id' => $customerFarm->id]);
+                return response()->json([
+                            'status' => false,
+                            'message' => 'Manager farm changed successfully.',
+                                ], 200);
+            } catch (\Exception $e) {
+                return response()->json([
+                            'status' => false,
+                            'message' => 'Unable to change manager farm. Try again later.',
+                                ], 423);
+            }
+        }
+        return response()->json([
+                    'status' => false,
+                    'message' => 'Unauthorized access.',
+                ], 421);
+    }
+    
     /**
      * @method isUniqueManager: Function to check if email address is unique or not
      * 
      */
-    public function isUniqueManager(string $email)
-    {
-        $validator = Validator::make(['email' => $email], [
-            'email' => 'required|email|unique:users',
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json([
-                        'status' => false,
-                        'message' => 'The given data was invalid.',
-                        'data' => $validator->errors()
-                    ], 422);
-        }
-        return response()->json([
-            'status' => true,
-        ], 200);
-    }
+//    public function isUniqueManager(string $email)
+//    {
+////        dd($email);
+//        $validator = Validator::make(['email' => $email], [
+//            'email' => 'required|email|unique:users',
+//        ]);
+//
+//        if ($validator->fails()) {
+//            return response()->json([
+//                        'status' => false,
+//                        'message' => 'The given data was invalid.',
+//                        'data' => $validator->errors()
+//                    ], 422);
+//        }
+//        return response()->json([
+//            'status' => true,
+//        ], 200);
+//    }
    
 }

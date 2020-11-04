@@ -2,24 +2,35 @@
 
 namespace App\Http\Controllers;
 
-use App\User;
+use Auth;
+use Mail;
 use Validator;
+use App\Models\User;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 
 class DriverController extends Controller
 {
+    public function allDriversList() {
+        if(Auth::user()->role_id == config('constant.roles.Haulers')) {
+            return response()->json([
+                'status' => true,
+                'message' => 'Customer farms details',
+                'data' => User::where('role_id', config('constant.roles.Hauler_driver'))->where('created_by', Auth::user()->id)->get()
+            ], 200);
+        }
+        return response()->json([
+                    'status' => false,
+                    'message' => 'Unauthorized access.',
+                ], 421);
+    }
+    
     public function create(Request $request) {
         $validator = Validator::make($request->all(), [
                     'driver_first_name' => 'required',
                     'driver_last_name' => 'required',
                     'email' => 'required|email|unique:users',
                     'driver_phone' => 'required',
-                    'driver_address' => 'required',
-                    'driver_city' => 'required',
-                    'driver_province' => 'required',
-                    'driver_zipcode' => 'required',
-                    'driver_licence' => 'required|unique:drivers',
-                    'driver_licence_image' => 'required',
         ]);
         if ($validator->fails()) {
             return response()->json([
@@ -28,61 +39,57 @@ class DriverController extends Controller
                         'data' => $validator->errors()
                             ], 422);
         }
-        
-        try {
-            $newPassword = Str::random();
-            $user = new User([
-                'prefix' => (isset($request->driver_prefix) && $request->driver_prefix != '' && $request->driver_prefix != null) ? $request->driver_prefix : null,
-                'first_name' => $request->driver_first_name,
-                'last_name' => $request->driver_last_name,
-                'email' => $request->email,
-                'phone' => $request->driver_phone,
-                'address' => $request->driver_address,
-                'city' => $request->driver_city,
-                'state' => $request->driver_province,
-                'zip_code' => $request->driver_zipcode,
-                'user_image' => (isset($request->user_image) && $request->user_image != '' && $request->user_image != null) ? $request->user_image : null,
-                'role_id' => config('constant.roles.Hauler_driver'),
-                'created_from_id' => $request->user()->id,
-                'created_by' => $request->user()->id,
-                'hauler_driver_licence' => $request->driver_licence,
-                'hauler_driver_licence_image' => $request->driver_licence_image,
-                'is_confirmed' => 1,
-                'is_active' => 1,
-                'password' => bcrypt($newPassword)
-            ]);
-            if ($user->save()) {
-                $this->_confirmPassword($user, $newPassword);
-                return response()->json([
+        if (Auth::user()->role_id == config('constant.roles.Haulers')) {
+            try {
+                $newPassword = Str::random();
+                $user = new User([
+                    'prefix' => (isset($request->driver_prefix) && $request->driver_prefix != '' && $request->driver_prefix != null) ? $request->driver_prefix : null,
+                    'first_name' => $request->driver_first_name,
+                    'last_name' => $request->driver_last_name,
+                    'email' => $request->email,
+                    'phone' => $request->driver_phone,
+                    'role_id' => config('constant.roles.Hauler_driver'),
+                    'created_from_id' => $request->user()->id,
+                    'created_by' => $request->user()->id,
+                    'is_confirmed' => 1,
+                    'is_active' => 1,
+                    'password' => bcrypt($newPassword)
+                ]);
+                if ($request->driver_image) {
+                    $imageName = $user->putImage($request->driver_image);
+                    $user['user_image'] = json_encode($imageName);
+                }
+                if ($user->save()) {
+                    $this->_confirmPassword($user, $newPassword);
+                    return response()->json([
                                 'status' => true,
                                 'message' => 'Driver created successfully.',
-                                'data' => []
+                                'data' => $user
                                     ], 200);
+                }
+            } catch (\Exception $e) {
+                DB::rollBack();
+                Log::error(json_encode($e->getMessage()));
+                return response()->json([
+                            'status' => false,
+                            'message' => $e->getMessage(),
+                            'data' => []
+                                ], 500);
             }
-        } catch (\Exception $e) {
-            DB::rollBack();
-            Log::error(json_encode($e->getMessage()));
-            return response()->json([
-                        'status' => false,
-                        'message' => $e->getMessage(),
-                        'data' => []
-                            ], 500);
         }
-        
+        return response()->json([
+                    'status' => false,
+                    'message' => 'Unauthorized access.',
+                        ], 421);
     }
-    
-    public function update(Request $request) {
+
+    public function update(Request $request, User $driver) {
         $validator = Validator::make($request->all(), [
                     'driver_first_name' => 'required',
                     'driver_last_name' => 'required',
                     'email' => 'required',
                     'driver_phone' => 'required',
-                    'driver_address' => 'required',
-                    'driver_city' => 'required',
-                    'driver_province' => 'required',
-                    'driver_zipcode' => 'required',
-                    'driver_licence' => 'required',
-                    'driver_licence_image' => 'required',
+                    'is_driver_active' => 'required'
         ]);
         if ($validator->fails()) {
             return response()->json([
@@ -91,99 +98,95 @@ class DriverController extends Controller
                         'data' => $validator->errors()
                             ], 422);
         }
-        $driver = User::whereId($request->driver_id)->first();
-        if ($request->email != '' && $request->email != null) {
-            if ($driver->email !== $request->email) {
-                $checkEmail = User::where('email', $request->email)->first();
-                if ($checkEmail !== null) {
-                    if ($checkEmail->id !== $driver->id) {
+        if(Auth::user()->role_id == config('constant.roles.Haulers')) {
+            if ($request->email != '' && $request->email != null) {
+                if ($driver->email !== $request->email) {
+                    $checkEmail = User::where('email', $request->email)->first();
+                    if ($checkEmail !== null) {
                         return response()->json([
                                     'status' => false,
                                     'message' => 'Email is already taken.',
                                     'data' => []
                                         ], 422);
                     }
+                    $confirmed = 0;
                 }
-                $confirmed = 0;
             }
-        }
-        $checkDriverLicence = User::where('driver_licence', $request->driver_licence)->first();
-        if ($checkDriverLicence !== null) {
-            if ($checkDriverLicence->id !== $driver->id) {
+            try {
+                $driver->prefix = (isset($request->driver_prefix) && $request->driver_prefix != '' && $request->driver_prefix != null) ? $request->driver_prefix : null;
+                $driver->first_name = $request->driver_first_name;
+                $driver->last_name = $request->driver_last_name;
+                $driver->email = $request->email;
+                $driver->phone = $request->driver_phone;
+                $driver->is_active = $request->is_driver_active;
+                if (isset($confirmed)) {
+                    $driver->is_confirmed = $confirmed;
+                }
+                if ($request->driver_image) {
+                    $imageName = $driver->putImage($request->driver_image);
+                    $driver->user_image = json_encode($imageName);
+                }
+                if ($driver->save()) {
+                    if (isset($confirmed)) {
+                        $this->_updateEmail($driver, $request->email);
+                    }
+                    return response()->json([
+                                'status' => true,
+                                'message' => 'Driver details updated successfully.',
+                                'data' => $driver
+                                    ], 200);
+                }
+            } catch (\Exception $e) {
                 return response()->json([
                             'status' => false,
-                            'message' => 'Driver lecience is already taken.',
+                            'message' => $e->getMessage(),
                             'data' => []
-                                ], 422);
+                                ], 500);
             }
         }
-        try {
-            DB::beginTransaction();
-            if ($request->password != '' && $request->password != null) {
-                $driver->password = bcrypt($request->password);
-            }
-            $driver->prefix = (isset($request->driver_prefix) && $request->driver_prefix != '' && $request->driver_prefix != null) ? $request->driver_prefix : null;
-            $driver->first_name = $request->driver_first_name;
-            $driver->last_name = $request->driver_last_name;
-            $driver->email = $request->email;
-            $driver->phone = $request->driver_phone;
-            $driver->address = $request->driver_address;
-            $driver->city = $request->driver_city;
-            $driver->state = $request->driver_province;
-            $driver->zip_code = $request->driver_zipcode;
-            $driver->user_image = (isset($request->user_image) && $request->user_image != '' && $request->user_image != null) ? $request->user_image : null;
-            $driver->hauler_driver_licence = $request->driver_licence;
-            $driver->hauler_driver_licence_image = $request->driver_licence_image;
-            if(isset($confirmed)) {
-                $driver->is_confirmed = $confirmed;
-            }
-            if ($driver->save()) {
-                DB::commit();
-                if (isset($confirmed)) {
-                    $this->_updateEmail($driver, $request->email);
-                }
-                return response()->json([
-                            'status' => true,
-                            'message' => 'Driver details updated successfully.',
-                            'data' => []
-                                ], 200);
-            }
-        } catch (\Exception $e) {
-            DB::rollBack();
-            Log::error(json_encode($e->getMessage()));
-            return response()->json([
-                        'status' => false,
-                        'message' => $e->getMessage(),
-                        'data' => []
-                            ], 500);
-        }
-    }
-    public function get(Request $request) {
         return response()->json([
+                    'status' => false,
+                    'message' => 'Unauthorized access.',
+                ], 421);
+    }
+    public function get(User $driver) {
+        if(Auth::user()->role_id == config('constant.roles.Haulers')) {
+            return response()->json([
                     'status' => true,
                     'message' => 'Hauler details',
-                    'data' => user::whereId($request->driver_id)->first()
+                    'data' => $driver
                         ], 200);
+        }
+        return response()->json([
+                    'status' => false,
+                    'message' => 'Unauthorized access.',
+                ], 421);
+        
         
     }
-    public function delete(Request $request) {
-        try {
-            User::whereId($request->driver_id)->delete();
-            return response()->json([
-                        'status' => true,
-                        'message' => 'Hauler driver deleted successfully.',
-                        'data' => []
-                            ], 200);
-        } catch (\Exception $e) {
-            Log::error(json_encode($e->getMessage()));
-            return response()->json([
-                        'status' => false,
-                        'message' => $e->getMessage(),
-                        'data' => []
-                            ], 500);
+    public function deleteDriver(User $driver) {
+        if (Auth::user()->role_id == config('constant.roles.Haulers')) {
+            try {
+                $driver->delete();
+                return response()->json([
+                            'status' => true,
+                            'message' => 'Hauler driver deleted successfully.',
+                            'data' => []
+                                ], 200);
+            } catch (\Exception $e) {
+                return response()->json([
+                            'status' => false,
+                            'message' => $e->getMessage(),
+                            'data' => []
+                                ], 500);
+            }
         }
+        return response()->json([
+                    'status' => false,
+                    'message' => 'Unauthorized access.',
+                        ], 421);
     }
-    
+
     public function _confirmPassword($user, $newPassword) {
         $name = $user->first_name . ' ' . $user->last_name;
         $data = array(

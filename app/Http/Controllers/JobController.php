@@ -2,20 +2,20 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Str;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Carbon;
-use Validator;
 use Mail;
 use Auth;
+use Validator;
+use App\Models\Job;
 use App\Models\User;
 use App\Models\Service;
 use App\Models\TimeSlots;
-use App\Models\Job;
+use Illuminate\Support\Str;
+use Illuminate\Http\Request;
 use App\Models\CustomerFarm;
+use Illuminate\Support\Carbon;
 use App\Models\CustomerCardDetail;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\PaymentController;
 use App\Http\Requests\Job\{
     CreateJobRequest
@@ -242,7 +242,7 @@ class JobController extends Controller
      *
      * @param CustomerFarm $customerFarm : Farm whose jobs need to be fetched.
      */
-    public function upcomingJobs(CustomerFarm $customerFarm)
+    public function upcomingJobsOfFarm(CustomerFarm $customerFarm)
     {
 //        dd('here');
         if (!Auth::user()->canAccessFarm($customerFarm)) {

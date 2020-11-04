@@ -33,6 +33,16 @@ class UpdateFarmRequest extends FormRequest
             'farm_active' => 'required',
             'latitude' => 'required',
             'longitude' => 'required',
+            'manager_details.*.id' => 'required',
+            'manager_details.*.manager_first_name' => 'required',
+            'manager_details.*.manager_last_name' => 'required',
+            'manager_details.*.email' => 'required|email',
+            'manager_details.*.manager_phone' => 'required',
+            'manager_details.*.manager_address' => 'required',
+            'manager_details.*.manager_city' => 'required',
+            'manager_details.*.manager_province' => 'required',
+            'manager_details.*.manager_zipcode' => 'required',
+            'manager_details.*.is_active' => 'required',
         ];
     }
 

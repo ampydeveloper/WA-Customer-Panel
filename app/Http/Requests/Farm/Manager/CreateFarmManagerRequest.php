@@ -26,7 +26,7 @@ class CreateFarmManagerRequest extends FormRequest
     public function rules()
     {
         return [
-            'farm_id' => 'required',
+//            'farm_id' => 'required',
             'manager_first_name' => 'required',
             'manager_last_name' => 'required',
             'email' => 'required|email|unique:users',
@@ -35,9 +35,9 @@ class CreateFarmManagerRequest extends FormRequest
             'manager_city' => 'required',
             'manager_province' => 'required',
             'manager_zipcode' => 'required',
-            'manager_card_image' => 'required|image|max:5120',
-            'manager_id_card' => 'required',
-            'salary' => 'required',
+//            'manager_card_image' => 'required|image|max:5120',
+//            'manager_id_card' => 'required',
+//            'salary' => 'required',
         ];
     }
 
