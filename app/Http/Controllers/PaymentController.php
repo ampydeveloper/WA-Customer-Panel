@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use Auth;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
+//use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
 use net\authorize\api\contract\v1 as AnetAPI;
 use net\authorize\api\controller as AnetController;
-use Auth;
 use App\Models\{
     Job,
     User,
@@ -28,11 +28,7 @@ class PaymentController extends Controller
         $this->gateway->setName(env('ANET_API_LOGIN_ID'));
         $this->gateway->setTransactionKey(env('ANET_TRANSACTION_KEY'));
     }
-
-    /**
-     * @method charge : Function to make charge using authorize.net.
-     *
-     */
+    
     public function charge(Request $request)
     {
         try {
@@ -62,26 +58,28 @@ class PaymentController extends Controller
         }
     }
 
-    public function checkCardExist($cardNumber, $customer_id)
-    {
-        return CustomerCardDetail::where('card_number', $cardNumber)->where('customer_id', $customer_id)->first();
-    }
-
     public function addCard(Request $request)
     {
-        $status = $this->processAddCard($request->all());
-        if ($status['status']) {
-            return response()->json($status, 200);
-        } else {
-            return response()->json($status, 200);
+        if (Auth::user()->role_id == config('constant.roles.Customer') || Auth::user()->role_id == config('constant.roles.Customer_Manager')) {
+            $status = $this->processAddCard($request->all());
+            if ($status['status']) {
+                return response()->json($status, 200);
+            } else {
+                return response()->json($status, 200);
+            }
         }
+        return response()->json([
+                    'status' => false,
+                    'message' => 'Unauthorized access.',
+                    'data' => []
+                        ], 421);
     }
-
+    
     public function processAddCard($cardData)
     {
         $user = Auth::user();
 
-        if ($user->role_id == config('constant.roles.Customer') || $user->role_id == config('constant.roles.Haulers')) {
+        if ($user->role_id == config('constant.roles.Customer')) {
             $customer = $user;
         } else {
             $customer = User::whereId($user->created_by)->first();
@@ -99,11 +97,12 @@ class PaymentController extends Controller
             return $this->createCustomerPaymentProfile($cardData, $user, $customer);
         }
     }
-
-    /**
-     * @method createCustomerProfile: function to create customer and add card on authorize.net
-     *
-     */
+    
+    public function checkCardExist($cardNumber, $customer_id)
+    {
+        return CustomerCardDetail::where('card_number', $cardNumber)->where('customer_id', $customer_id)->first();
+    }
+    
     public function createCustomerProfile(array $cardData, $user, $customer)
     {
         $cardData = (object) $cardData;
@@ -202,11 +201,7 @@ class PaymentController extends Controller
             'error' => $errorMessages
         ];
     }
-
-    /**
-     * @method createCustomerPaymentProfile: Function to createadd card to exsiting customer on authorize.net
-     *
-     */
+    
     public function createCustomerPaymentProfile(array $cardData, $user, $customer)
     {
         $cardData = (object) $cardData;
@@ -286,15 +281,11 @@ class PaymentController extends Controller
             ];
         }
     }
-
-    /**
-     * @method getCustomerPaymentProfileList : Function to get all cards.
-     *
-     */
+    
     function getCustomerPaymentProfileList()
     {
         $user = Auth::user();
-        if($user->role_id == config('constant.roles.Customer') || $user->role_id == config('constant.roles.Haulers')) {
+        if($user->role_id == config('constant.roles.Customer')) {
             $cards = CustomerCardDetail::where('customer_id', $user->id)->get();
             return response()->json([
             'status' => true,
@@ -313,152 +304,139 @@ class PaymentController extends Controller
                         ], 421);
         }
     }
-
-    /**
-     * @method deleteCustomerPaymentProfile : Function to delete a card.
-     *
-     */
+    
     function deleteCustomerPaymentProfile(CustomerCardDetail $customerCardDetails)
     {
-//        dd($customerCardDetails->toArray());
-        if ($customerCardDetails->card_primary == 1) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Can not delete a default card.',
-            ], 421);
-        }
-        
-        $user = Auth::user();
-        if($user->role_id == config('constant.roles.Customer_Manager')) {
-            $user = User::whereId(Auth::user()->created_by)->first();
-        }
-        $customerProfileId = $user->authorize_net_id;
-        
-//        $user = Auth::user();
-        // dd($customerCardDetails->customer);
-        // if (!$user->canAccessFarm()) {
-
-        // }
-//        if ($user->role_id == config('constant.roles.Customer') || $user->role_id == config('constant.roles.Haulers')) {
-//            $customerProfileId = ($user->authorize_net_id) ? $user->authorize_net_id : null;
-//        } else {
-//            $farms = $user->farms;
-//            $customerProfileId = ($farms[0] && $farms[0]->user && $farms[0]->user->authorize_net_id ) ? $farms[0]->user->authorize_net_id : null;
-//        }
-
-        if (!$customerProfileId) {
-            return response()->json([
-                'status' => false,
-                'message' => 'User is not a customer on authorize.net. Please contact admin.',
-            ], 421);
-        }
-
-        $request = new AnetAPI\DeleteCustomerPaymentProfileRequest();
-        $request->setMerchantAuthentication($this->gateway);
-        $request->setCustomerProfileId($customerProfileId);
-        $request->setCustomerPaymentProfileId($customerCardDetails->card_id);
-        $controller = new AnetController\DeleteCustomerPaymentProfileController($request);
-        $response = $controller->executeWithApiResponse( \net\authorize\api\constants\ANetEnvironment::SANDBOX);
-        if (($response != null) && ($response->getMessages()->getResultCode() == "Ok") )
-        {
-            $customerCardDetails->delete();
-
-            return response()->json([
-                'status' => true,
-                'message' => 'Card deleted successfully.'
-            ], 200);
-        } else {
-            return response()->json([
-                'status' => false,
-                'message' => 'Not able to delete card please try again later.',
-                'error' => $errorMessages = $response->getMessages()->getMessage()
-            ], 421);
-        }
-    }
-
-    /**
-     * @method updateCustomerPaymentProfile : Function to make card default.
-     *
-     */
-    function updateCustomerPaymentProfile(CustomerCardDetail $customerCardDetails)
-    {
-//        dd($customerCardDetails->toArray());
-        if($customerCardDetails->card_primary == 1) {
-            return response()->json([
-                    'status' => true,
-                    'message' => 'Card is already a primary card.'
-                ], 200);
-        }
-        $user = Auth::user();
-        if ($user->role_id == config('constant.roles.Customer') || $user->role_id == config('constant.roles.Haulers')) {
-            $customer = $user;
-        } elseif($user->role_id == config('constant.roles.Customer_Manager')) {
-            $customer = User::whereId($user->created_by)->first();
-        } else {
-            return response()->json([
-                    'status' => false,
-                    'message' => 'Unauthorized access.',
-                        ], 421);
-        }
-
-        $request = new AnetAPI\GetCustomerPaymentProfileRequest();
-        $request->setMerchantAuthentication($this->gateway);
-        $request->setRefId($customer->id);
-        $request->setCustomerProfileId($customer->authorize_net_id);
-        $request->setCustomerPaymentProfileId($customerCardDetails->card_id);
-
-        $controller = new AnetController\GetCustomerPaymentProfileController($request);
-        $response = $controller->executeWithApiResponse( \net\authorize\api\constants\ANetEnvironment::SANDBOX);
-        if (($response != null) && ($response->getMessages()->getResultCode() == "Ok")) {
-
-            $creditCard = new AnetAPI\CreditCardType();
-            $creditCard->setCardNumber($customerCardDetails->card_number);
-            $exp = $customerCardDetails->card_exp_year . '-' . (($customerCardDetails->card_exp_month < 10) ? '0'.$customerCardDetails->card_exp_month : $customerCardDetails->card_exp_month);
-            $creditCard->setExpirationDate($exp);
-            $paymentCreditCard = new AnetAPI\PaymentType();
-            $paymentCreditCard->setCreditCard($creditCard);
-
-            $paymentprofile = new AnetAPI\CustomerPaymentProfileExType();
-            $paymentprofile->setCustomerPaymentProfileId($customerCardDetails->card_id);
-            $paymentprofile->setDefaultPaymentProfile(true);
-            $paymentprofile->setPayment($paymentCreditCard);
-
-            // Submit a UpdatePaymentProfileRequest
-            $request = new AnetAPI\UpdateCustomerPaymentProfileRequest();
-            $request->setMerchantAuthentication($this->gateway);
-            $request->setCustomerProfileId($customer->authorize_net_id);
-            $request->setPaymentProfile($paymentprofile);
-
-            $controller = new AnetController\UpdateCustomerPaymentProfileController($request);
-            $response = $controller->executeWithApiResponse( \net\authorize\api\constants\ANetEnvironment::SANDBOX);
-            if (($response != null) && ($response->getMessages()->getResultCode() == "Ok") )
-            {
-                CustomerCardDetail::where([
-                    'customer_id' => $customer->id,
-                    'card_primary' => 1
-                ])->update([
-                    'card_primary' => 0
-                ]);
-                $customerCardDetails->update([
-                    'card_primary' => 1
-                ]);
+        if (Auth::user()->role_id == config('constant.roles.Customer') || Auth::user()->role_id == config('constant.roles.Customer_Manager')) {
+            if ($customerCardDetails->card_primary == 1) {
                 return response()->json([
-                    'status' => true,
-                    'message' => 'Card set as default card.'
-                ], 200);
+                            'status' => false,
+                            'message' => 'Can not delete a default card.',
+                                ], 421);
+            }
+
+            $user = Auth::user();
+            if ($user->role_id == config('constant.roles.Customer_Manager')) {
+                $user = User::whereId(Auth::user()->created_by)->first();
+            }
+            $customerProfileId = $user->authorize_net_id;
+
+            if (!$customerProfileId) {
+                return response()->json([
+                            'status' => false,
+                            'message' => 'User is not a customer on authorize.net. Please contact admin.',
+                                ], 421);
+            }
+
+            $request = new AnetAPI\DeleteCustomerPaymentProfileRequest();
+            $request->setMerchantAuthentication($this->gateway);
+            $request->setCustomerProfileId($customerProfileId);
+            $request->setCustomerPaymentProfileId($customerCardDetails->card_id);
+            $controller = new AnetController\DeleteCustomerPaymentProfileController($request);
+            $response = $controller->executeWithApiResponse(\net\authorize\api\constants\ANetEnvironment::SANDBOX);
+            if (($response != null) && ($response->getMessages()->getResultCode() == "Ok")) {
+                $customerCardDetails->delete();
+
+                return response()->json([
+                            'status' => true,
+                            'message' => 'Card deleted successfully.'
+                                ], 200);
+            } else {
+                return response()->json([
+                            'status' => false,
+                            'message' => 'Not able to delete card please try again later.',
+                            'error' => $errorMessages = $response->getMessages()->getMessage()
+                                ], 421);
             }
         }
         return response()->json([
-            'status' => true,
-            'message' => 'Failed to set card as default card.',
-            'error' => $response->getMessages()->getMessage()
-        ], 421);
+                    'status' => false,
+                    'message' => 'Unauthorized access.',
+                    'data' => []
+                        ], 421);
     }
+    
+    function updateCustomerPaymentProfile(CustomerCardDetail $customerCardDetails)
+    {
+        if (Auth::user()->role_id == config('constant.roles.Customer') || Auth::user()->role_id == config('constant.roles.Customer_Manager')) {
+            if ($customerCardDetails->card_primary == 1) {
+                return response()->json([
+                            'status' => true,
+                            'message' => 'Card is already a primary card.'
+                                ], 200);
+            }
+            $user = Auth::user();
+            if ($user->role_id == config('constant.roles.Customer') || $user->role_id == config('constant.roles.Haulers')) {
+                $customer = $user;
+            } elseif ($user->role_id == config('constant.roles.Customer_Manager')) {
+                $customer = User::whereId($user->created_by)->first();
+            } else {
+                return response()->json([
+                            'status' => false,
+                            'message' => 'Unauthorized access.',
+                                ], 421);
+            }
 
-    /**
-     * @method chargeCustomerProfile : Function to charge a customer.
-     *
-     */
+            $request = new AnetAPI\GetCustomerPaymentProfileRequest();
+            $request->setMerchantAuthentication($this->gateway);
+            $request->setRefId($customer->id);
+            $request->setCustomerProfileId($customer->authorize_net_id);
+            $request->setCustomerPaymentProfileId($customerCardDetails->card_id);
+
+            $controller = new AnetController\GetCustomerPaymentProfileController($request);
+            $response = $controller->executeWithApiResponse(\net\authorize\api\constants\ANetEnvironment::SANDBOX);
+            if (($response != null) && ($response->getMessages()->getResultCode() == "Ok")) {
+
+                $creditCard = new AnetAPI\CreditCardType();
+                $creditCard->setCardNumber($customerCardDetails->card_number);
+                $exp = $customerCardDetails->card_exp_year . '-' . (($customerCardDetails->card_exp_month < 10) ? '0' . $customerCardDetails->card_exp_month : $customerCardDetails->card_exp_month);
+                $creditCard->setExpirationDate($exp);
+                $paymentCreditCard = new AnetAPI\PaymentType();
+                $paymentCreditCard->setCreditCard($creditCard);
+
+                $paymentprofile = new AnetAPI\CustomerPaymentProfileExType();
+                $paymentprofile->setCustomerPaymentProfileId($customerCardDetails->card_id);
+                $paymentprofile->setDefaultPaymentProfile(true);
+                $paymentprofile->setPayment($paymentCreditCard);
+
+                // Submit a UpdatePaymentProfileRequest
+                $request = new AnetAPI\UpdateCustomerPaymentProfileRequest();
+                $request->setMerchantAuthentication($this->gateway);
+                $request->setCustomerProfileId($customer->authorize_net_id);
+                $request->setPaymentProfile($paymentprofile);
+
+                $controller = new AnetController\UpdateCustomerPaymentProfileController($request);
+                $response = $controller->executeWithApiResponse(\net\authorize\api\constants\ANetEnvironment::SANDBOX);
+                if (($response != null) && ($response->getMessages()->getResultCode() == "Ok")) {
+                    CustomerCardDetail::where([
+                        'customer_id' => $customer->id,
+                        'card_primary' => 1
+                    ])->update([
+                        'card_primary' => 0
+                    ]);
+                    $customerCardDetails->update([
+                        'card_primary' => 1
+                    ]);
+                    return response()->json([
+                                'status' => true,
+                                'message' => 'Card set as default card.'
+                                    ], 200);
+                }
+            }
+            return response()->json([
+                        'status' => true,
+                        'message' => 'Failed to set card as default card.',
+                        'error' => $response->getMessages()->getMessage()
+                            ], 421);
+        }
+        return response()->json([
+                    'status' => false,
+                    'message' => 'Unauthorized access.',
+                    'data' => []
+                        ], 421);
+    }
+    
+    
     function chargeCustomerProfile(ChargeCustomerProfileRequest $request)
     {
         dd($request->all());
@@ -581,5 +559,4 @@ class PaymentController extends Controller
             ]
         ], 421);
     }
-
 }

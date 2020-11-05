@@ -7,8 +7,8 @@ use Auth;
 use Validator;
 use App\Models\Job;
 use App\Models\User;
-use App\Models\Service;
-use App\Models\TimeSlots;
+//use App\Models\Service;
+//use App\Models\TimeSlots;
 //use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Models\CustomerFarm;
@@ -45,7 +45,24 @@ class JobController extends Controller
     public function create(CreateJobRequest $createJobRequest)
     {
         $user = Auth::user();
-        dump($user->role_id);
+        if($user->role_id == config('constant.roles.Customer') || $user->role_id == config('constant.roles.Haulers')) {
+            if($user->authorize_net_id == null) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'No card added',
+                    'data' => []
+                        ], 421);
+            }
+        } else {
+            $Owner = User::whereId($user->created_by)->first();
+            if($Owner->authorize_net_id == null) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'No card added',
+                    'data' => []
+                        ], 421);
+            }
+        }
         DB::beginTransaction();
         try {
             $data = [
