@@ -39,45 +39,32 @@ Route::group(['middleware' => 'auth:api'], function () {
 });
 
 Route::group(['middleware' => 'auth:api', 'prefix' => 'my', 'as' => 'my'], function () {
-    //done
     Route::get('jobs', 'JobController@myJobs')->name('jobs');
-    //done
     Route::get('jobs/upcoming', 'JobController@myUpcomingJobs')->name('upcoming.jobs');
-    //done
     Route::get('farms', 'CustomerController@myFarms')->name('farms');
-    //done
     Route::get('managers', 'CustomerController@myManagers')->name('list-all');
 });
 
 Route::group(['middleware' => 'auth:api', 'prefix' => 'customer', 'as' => 'customer'], function () {
     
-    // Job related apis
-    Route::group(['prefix' => 'job', 'as' => 'job'], function () {
-        //done
-        Route::post('', 'JobController@create')->name('create');
-        //done
-        Route::post('{job_id}', 'JobController@update')->name('update');
-        //done
-        Route::get('{job}/cancel', 'JobController@cancelJob')->name('cancel');
-        //done
-        Route::get('{job}', 'JobController@get')->name('get');
-    });
-
     // Services related routes
     Route::group(['prefix' => 'service', 'as' => 'service'], function () {
-        //done
         Route::get('list', 'ServiceController@serviceList')->name('list');
-        //done
         Route::get('{service}', 'ServiceController@get')->name('get');
+    });
+    
+    // Job related apis
+    Route::group(['prefix' => 'job', 'as' => 'job'], function () {
+        Route::post('', 'JobController@create')->name('create');
+        Route::post('{job_id}', 'JobController@update')->name('update');
+        Route::get('{job}/cancel', 'JobController@cancelJob')->name('cancel');
+        Route::get('{job}', 'JobController@get')->name('get');
     });
 
     // Farm related apis
     Route::group(['prefix' => 'farm', 'as' => 'farm'], function () {
-        
         Route::group(['prefix' => '{customer_farm}', 'as' => 'jobs'], function () {
-            //done
             Route::get('jobs', 'JobController@getJobsOfFram')->name('list');
-            //done
             Route::get('jobs/upcoming', 'JobController@upcomingJobsOfFarm')->name('upcoming-jobs-list');
         });
         //Done

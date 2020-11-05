@@ -9,7 +9,7 @@ use App\Models\Job;
 use App\Models\User;
 use App\Models\Service;
 use App\Models\TimeSlots;
-use Illuminate\Support\Str;
+//use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Models\CustomerFarm;
 use Illuminate\Support\Carbon;
@@ -23,13 +23,29 @@ use App\Http\Requests\Job\{
 
 class JobController extends Controller
 {
+    
+    public function myJobs()
+    {
+        return response()->json([
+            'status' => true,
+            'message' => 'Job List',
+            'data' => Auth::user()->myJobs()
+        ], 200);
+    }
+    
+    public function myUpcomingJobs()
+    {
+        return response()->json([
+            'status' => true,
+            'message' => 'Job List',
+            'data' => Auth::user()->myUpcomingJobs()
+        ], 200);
+    }
 
-    /**
-     * @method createJob : Function to Create job.
-     */
     public function create(CreateJobRequest $createJobRequest)
     {
         $user = Auth::user();
+        dump($user->role_id);
         DB::beginTransaction();
         try {
             $data = [
@@ -46,16 +62,15 @@ class JobController extends Controller
                 'notes' => (isset($createJobRequest->notes) && $createJobRequest->notes != '' && $createJobRequest->notes != null) ? $createJobRequest->notes : null,
                 'amount' => $createJobRequest->amount,
             ];
-            
             if($user->role_id == config('constant.roles.Customer')) {
                 $data['farm_id'] = $createJobRequest->farm_id;
                 $data['customer_id'] = $user->id;
                 $data['manager_id'] = $createJobRequest->manager_id;
             } else if($user->role_id == config('constant.roles.Customer_Manager')) {
-                $data['farm_id'] = $createJobRequest->farm_id;
+                $data['farm_id'] = $user->farm_id;
                 $data['customer_id'] = $user->created_by;
                 $data['manager_id'] = $user->id;
-            } else if($user->role_id == config('constant.roles.Hauler')) {
+            } else if($user->role_id == config('constant.roles.Haulers')) {
                 $data['farm_id'] = null;
                 $data['customer_id'] = $user->id;
                 $data['manager_id'] = $createJobRequest->manager_id;
@@ -150,122 +165,12 @@ class JobController extends Controller
             });
         }
     }
-
-    /**
-     * get farms
-     */
-    public function getJobsOfFram(CustomerFarm $customerFarm)
+    
+    public function update(Job $job_id, Request $request)
     {
-        if (!Auth::user()->canAccessFarm($customerFarm)) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Unauthorized access.',
-                'data' => []
-            ], 421);
-        }
-
-        return response()->json([
-            'status' => true,
-            'message' => 'Job List Of Farm',
-            'data' => $customerFarm->jobs
-        ], 200);
-    }
-    /**
-     * get service time slots
-     */
-    public function getServiceSlots(Request $request)
-    {
-        $service = Service::whereId($request->service_id)->first();
-        if ($service != null) {
-            $timeSlots = TimeSlots::whereIn('id', json_decode($service->slot_time))->get();
-            return response()->json([
-                'status' => true,
-                'message' => 'Service Slot Details.',
-                'data' => $timeSlots
-            ], 200);
-        } else {
-            return response()->json([
-                'status' => true,
-                'message' => 'No time slot available.',
-                'data' => []
-            ], 500);
-        }
-    }
-    /**
-     * @method get: Function to get single jobs.
-     *
-     * @param Job $job : Job which need to be fetched.
-     */
-    public function get(Job $job)
-    {
-
-        return response()->json([
-            'status' => true,
-            'message' => 'Job Details.',
-            'data' => $job->where('id', $job->id)->with('farm','manager', 'service')->first()
-        ], 200);
-    }
-
-    /**
-     * @method cancelJob: Function to cancel a job. A job can not be canceled after 24 hours.
-     *
-     * @param Job $job : Job which need to be canceled.
-     */
-    public function cancelJob(Job $job)
-    {
-        if ($job->job_status == config('constant.job_status.open')) {
-            try {
-                $job->update(['job_status' => config('constant.job_status.cancelled')]);
-                return response()->json([
-                    'status' => true,
-                    'message' => 'Job cancelled successfully.',
-                    'data' => $job
-                ], 200);
-            } catch (\Exception $e) {
-                Log::error(json_encode($e->getMessage()));
-                return response()->json([
-                    'status' => false,
-                    'message' => $e->getMessage(),
-                    'data' => []
-                ], 500);
-            }
-        }
-        return response()->json([
-            'status' => false,
-            'message' => 'You cannot cancel the job.',
-            'data' => []
-        ], 500);
-    }
-
-    /**
-     * @method upcomingJobs: Function to get upcoming jobs.
-     *
-     * @param CustomerFarm $customerFarm : Farm whose jobs need to be fetched.
-     */
-    public function upcomingJobsOfFarm(CustomerFarm $customerFarm)
-    {
-//        dd('here');
-        if (!Auth::user()->canAccessFarm($customerFarm)) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Unauthorized access.',
-                'data' => []
-            ], 421);
-        }
-
-        return response()->json([
-            'status' => true,
-            'message' => 'Upcoming Jobs',
-            'now' => Carbon::now()->format('Y-m-d'),
-            'data' => Job::Where('farm_id', $customerFarm->id)->where('job_providing_date', '>', Carbon::now())->with('truck_driver', 'truck')->get()
-        ], 200);
-    }
-
-    public function update($job_id, Request $request)
-    {
-//        dump($job_id);
         $validator = Validator::make(array_merge(['job_id' => $job_id], $request->all()), [
-                    'manager_id' => 'required',
+                    'manager_id' => 'sometimes|required',
+                    'farm_id' => 'sometimes|required',
                     'service_id' => 'required',
                     'job_providing_date' => 'required',
                     'is_repeating_job' => 'required',
@@ -281,9 +186,7 @@ class JobController extends Controller
                             ], 422);
         }
         
-//        dump($request->all());
-        $checkIfEdittingAllowed = Job::where('id', $job_id)->first();
-        if ($checkIfEdittingAllowed->job_status == config('constant.job_status.open')) {
+        if ($job_id->job_status == config('constant.job_status.open')) {
             try {
                 $images = null;
                 if(isset($request->existingImages) && $request->existingImages && strlen($request->existingImages) > 0){
@@ -291,9 +194,8 @@ class JobController extends Controller
                 }
                 if (isset($request->images) && $request->images && count($request->images) > 0) {
                     $jobImages = [];
-                    $job = Job::whereId($request->job_id)->first();
                     foreach ($request->images as $image) {
-                        $imageName = $job->putImage($image);
+                        $imageName = $job_id->putImage($image);
                         if ($imageName) {
                             $jobImages[] = $imageName;
                         }
@@ -304,8 +206,6 @@ class JobController extends Controller
                     $images = json_encode($jobImages);
                 }
                 $jobUpdate = [
-                    'manager_id' => (isset($request->manager_id) && $request->manager_id != '' && $request->manager_id != null) ? $request->manager_id : null,
-                    'farm_id' => (isset($request->farm_id) && $request->farm_id != '' && $request->farm_id != null) ? $request->farm_id : null,
                     'gate_no' => (isset($request->gate_no) && $request->gate_no != '' && $request->gate_no != null) ? $request->gate_no : null,
                     'service_id' => $request->service_id,
                     'time_slots_id' => (isset($request->time_slots_id) && $request->time_slots_id != '' && $request->time_slots_id != null) ? $request->time_slots_id : null,
@@ -319,10 +219,16 @@ class JobController extends Controller
                     'amount' => $request->amount,
                     'images' => $images
                 ];
-                Job::whereId($job_id)->update($jobUpdate);
+                if(isset($request->manager_id)) {
+                    $jobUpdate['manager_id'] = $request->manager_id;
+                }
+                if(isset($request->farm_id)) {
+                    $jobUpdate['farm_id'] = $request->farm_id;
+                }
+                $job_id->update($jobUpdate);
                 $mailData = [
-                    'job_id' => $job_id,
-                    'customer_id' => $checkIfEdittingAllowed->customer_id,
+                    'job_id' => $job_id->id,
+                    'customer_id' => $job_id->customer_id,
                     'manager_id' => isset($request->manager_id) ? $request->manager_id : null
                 ];
                 $this->_sendPaymentEmail($mailData);
@@ -346,27 +252,109 @@ class JobController extends Controller
                 ], 500);
     }
 
-    /**
-     * @method myJobs: Functin to get jobs.
-     */
-    public function myJobs()
+    
+    public function cancelJob(Job $job)
     {
+        $user = Auth::user();
+        If ($user->id == $job->customer_id || $user->id == $job->manager_id || ($user->farm_id == $job->farm_id && $user->role_id == config('constant.roles.Customer_Manager'))) {
+            if ($job->job_status == config('constant.job_status.open')) {
+                try {
+                    $job->update(['job_status' => config('constant.job_status.cancelled')]);
+                    return response()->json([
+                                'status' => true,
+                                'message' => 'Job cancelled successfully.',
+                                'data' => $job
+                                    ], 200);
+                } catch (\Exception $e) {
+                    Log::error(json_encode($e->getMessage()));
+                    return response()->json([
+                                'status' => false,
+                                'message' => $e->getMessage(),
+                                'data' => []
+                                    ], 500);
+                }
+            }
+            return response()->json([
+                        'status' => false,
+                        'message' => 'You cannot cancel the job.',
+                        'data' => []
+                            ], 500);
+        }
         return response()->json([
-            'status' => true,
-            'message' => 'Job List',
-            'data' => Auth::user()->myJobs()
-        ], 200);
+                    'status' => false,
+                    'message' => 'unauthorized access.',
+                    'data' => []
+                        ], 421);
+    }
+    
+    public function get(Job $job)
+    {
+        $user = Auth::user();
+        If ($user->id == $job->customer_id || $user->id == $job->manager_id || ($user->farm_id == $job->farm_id && $user->role_id == config('constant.roles.Customer_Manager'))) {
+            return response()->json([
+                        'status' => true,
+                        'message' => 'Job Details.',
+                        'data' => $job->where('id', $job->id)->with('farm', 'manager', 'service')->first()
+                            ], 200);
+        }
+        return response()->json([
+                    'status' => false,
+                    'message' => 'unauthorized access.',
+                    'data' => []
+                        ], 421);
     }
 
-     /**
-     * @method myUpcomingJobs: FunctiOn to get upcoming jobs.
-     */
-    public function myUpcomingJobs()
+    public function getJobsOfFram(CustomerFarm $customerFarm)
     {
+        if (!Auth::user()->canAccessFarm($customerFarm)) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Unauthorized access.',
+                'data' => []
+            ], 421);
+        }
+
         return response()->json([
             'status' => true,
-            'message' => 'Job List',
-            'data' => Auth::user()->myUpcomingJobs()
+            'message' => 'Job List Of Farm',
+            'data' => $customerFarm->jobs
         ], 200);
     }
+    
+    public function upcomingJobsOfFarm(CustomerFarm $customerFarm)
+    {
+        if (!Auth::user()->canAccessFarm($customerFarm)) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Unauthorized access.',
+                'data' => []
+            ], 421);
+        }
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Upcoming Jobs',
+            'now' => Carbon::now()->format('Y-m-d'),
+            'data' => Job::Where('farm_id', $customerFarm->id)->where('job_providing_date', '>', Carbon::now())->with('truck_driver', 'truck')->get()
+        ], 200);
+    }
+    
+//    public function getServiceSlots(Request $request)
+//    {
+//        $service = Service::whereId($request->service_id)->first();
+//        if ($service != null) {
+//            $timeSlots = TimeSlots::whereIn('id', json_decode($service->slot_time))->get();
+//            return response()->json([
+//                'status' => true,
+//                'message' => 'Service Slot Details.',
+//                'data' => $timeSlots
+//            ], 200);
+//        } else {
+//            return response()->json([
+//                'status' => true,
+//                'message' => 'No time slot available.',
+//                'data' => []
+//            ], 500);
+//        }
+//    }
 }

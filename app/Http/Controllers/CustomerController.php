@@ -4,22 +4,22 @@ namespace App\Http\Controllers;
 
 use Auth;
 use Mail;
-use App\Job;
-use App\Payment;
-use App\Service;
-use Carbon\Carbon;
-use App\TimeSlots;
+//use App\Job;
+//use App\Payment;
+//use App\Service;
+//use Carbon\Carbon;
+//use App\TimeSlots;
 use App\Models\User;
-use App\CustomerFarm;
-use App\ManagerDetail;
-use App\ServicesTimeSlot;
-use App\CustomerCardDetail;
-use Illuminate\Support\Str;
-use Illuminate\Http\Request;
-use Illuminate\Validation\Rule;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Validator;
+//use App\ManagerDetail;
+//use App\ServicesTimeSlot;
+//use App\CustomerCardDetail;
+//use Illuminate\Support\Str;
+use App\Models\CustomerFarm;
+//use Illuminate\Http\Request;
+//use Illuminate\Validation\Rule;
+//use Illuminate\Support\Facades\DB;
+//use Illuminate\Support\Facades\Log;
+//use Illuminate\Support\Facades\Validator;
 
 class CustomerController extends Controller {
     
@@ -34,7 +34,7 @@ class CustomerController extends Controller {
             return response()->json([
                     'status' => true,
                     'message' => 'Customer farms details',
-                    'farms' => CustomerFarm::whereId(Auth::user()->created_by)->get()
+                    'farms' => CustomerFarm::whereId(Auth::user()->farm_id)->get()
                 ], 200);
         } else {
             return response()->json([
@@ -43,27 +43,6 @@ class CustomerController extends Controller {
                 'data' => []
             ], 421);
         }
-    }
-    
-    public function listCustomerMobile(Request $request) {
-        $validator = Validator::make($request->all(), [
-                    'offset' => 'required',
-                    'take' => 'required',
-        ]);
-        if ($validator->fails()) {
-            return response()->json([
-                        'status' => false,
-                        'message' => 'The given data was invalid.',
-                        'data' => $validator->errors()
-                            ], 422);
-        }
-        $getCustomer = User::with('farmlist.farmManager')
-                        ->whereRoleId(config('constant.roles.Customer'))->skip($request->offset)->take($request->take)->get();
-        return response()->json([
-                    'status' => true,
-                    'message' => 'Customer Listing.',
-                    'data' => $getCustomer
-                        ], 200);
     }
     
     public function myManagers() {
@@ -81,6 +60,29 @@ class CustomerController extends Controller {
             ], 421);
         
     }
+    
+//    public function listCustomerMobile(Request $request) {
+//        $validator = Validator::make($request->all(), [
+//                    'offset' => 'required',
+//                    'take' => 'required',
+//        ]);
+//        if ($validator->fails()) {
+//            return response()->json([
+//                        'status' => false,
+//                        'message' => 'The given data was invalid.',
+//                        'data' => $validator->errors()
+//                            ], 422);
+//        }
+//        $getCustomer = User::with('farmlist.farmManager')
+//                        ->whereRoleId(config('constant.roles.Customer'))->skip($request->offset)->take($request->take)->get();
+//        return response()->json([
+//                    'status' => true,
+//                    'message' => 'Customer Listing.',
+//                    'data' => $getCustomer
+//                        ], 200);
+//    }
+    
+    
     /**
      * create customer
      */
