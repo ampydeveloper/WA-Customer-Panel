@@ -28,7 +28,6 @@ class CreateJobRequest extends FormRequest
     {
         $rules = [
             'service_id' => 'required',
-            'manager_id' => 'required',
             'payment_mode' => 'required',
             'job_providing_date' => 'required|date|date_format:Y-m-d',
             'is_repeating_job' => 'required',
@@ -36,10 +35,14 @@ class CreateJobRequest extends FormRequest
             'repeating_days' => 'required_if:is_repeating_job,==,true',
         ];
 
-        if (Auth::user()->role_id != config('constant.roles.Haulers')) {
-            $rules['farm_id'] = 'sometimes|required';
+        if(Auth::user()->role_id == config('constant.roles.Customer')) {
+            dd('in');
+            $rules['manager_id'] = 'required';
+            $rules['farm_id'] = 'required';
         }
-
+        if (Auth::user()->role_id == config('constant.roles.Haulers')) {
+            $rules['manager_id'] = 'required';
+        }
         return $rules;
     }
 

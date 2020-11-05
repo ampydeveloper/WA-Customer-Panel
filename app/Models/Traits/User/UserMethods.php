@@ -57,8 +57,10 @@ trait UserMethods
     {
         if ($this->isCustomer()) {
             return Job::where('customer_id', $this->id)->with('farm','customer', 'manager', 'service')->get();
+        } elseif($this->role_id == config('constant.roles.Customer_Manager')) {
+            return Job::where('manager_id', $this->id)->orWhere('farm_id', $this->farm_id)->with('farm','customer', 'manager', 'service')->get();
         } else {
-            return Job::where('customer_id', $this->created_by)->with('farm','customer', 'manager', 'service')->get();
+            return Job::where('manager_id', $this->id)->with('farm','customer', 'manager', 'service')->get();
         }
     }
     
@@ -66,7 +68,9 @@ trait UserMethods
     {
         if ($this->isCustomer()) {
             return Job::where('customer_id', $this->id)->where('job_providing_date', '>', Carbon::now())->with('farm','customer', 'manager', 'service')->get();
-        } else {
+        } elseif($this->role_id == config('constant.roles.Customer_Manager')) {
+            return Job::where('manager_id', $this->id)->orWhere('farm_id', $this->farm_id)->where('job_providing_date', '>', Carbon::now())->with('farm','customer', 'manager', 'service')->get();
+        }else {
             return Job::where('manager_id', $this->id)->where('job_providing_date', '>', Carbon::now())->with('farm','customer', 'manager', 'service')->get();
         }
     }
