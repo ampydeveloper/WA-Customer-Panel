@@ -43,7 +43,7 @@ class DriverController extends Controller
             try {
                 $newPassword = Str::random();
                 $user = new User([
-                    'prefix' => (isset($request->driver_prefix) && $request->driver_prefix != '' && $request->driver_prefix != null) ? $request->driver_prefix : null,
+                    'prefix' => (isset($request->prefix) && $request->prefix != '' && $request->prefix != null) ? $request->prefix : null,
                     'first_name' => $request->driver_first_name,
                     'last_name' => $request->driver_last_name,
                     'email' => $request->email,
@@ -55,11 +55,11 @@ class DriverController extends Controller
                     'is_active' => 1,
                     'password' => bcrypt($newPassword)
                 ]);
-                if ($request->driver_image) {
-                    $imageName = $user->putImage($request->driver_image);
-                    $user['user_image'] = json_encode($imageName);
-                }
                 if ($user->save()) {
+                    if ($request->driver_image) {
+                        $imageName = $user->putImage($request->driver_image);
+                        $user['user_image'] = $imageName;
+                    }
                     $this->_confirmPassword($user, $newPassword);
                     return response()->json([
                                 'status' => true,
@@ -85,11 +85,11 @@ class DriverController extends Controller
 
     public function update(Request $request, User $driver) {
         $validator = Validator::make($request->all(), [
-                    'driver_first_name' => 'required',
-                    'driver_last_name' => 'required',
+                    'first_name' => 'required',
+                    'last_name' => 'required',
                     'email' => 'required',
-                    'driver_phone' => 'required',
-                    'is_driver_active' => 'required'
+                    'phone' => 'required',
+                    'is_active' => 'required'
         ]);
         if ($validator->fails()) {
             return response()->json([
@@ -113,20 +113,20 @@ class DriverController extends Controller
                 }
             }
             try {
-                $driver->prefix = (isset($request->driver_prefix) && $request->driver_prefix != '' && $request->driver_prefix != null) ? $request->driver_prefix : null;
-                $driver->first_name = $request->driver_first_name;
-                $driver->last_name = $request->driver_last_name;
+                $driver->prefix = (isset($request->prefix) && $request->prefix != '' && $request->prefix != null) ? $request->prefix : null;
+                $driver->first_name = $request->first_name;
+                $driver->last_name = $request->last_name;
                 $driver->email = $request->email;
-                $driver->phone = $request->driver_phone;
-                $driver->is_active = $request->is_driver_active;
+                $driver->phone = $request->phone;
+                $driver->is_active = $request->is_active == false ? 0 : 1;
                 if (isset($confirmed)) {
                     $driver->is_confirmed = $confirmed;
                 }
-                if ($request->driver_image) {
-                    $imageName = $driver->putImage($request->driver_image);
-                    $driver->user_image = json_encode($imageName);
-                }
                 if ($driver->save()) {
+                    if ($request->driver_image) {
+                        $imageName = $driver->putImage($request->driver_image);
+                        $driver->user_image = $imageName;
+                    }
                     if (isset($confirmed)) {
                         $this->_updateEmail($driver, $request->email);
                     }
