@@ -91,7 +91,7 @@ Route::group(['middleware' => 'auth:api', 'prefix' => 'hauler/driver', 'as' => '
 Route::group(['middleware' => 'auth:api', 'prefix' => 'payment', 'as' => 'payment'], function () {
     Route::post('charge', 'PaymentController@chargeCustomerProfile')->name('charge');
     Route::group(['prefix' => 'customer', 'as' => 'customer'], function () {
-        Route::post('add-card', 'PaymentController@addCard')->name('create');
+        Route::put('add-card', 'PaymentController@addCard')->name('create');
         Route::get('cards', 'PaymentController@getCustomerPaymentProfileList')->name('cards');
         Route::delete('card/{customerCardDetails}', 'PaymentController@deleteCustomerPaymentProfile')->name('card.delete');
         Route::get('card/make-default/{customerCardDetails}', 'PaymentController@updateCustomerPaymentProfile')->name('card.make-default');

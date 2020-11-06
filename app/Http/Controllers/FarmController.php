@@ -87,7 +87,7 @@ class FarmController extends Controller
                         'farm_id' => $farmDetails->id,
                         'password' => bcrypt($newPassword)
                     ]);
-                    if ($manager['manager_image']) {
+                    if (isset($manager['manager_image'])) {
                         $imageName = $saveManger->putImage($manager['manager_image']);
                         $saveManger['user_image'] = json_encode($imageName);
                     }

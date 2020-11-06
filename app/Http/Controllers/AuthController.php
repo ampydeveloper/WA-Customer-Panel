@@ -6,15 +6,15 @@ use Mail;
 use App\Models\User;
 use Socialite;
 use Carbon\Carbon;
-use GuzzleHttp\Client;
-use Illuminate\Support\Str;
+//use GuzzleHttp\Client;
+//use Illuminate\Support\Str;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\URL;
+//use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Validator;
-use GuzzleHttp\Exception\GuzzleException;
+//use GuzzleHttp\Exception\GuzzleException;
 use App\Http\Requests\Auth\{
     SignUpRequest,
     LoginRequest,
@@ -26,16 +26,8 @@ use App\Http\Requests\Auth\{
 class AuthController extends Controller
 {
 
-    /**
-     * @method signup: Function to register a customer.
-     *
-     * @param SignUpRequest $request: Contains SignUp data.
-     *
-     * @return JSON response.
-     */
     public function signup(SignUpRequest $request)
     {
-//        dd($request->all());
         if ($request->role_id == config('constant.roles.Customer') || $request->role_id == config('constant.roles.Haulers')) {
             try {
                 $user = new User([
@@ -56,7 +48,6 @@ class AuthController extends Controller
                 if ($user->save()) {
                     $this->_welcomeEmail($user);
                 }
-
                 return response()->json([
                     'status' => true,
                     'message' => 'Your account is successfully created. We have sent you an e-mail to confirm your account.',
@@ -70,7 +61,6 @@ class AuthController extends Controller
                 ], 500);
             }
         }
-
         return response()->json([
             'status' => false,
             'message' => 'Please check the type of user.',

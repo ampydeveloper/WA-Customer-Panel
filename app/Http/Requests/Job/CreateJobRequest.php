@@ -36,7 +36,6 @@ class CreateJobRequest extends FormRequest
         ];
 
         if(Auth::user()->role_id == config('constant.roles.Customer')) {
-            dd('in');
             $rules['manager_id'] = 'required';
             $rules['farm_id'] = 'required';
         }
