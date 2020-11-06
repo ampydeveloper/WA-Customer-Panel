@@ -539,23 +539,21 @@ class FarmController extends Controller
      * @method isUniqueManager: Function to check if email address is unique or not
      * 
      */
-//    public function isUniqueManager(string $email)
-//    {
-////        dd($email);
-//        $validator = Validator::make(['email' => $email], [
-//            'email' => 'required|email|unique:users',
-//        ]);
-//
-//        if ($validator->fails()) {
-//            return response()->json([
-//                        'status' => false,
-//                        'message' => 'The given data was invalid.',
-//                        'data' => $validator->errors()
-//                    ], 422);
-//        }
-//        return response()->json([
-//            'status' => true,
-//        ], 200);
-//    }
+   public function isUniqueManager(string $email){
+       $validator = Validator::make(['email' => $email], [
+           'email' => 'required|email|unique:users',
+       ]);
+
+       if ($validator->fails()) {
+           return response()->json([
+                       'status' => false,
+                       'message' => 'The given data was invalid.',
+                       'data' => $validator->errors()
+                   ], 422);
+       }
+       return response()->json([
+           'status' => true,
+       ], 200);
+   }
    
 }

@@ -4,9 +4,11 @@
     <form action novalidate>
       <vue-form-generator
         tag="section"
+        ref="managerForm"
         :schema="schema"
         :options="formOptions"
         :model="model"
+        @validated="onValidated"
       />
     </form>
     <button
@@ -42,6 +44,7 @@ export default {
   props: ["newManager", "isEdit"],
   data() {
     return {
+      formValid: false,
       model: this.newManager !== undefined ? this.newManager : emptyManager,
       schema: {
         fields: [
@@ -49,15 +52,6 @@ export default {
           {
             type: "filepond",
             label: "Card Image",
-            // files: [
-            //     {
-            //         source: '12345',
-            //         options: {
-            //             type: 'local',
-            //             file: window.ttt
-            //         }
-            //     }
-            // ],
             allowMultiple: false,
             onFilePondDrop: (fieldName, file, metadata, load) => {
               this.model.manager_card_image = [];
@@ -75,31 +69,10 @@ export default {
             buttonText: this.isEdit === false ? "Add Manager" : "Save",
             caption: "Create Manager form",
             validateBeforeSubmit: true,
+            disabled: (model, field, form) => this.formValid,
             onSubmit: (model, schema) => {
               const { farmId } = this.$route.params;
-              // if (farmId === undefined) {
-                this.$emit("updatemanager", model, this.isEdit);
-              // } else {
-              //   const managerRequest = { ...this.model, farm_id: farmId };
-              //   FarmService.createManager(managerRequest).then(response => {
-              //     this.$toast.open(
-              //       {
-              //         message: response.data.message,
-              //         type: "success",
-              //         position: "top-right",
-              //         dismissible: false
-              //       },
-              //       error => {
-              //         this.$toast.open({
-              //           message: error.response.data.message,
-              //           type: "error",
-              //           position: "bottom-right",
-              //           dismissible: false
-              //         });
-              //       }
-              //     );
-              //   });
-              // }
+              this.$emit("updatemanager", model, this.isEdit);
             },
           },    
         ]
@@ -115,6 +88,9 @@ export default {
     },
     removeExisting: function(){
       this.model.manager_card_image = []
+    },
+    onValidated(isValid, errors) {
+      this.formValid = !isValid;
     }
   }
 };

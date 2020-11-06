@@ -32,14 +32,12 @@
               <v-col cols="11" md="11" class="pl-0 manager-cols">
                 <div class="custom-col row custom-img-holder">
                   <v-col sm="4" class="label-align pt-0 image-upload-label">
-                    <label>Profile Image</label>
+                    <label>Profile Image</label><br/>
+                    <small class="font-weight-bold"><i>(Click on image to change!)</i></small>
                   </v-col>
                   <v-col sm="4" class="pt-0 pb-0">
-                      <div class="profile-image" v-if="image_url != null && image_url != 'null'">
-                        <img v-bind:src="image_url" alt="name" />
-                        <div class="image-edit" @click="uploadImage = true">
-                          <i data-feather="edit-3"></i>
-                        </div>
+                      <div class="profile-image" v-if="image_url != null && image_url != 'null' && uploadImage != true">
+                        <img v-bind:src="image_url" alt="name" @click="uploadImage = true" />
                       </div>
                       <file-pond
                       v-if='uploadImage'

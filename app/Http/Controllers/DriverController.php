@@ -58,7 +58,8 @@ class DriverController extends Controller
                 if ($user->save()) {
                     if ($request->driver_image) {
                         $imageName = $user->putImage($request->driver_image);
-                        $user['user_image'] = $imageName;
+                        $user->user_image = $imageName;
+                        $user->save();
                     }
                     $this->_confirmPassword($user, $newPassword);
                     return response()->json([
@@ -122,11 +123,11 @@ class DriverController extends Controller
                 if (isset($confirmed)) {
                     $driver->is_confirmed = $confirmed;
                 }
+                if ($request->driver_image) {
+                    $imageName = $driver->putImage($request->driver_image);
+                    $driver->user_image = $imageName;
+                }
                 if ($driver->save()) {
-                    if ($request->driver_image) {
-                        $imageName = $driver->putImage($request->driver_image);
-                        $driver->user_image = $imageName;
-                    }
                     if (isset($confirmed)) {
                         $this->_updateEmail($driver, $request->email);
                     }

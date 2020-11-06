@@ -66,6 +66,7 @@ Route::group(['middleware' => 'auth:api', 'prefix' => 'customer', 'as' => 'custo
         Route::get('{customer_farm}', 'FarmController@get')->name('get');
         Route::post('{customer_farm}', 'FarmController@update')->name('update');
         Route::delete('{customer_farm}', 'FarmController@deleteFarm')->name('delete');
+        Route::get('manager/is-unique/{email}', 'FarmController@isUniqueManager')->name('manage.is-unique');
 
         // Route group to manage farm managers
         Route::group(['prefix' => '{customer_farm}', 'as' => 'manager'], function () {
