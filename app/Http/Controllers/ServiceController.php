@@ -11,6 +11,8 @@ use App\Models\Service;
 //use Illuminate\Support\Facades\DB;
 //use App\Models\TimeSlots;
 //use Illuminate\Support\Str;
+use App\Models\News;
+use App\Models\Faq;
 
 class ServiceController extends Controller
 {
@@ -34,7 +36,32 @@ class ServiceController extends Controller
                         ], 200);
         }
     }
+    
+    public function serviceForAll() {
+            $getAllServices = Service::get();
+            return response()->json([
+                    'status' => true,
+                    'message' => 'Service Listing.',
+                    'data' => $getAllServices
+                        ], 200);
+    }
    
+     public function newsList() {
+        return response()->json([
+                    'status' => true,
+                    'message' => 'News List',
+                    'data' => News::get()
+                        ], 200);
+    }
+    
+    public function faqList() {
+        return response()->json([
+                    'status' => true,
+                    'message' => 'Faq List',
+                    'data' => Faq::get()
+                        ], 200);
+    }
+    
     public function get(Service $service)
     {
         $user = request()->user();

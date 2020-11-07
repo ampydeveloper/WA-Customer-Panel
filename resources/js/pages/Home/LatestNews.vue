@@ -7,7 +7,7 @@
         <span class="bg-custom-thickness">latest news</span>
       </h2>
       <div class="tabs-get">
-        <div class="news-tabs">
+        <!-- <div class="news-tabs">
           <h5>Work</h5>
           <ul class="nav nav-tabs">
             <li class="active">
@@ -23,288 +23,33 @@
               <a data-toggle="tab" href="#menu4" aria-expanded="true">amet</a>
             </li>
           </ul>
-        </div>
+        </div> -->
         <div class="tab-content">
           <div id="menu1" class="tab-pane fade active show">
             <div class="products-inner row">
-              <div class="col-md-4">
+              
+              <div class="col-md-4" v-for="item in news">
                 <div class="news-latest-cols">
                   <div class="nes-im">
                     <a href="#">
-                      <img src="img/news-1.jpg" alt />
+                      <img :src="item.image" alt />
                     </a>
                   </div>
-                  <span class="vendor">Work</span>
+                  <span class="vendor">News</span>
                   <h3>
                     <a href="#">
-                      Donec nec justo eget felis
-                      facilisis digniss Aliquam
+                     {{ item.heading }}
                     </a>
                   </h3>
                   <p>
-                    Adapting wild plants and animals for
-                    people to use is called farmers were
-                    domestication....
+                    {{ item.description }}
                   </p>
                 </div>
               </div>
-              <!-------------col-md-3------------>
-              <div class="col-md-4">
-                <div class="news-latest-cols">
-                  <div class="nes-im">
-                    <a href="#">
-                      <img src="img/news-2.jpg" alt />
-                    </a>
-                  </div>
-                  <span class="vendor">Work</span>
-                  <h3>
-                    <a href="#">
-                      Donec nec justo eget felis
-                      facilisis digniss Aliquam
-                    </a>
-                  </h3>
-                  <p>
-                    Adapting wild plants and animals for
-                    people to use is called farmers were
-                    domestication....
-                  </p>
-                </div>
-              </div>
-              <!-------------col-md-3------------>
-              <div class="col-md-4">
-                <div class="news-latest-cols">
-                  <div class="nes-im">
-                    <a href="#">
-                      <img src="img/news-3.jpg" alt />
-                    </a>
-                  </div>
-                  <span class="vendor">Work</span>
-                  <h3>
-                    <a href="#">
-                      Donec nec justo eget felis
-                      facilisis digniss Aliquam
-                    </a>
-                  </h3>
-                  <p>
-                    Adapting wild plants and animals for
-                    people to use is called farmers were
-                    domestication....
-                  </p>
-                </div>
-              </div>
-              <!-------------col-md-3------------>
+           
             </div>
           </div>
-          <div id="menu2" class="tab-pane fade">
-            <div class="products-inner row">
-              <div class="col-md-4">
-                <div class="news-latest-cols">
-                  <div class="nes-im">
-                    <a href="#">
-                      <img src="img/news-3.jpg" alt />
-                    </a>
-                  </div>
-                  <span class="vendor">Work</span>
-                  <h3>
-                    <a href="#">
-                      Donec nec justo eget felis
-                      facilisis digniss Aliquam
-                    </a>
-                  </h3>
-                  <p>
-                    Adapting wild plants and animals for
-                    people to use is called farmers were
-                    domestication....
-                  </p>
-                </div>
-              </div>
-              <!-------------col-md-3------------>
-              <div class="col-md-4">
-                <div class="news-latest-cols">
-                  <div class="nes-im">
-                    <a href="#">
-                      <img src="img/news-2.jpg" alt />
-                    </a>
-                  </div>
-                  <span class="vendor">Work</span>
-                  <h3>
-                    <a href="#">
-                      Donec nec justo eget felis
-                      facilisis digniss Aliquam
-                    </a>
-                  </h3>
-                  <p>
-                    Adapting wild plants and animals for
-                    people to use is called farmers were
-                    domestication....
-                  </p>
-                </div>
-              </div>
-              <!-------------col-md-3------------>
-              <div class="col-md-4">
-                <div class="news-latest-cols">
-                  <div class="nes-im">
-                    <a href="#">
-                      <img src="img/news-1.jpg" alt />
-                    </a>
-                  </div>
-                  <span class="vendor">Work</span>
-                  <h3>
-                    <a href="#">
-                      Donec nec justo eget felis
-                      facilisis digniss Aliquam
-                    </a>
-                  </h3>
-                  <p>
-                    Adapting wild plants and animals for
-                    people to use is called farmers were
-                    domestication....
-                  </p>
-                </div>
-              </div>
-              <!-------------col-md-3------------>
-            </div>
-          </div>
-          <div id="menu3" class="tab-pane fade">
-            <div class="products-inner row">
-              <div class="col-md-4">
-                <div class="news-latest-cols">
-                  <div class="nes-im">
-                    <a href="#">
-                      <img src="img/news-1.jpg" alt />
-                    </a>
-                  </div>
-                  <span class="vendor">Work</span>
-                  <h3>
-                    <a href="#">
-                      Donec nec justo eget felis
-                      facilisis digniss Aliquam
-                    </a>
-                  </h3>
-                  <p>
-                    Adapting wild plants and animals for
-                    people to use is called farmers were
-                    domestication....
-                  </p>
-                </div>
-              </div>
-              <!-------------col-md-3------------>
-              <div class="col-md-4">
-                <div class="news-latest-cols">
-                  <div class="nes-im">
-                    <a href="#">
-                      <img src="img/news-2.jpg" alt />
-                    </a>
-                  </div>
-                  <span class="vendor">Work</span>
-                  <h3>
-                    <a href="#">
-                      Donec nec justo eget felis
-                      facilisis digniss Aliquam
-                    </a>
-                  </h3>
-                  <p>
-                    Adapting wild plants and animals for
-                    people to use is called farmers were
-                    domestication....
-                  </p>
-                </div>
-              </div>
-              <!-------------col-md-3------------>
-              <div class="col-md-4">
-                <div class="news-latest-cols">
-                  <div class="nes-im">
-                    <a href="#">
-                      <img src="img/news-3.jpg" alt />
-                    </a>
-                  </div>
-                  <span class="vendor">Work</span>
-                  <h3>
-                    <a href="#">
-                      Donec nec justo eget felis
-                      facilisis digniss Aliquam
-                    </a>
-                  </h3>
-                  <p>
-                    Adapting wild plants and animals for
-                    people to use is called farmers were
-                    domestication....
-                  </p>
-                </div>
-              </div>
-              <!-------------col-md-3------------>
-            </div>
-          </div>
-          <div id="menu4" class="tab-pane fade">
-            <div class="products-inner row">
-              <div class="col-md-4">
-                <div class="news-latest-cols">
-                  <div class="nes-im">
-                    <a href="#">
-                      <img src="img/news-3.jpg" alt />
-                    </a>
-                  </div>
-                  <span class="vendor">Work</span>
-                  <h3>
-                    <a href="#">
-                      Donec nec justo eget felis
-                      facilisis digniss Aliquam
-                    </a>
-                  </h3>
-                  <p>
-                    Adapting wild plants and animals for
-                    people to use is called farmers were
-                    domestication....
-                  </p>
-                </div>
-              </div>
-              <!-------------col-md-3------------>
-              <div class="col-md-4">
-                <div class="news-latest-cols">
-                  <div class="nes-im">
-                    <a href="#">
-                      <img src="img/news-2.jpg" alt />
-                    </a>
-                  </div>
-                  <span class="vendor">Work</span>
-                  <h3>
-                    <a href="#">
-                      Donec nec justo eget felis
-                      facilisis digniss Aliquam
-                    </a>
-                  </h3>
-                  <p>
-                    Adapting wild plants and animals for
-                    people to use is called farmers were
-                    domestication....
-                  </p>
-                </div>
-              </div>
-              <!-------------col-md-3------------>
-              <div class="col-md-4">
-                <div class="news-latest-cols">
-                  <div class="nes-im">
-                    <a href="#">
-                      <img src="img/news-1.jpg" alt />
-                    </a>
-                  </div>
-                  <span class="vendor">Work</span>
-                  <h3>
-                    <a href="#">
-                      Donec nec justo eget felis
-                      facilisis digniss Aliquam
-                    </a>
-                  </h3>
-                  <p>
-                    Adapting wild plants and animals for
-                    people to use is called farmers were
-                    domestication....
-                  </p>
-                </div>
-              </div>
-              <!-------------col-md-3------------>
-            </div>
-          </div>
+         
         </div>
       </div>
     </div>
@@ -312,5 +57,30 @@
 </template>
 
 <script>
-export default {};
+import JobService from "../../services/JobService";
+export default {
+  data() {
+    return {
+      news: [],
+    };
+  },
+  mounted() {
+    this.getResults();
+  },
+  methods: {
+    getResults() {
+      JobService.newsForAll().then((response) => {
+        if (response.status) {
+          this.news = response.data.data;
+        } else {
+          this.$toast.open({
+            message: response.message,
+            type: "error",
+            position: "top-right",
+          });
+        }
+      });
+    },
+  }
+};
 </script>

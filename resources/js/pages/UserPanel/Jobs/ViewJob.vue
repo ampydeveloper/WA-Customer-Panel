@@ -87,7 +87,56 @@
             </div>
 
             <div class="col-sm-6 content-right-outer">
-              <div class="map-route-outer">CHAT comes here</div>
+              
+              <v-col cols="12" md="12" class="main_box chat-area-outer">
+          <div class="chat-area" id="message-container">
+            <div class="empty-message">
+              <p>
+                Lets start conversing <br />
+                & <br />
+                find solutions.
+              </p>
+            </div>
+            <div class="uploading-image-out">
+              <loader-icon size="1.5x" class="custom-class"></loader-icon>
+              <p>Uploading image</p>
+            </div>
+          </div>
+        </v-col>
+
+        <v-col cols="12" md="12" class="main_box chat-form-outer">
+          <div class="type_msg">
+            <form id="send-container" autocomplete="off">
+              <div class="input_msg_write">
+                <input
+                  type="hidden"
+                  id="user-details-id"
+                  :value="userdata.id"
+                />
+                <input type="hidden" id="job-id" :value="job.id" />
+                <input
+                  type="hidden"
+                  id="current-user-image"
+                  :value="baseUrl + userdata.user_image"
+                />
+
+                <span class="upload-images-out">
+                  <image-icon size="1.5x" class="custom-class"></image-icon>
+                </span>
+                <input
+                  type="text"
+                  class="write_msg"
+                  placeholder="Type your message"
+                  id="message-input"
+                />
+                <button class="msg_send_btn" id="send-button" type="submit">
+                  <send-icon size="1.5x" class="custom-class"></send-icon>
+                </button>
+              </div>
+            </form>
+          </div>
+        </v-col>
+
             </div>
           </div>
         </div>
@@ -102,11 +151,14 @@ import AppSmallFooter from "../../../shared/components/AppSmallFooter";
 import JobService from "../../../services/JobService";
 import router from "../../../router";
 import mapboxgl from "mapbox-gl";
+import { SendIcon, ImageIcon, LoaderIcon } from "vue-feather-icons";
 export default {
   components: {
     AppSmallHeader,
     AppSmallFooter,
-    //  PlusIcon,
+     SendIcon,
+    ImageIcon,
+    LoaderIcon,
   },
   data() {
     return {
@@ -284,6 +336,167 @@ export default {
       });
       getRoute(start, [-122.61365699963287, 45.51773726437733]);
     }, 2000);
+    //map END
+
+     this.getResults();
+    this.getChatMembers();
+  
+    setTimeout(() => {
+           this.getChatMessages();
+        }, 500);
+    
+    let socketScript = document.createElement("script");
+    socketScript.setAttribute(
+      "src",
+      "https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.1/socket.io.js"
+    );
+    document.head.appendChild(socketScript);
+    let scrollScript = document.createElement("script");
+    scrollScript.setAttribute(
+      "src",
+      "https://cdnjs.cloudflare.com/ajax/libs/overlayscrollbars/1.12.0/js/OverlayScrollbars.min.js"
+    );
+    document.head.appendChild(scrollScript);
+    let scrollScript2 = document.createElement("link");
+    scrollScript2.setAttribute(
+      "href",
+      "https://cdnjs.cloudflare.com/ajax/libs/overlayscrollbars/1.12.0/css/OverlayScrollbars.min.css"
+    );
+    scrollScript2.setAttribute("rel", "stylesheet");
+    document.head.appendChild(scrollScript2);
+  },
+    methods: {
+    getResults() {
+      jobService.singleJob(this.$route.params.id).then((response) => {
+        //handle response
+        if (response.status) {
+          this.job = response.data;
+          this.service = response.data.service;
+          this.manager = response.data.manager;
+          this.farm = response.data.farm;
+        } else {
+          this.$toast.open({
+            message: response.message,
+            type: "error",
+            position: "top-right",
+          });
+        }
+      });
+    },
+    getChatMembers() {
+      jobService.chatUsers(this.$route.params.id).then((response) => {
+        //handle response
+        if (response.status) {
+          // this.job = response.data;
+          console.log(response.data);
+          var users = [];
+          users[response.data.customer_id] = response.data.customer;
+          users[response.data.manager_id] = response.data.manager;
+          users[response.data.skidsteer_driver_id] =
+            response.data.skidsteer_driver;
+          users[response.data.truck_driver_id] = response.data.truck_driver;
+
+          this.chatUsers = users;
+        }
+      });
+    },
+    getChatMessages() {
+      //${this.chatUsers[val.username].user_image}
+      jobService
+        .getJobChatMessages({ jobId: this.$route.params.id })
+        .then((response) => {
+          if (response) {
+            response.data.forEach(function (val, index) {
+              const messageElement = document.createElement("div");
+              messageElement.className = "chat-receiver";
+              messageElement.innerHTML =
+                '<div class="chat-msg">' +
+                `${val.message}` +
+                '</div><div class="chat-img"><img src="' +
+                `${environment.baseUrl + "/images/avatar.png"}` +
+                '"></div>';
+              $(document).find("#message-container").prepend(messageElement);
+              $("#message-container .empty-message").remove();
+            });
+          }
+        });
+    },
+  },
+  updated() {
+
+    var messageContainerScroll;
+    setTimeout(function () {
+      messageContainerScroll = OverlayScrollbars(
+        document.querySelectorAll("#message-container"),
+        {}
+      );
+
+      const socket = io.connect("http://13.235.151.113:3100", { secure: true });
+      const messageContainer = document.getElementById("message-container");
+      const messageForm = document.getElementById("send-container");
+      const messageInput = document.getElementById("message-input");
+      const name = document.getElementById("user-details-id");
+      const jobId = document.getElementById("job-id");
+
+      socket.emit("new-user", name._value);
+      messageContainerScroll.scroll([0, "100%"], 50, { x: "", y: "linear" });
+
+      socket.on("chat-message", (data) => {
+        const userImage = $("#current-user-image").val();
+        if (data.name == name._value) {
+          appendMessage(
+            '<div class="chat-msg">' +
+              `${data.message.message}` +
+              '</div><div class="chat-img"><img src="' +
+              `${userImage}` +
+              '"></div>'
+          );
+        } else {
+          appendMessage(
+            '<div class="chat-msg">' +
+              `${data.message.message}` +
+              '</div><div class="chat-img"><img src="' +
+              `${environment.baseUrl + "/images/avatar.png"}` +
+              '"></div>'
+          );
+        }
+        messageContainerScroll.scroll([0, "100%"], 50, { x: "", y: "linear" });
+      });
+      $(document).on("submit", "#send-container", function (e) {
+        const message = messageInput.value;
+        const userImage = $("#current-user-image").val();
+        if (message != "") {
+          appendMessage(
+            '<div class="chat-msg">' +
+              `${message}` +
+              '</div><div class="chat-img"><img src="' +
+              `${userImage}` +
+              '"></div>'
+          );
+          socket.emit("send-chat-message", {
+            message: message,
+            job_id: jobId._value,
+          });
+          messageInput.value = "";
+          $("#send-button").attr("disabled", false);
+          messageContainerScroll.scroll([0, "100%"], 50, {
+            x: "",
+            y: "linear",
+          });
+        }
+        e.preventDefault();
+      });
+      function appendMessage(message) {
+        const messageElement = document.createElement("div");
+        messageElement.className = "chat-receiver";
+        messageElement.innerHTML = message;
+        $(document)
+          .find("#message-container")
+          .find(".os-content")
+          .prepend(messageElement);
+        $("#message-container .empty-message").remove();
+      }
+    }, 1000);
   },
 };
 </script>

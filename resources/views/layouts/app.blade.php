@@ -13,7 +13,7 @@
     <script src="{{ asset('js/app.js') }}" defer></script>
     <script src='https://npmcdn.com/@turf/turf/turf.min.js'></script>
     <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.js'></script>
-    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAQEbFYBxoq9qSepomK_1KEM7TxU3vSOyw&libraries=geometry,places"></script>
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAJNnFDVwxq7H2eFWW5MZTQc8Pg7uD47Dk&libraries=geometry,places"></script>
     <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.css' rel='stylesheet' />
     <!-- Fonts -->
     <link rel="dns-prefetch" href="//fonts.gstatic.com">
