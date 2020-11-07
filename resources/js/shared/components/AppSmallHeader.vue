@@ -21,7 +21,7 @@
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
           <ul class="navbar-nav ml-auto">
             <li class="nav-item active" v-if="isCustomer">
-              <a class="nav-link" href="javascript:void(0);">Services</a>
+<router-link class="nav-link" to="/services">Services</router-link>
             </li>
 
             <li class="nav-item dropdown">
