@@ -28,7 +28,7 @@
                   <div class="row">
                     <div class="col-sm-12 pt-0 pb-0">
                       <div class="profile-image" v-if="!profileUpload">
-                        <img v-bind:src="userProfile.image_url" alt="name" />
+                        <img v-if='userProfile.image_url' v-bind:src="userProfile.image_url.replace('/storage/', '/storage/user_images/')" alt="name" />
                         <div class="image-edit" @click="showProfileUpload">
                           <i data-feather="edit-3"></i>
                         </div>
@@ -230,12 +230,32 @@
             <!-- /Notifications -->
 
             <!-- Manage Cards -->
-            <div class="col-sm-6 content-right-outer">
+            <div class="col-sm-6 content-right-outer" v-if='!isHaulerDriver'>
               <div class="each-profile-block">
                 <h5 class="heading2">Payment Info</h5>
 
+                <div class="add-new-card" v-if='isHauler'>
+                  <v-radio-group
+                    v-model="userProfile.payment_mode"
+                    row
+                  >
+                    <v-radio
+                      label="Online"
+                      :value=0
+                    ></v-radio>
+                    <v-radio
+                      label="Cash"
+                      :value=1
+                    ></v-radio>
+                    <v-radio
+                      label="Cheque"
+                      :value=2
+                    ></v-radio>
+                  </v-radio-group>
+                </div>
+
                 <!-- Card Listing -->
-                <table class="table payment-info-table basic-table">
+                <table class="table payment-info-table basic-table" v-if='!isHauler'>
                   <thead>
                     <tr>
                       <th>Name</th>
@@ -278,7 +298,7 @@
                 <!-- /Card Listing -->
 
                 <!-- Add Card -->
-                <div class="add-new-card">
+                <div class="add-new-card" v-if='!isHauler'>
                   <div class="add-n-c-outer clearfix">
                     <a
                       href="javascript:void(0);"
@@ -504,6 +524,7 @@ export default {
         phone: "",
         city: "",
         state: "",
+        payment_mode: null,
         // country: "",
         zip_code: "",
       },
@@ -693,6 +714,8 @@ export default {
         ...this.userProfile,
         ...response.data.data,
       };
+      this.userProfile.payment_mode = response.data.data.payment_mode;
+      console.log(response.data.data, this.userProfile);
       this.userImage = response.data.data.image_url;
 
       CardService.list().then((response) => {

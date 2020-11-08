@@ -32,7 +32,14 @@
                   <td v-if="!farm.primary_manager"> N/A </td>
                   <td v-if="farm.primary_manager"> {{ farm.primary_manager.full_name }} / {{ farm.primary_manager.phone }} / {{ farm.primary_manager.email }}</td>
                   <td>
-                    <span class="badge-tag">{{ farm.total_jobs }}</span>
+                    <span class="badge-tag">{{ farm.total_jobs }} </span>
+                    <router-link :to="{
+                                      name: 'FarmJobsDashboard',
+                                      params: { farmId: farm.id },
+                                    }"
+                        class="btn btn-table-outline"
+                      > <i data-feather="view"></i> View</router-link
+                    >
                   </td>
                   <td>
                     <router-link
@@ -54,10 +61,12 @@
                       >Managers</router-link
                     > -->
                     <button
+                      v-if="!isManager"
                       @click="deleteFarm(farm.id)"
                       class="btn btn-table-outline"
                     > <i data-feather="x"></i>  Delete
                     </button>
+                    <i v-if='!isCustomer && !isHauler'>NA</i>
                   </td>
                 </tr>
               </tbody>
@@ -95,6 +104,7 @@ export default {
   },
   data() {
     return {
+      user: {},
       farmList: [],
     };
   },
@@ -102,6 +112,7 @@ export default {
     FarmService.list().then((response) => {
       this.farmList = response.data.farms;
     });
+    this.user = JSON.parse(window.localStorage.getItem('user'));
   },
   methods: {
     deleteFarm: async function (farmId) {
@@ -138,6 +149,6 @@ export default {
         }
       });
     },
-  },
+  }
 };
 </script>

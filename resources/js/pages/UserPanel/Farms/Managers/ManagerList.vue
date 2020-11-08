@@ -1,46 +1,59 @@
 <template>
-  <div class="main-wrapper">
-  <section class="page-section-top" data-aos="">
-      <div class="container">
-        <div class="row">
-          <div class="col-md-12">
-            <h2>Manager Dashboard</h2>
+  <div class="loc-page logged-in-page">
+    <div class="main-wrapper">
+      <section class="page-section-top" data-aos="">
+        <div class="container">
+          <div class="row">
+            <div class="col-md-12">
+              <h2>Manager Dashboard</h2>
+            </div>
           </div>
         </div>
-      </div>
-    </section>
+      </section>
 
-   <section class="job-dashboard-outer center-content-outer" data-aos="">
-      <div class="container">
-        <div class="row">
-          <div class="col-md-12">
-            <table class="table table-bordered">
-              <thead>
-                <tr>
-                  <th scope="col">Name</th>
-                  <th scope="col">Email</th>
-                  <th scope="col">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr v-for="manager in managerList" :key="manager.id">
-                  <td>{{ manager.full_name }}</td>
-                  <td>{{ manager.email }}</td>
-                  <td>
-                    <button
-                      @click="deleteManager(manager.id)"
-                      class="btn btn-danger btn-sm"
-                    >
-                      Delete
-                    </button>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+      <section class="job-dashboard-outer center-content-outer" data-aos="">
+        <div class="container">
+          <div class="row">
+            <div class="col-md-12">
+              <table class="table basic-table" id='all-managers-table'>
+                <thead>
+                  <tr>
+                    <th class="job-summ">Manager Name</th>
+                    <th>Email</th>
+                    <th class="time-col">Phone</th>
+                    <th>Address</th>
+                    <th>Actions</th>
+                    <th>Farm</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="manager in managerList" :key="manager.id">
+                    <td>{{ manager.full_name }}</td>
+                    <td>{{ manager.email }}</td>
+                    <td>{{ manager.phone }}</td>
+                    <td>{{ manager.address }}</td>
+                    <td>
+                      <router-link :to="{ name: 'editManager', params: { managerId: manager.id }}" class="btn btn-table-outline">Edit</router-link>
+                      <button
+                        @click="deleteManager(manager.id)"
+                        class="btn btn-table-outline"
+                      >
+                        Delete
+                      </button>
+                    </td>
+                    <td>
+                      <select class="form-control" v-model='manager.farm_id' @change='updateFarm(manager.id, $event)'>
+                        <option :value="farm.value" v-bind:key='farm.value' :selected='manager.farm_id == farm.value' v-for='farm in farms' v-text='farm.text'></option>
+                      </select>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
-      </div>
-    </section>
+      </section>
+    </div>
   </div>
 </template>
 
@@ -51,15 +64,44 @@ import JobService from "../../../../services/JobService";
 export default {
   data() {
     return {
-      managerList: []
+      managerList: [],
+      farms: []
     };
   },
   created() {
-    FarmService.listManagers(this.$route.params.farmId).then(response => {
+    FarmService.listManagers().then(response => {
+      // console.log(response.data);
       this.managerList = response.data.data;
+    });
+    FarmService.list().then(response => {
+      this.farms = [...response.data.farms.map((farm) => {
+                                  return {
+                                    text: farm.farm_address,
+                                    value: farm.id,
+                                  }
+                                })];
     });
   },
   methods: {
+    updateFarm(managerId, $event){
+      FarmService.changeManager($event.target.value, managerId).then((response) => {
+        this.$toast.open({
+          message: response.data.message,
+          type: "success",
+          position: "top-right",
+          dismissible: false,
+        });
+      },
+        (error) => {
+          this.$toast.open({
+            message: error.response.data.message,
+            type: "error",
+            position: "bottom-right",
+            dismissible: false,
+          });
+        }
+      );
+    },
     deleteManager: async function(managerId) {
       this.$swal({
         title: "Are you sure?",

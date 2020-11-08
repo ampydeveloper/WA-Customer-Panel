@@ -45,12 +45,17 @@ class CustomerController extends Controller {
         }
     }
     
-    public function myManagers() {
+    public function myManagers($id=null) {
         if(Auth::user()->role_id == config('constant.roles.Customer') || Auth::user()->role_id == config('constant.roles.Haulers')) {
+            if($id != null){
+                $data = User::where('id', $id)->with('managerDetails')->get();
+            }else{
+                $data = User::where('created_by', Auth::user()->id)->get();
+            }
             return response()->json([
                     'status' => true,
                     'message' => 'Customer all managers details',
-                    'farms' => User::where('created_by', Auth::user()->id)->get()
+                    'data' => $data
                 ], 200);
         }
         return response()->json([

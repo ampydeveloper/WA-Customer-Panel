@@ -486,12 +486,20 @@ class FarmController extends Controller
     public function changeManager(CustomerFarm $customerFarm, User $user) {
         if($customerFarm->isOwner()) {
             try {
+                $farmManagerCount = CustomerFarm::whereId($user->farm_id)->first()->managers->count();
+                if($farmManagerCount <= 1){
+                    return response()->json([
+                        'status' => false,
+                        'message' => 'Exising farm has only 1 manager, hence manager`s farm cannot be changed.',
+                    ], 423);
+                }
                 $user->update(['farm_id' => $customerFarm->id]);
                 return response()->json([
                             'status' => false,
                             'message' => 'Manager farm changed successfully.',
                                 ], 200);
             } catch (\Exception $e) {
+                dd($e);
                 return response()->json([
                             'status' => false,
                             'message' => 'Unable to change manager farm. Try again later.',

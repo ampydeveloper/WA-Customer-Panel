@@ -26,6 +26,19 @@
             <div class="row">
               <div class="col-sm-6 content-left-outer">
                 <div class="row">
+                  <v-col cols="12" md="12" v-if="isHauler">
+                      <div class="label-align pt-0">
+                        <label>Driver</label>
+                      </div>
+                      <div class="pt-0 pb-0 farm-conatiner">
+                        <v-select
+                          v-model="jobRequest.manager_id"
+                          :items="driverList"
+                          placeholder="Select Driver"
+                          :rules="[(v) => !!v || 'Driver is required.']"
+                        ></v-select>
+                      </div>
+                    </v-col>
                   <v-col cols="12" md="12" class="pt-0 pb-0">
                     <div class="label-align pt-0">
                       <label>Service</label>
@@ -99,7 +112,7 @@
                     md="12"
                     class="t-s-inner pt-0 service-time-timing-outer"
                   >
-                    <div class="label-align pt-0">
+                    <div class="label-align pt-0" v-if='Object.keys({...serviceTimeSlotMap}).length > 0'>
                       <label>Service Time</label>
                     </div>
                     <div class="pt-0 pb-0 service-time-timing-out">
@@ -485,6 +498,7 @@ import subFooter from "../subFooter";
 import jobFormSchema from "../../../forms/jobFormSchema";
 import JobService from "../../../services/JobService";
 import FarmService from "../../../services/FarmService";
+import DriverService from '../../../services/DriverService';
 import router from "../../../router";
 import _ from "lodash";
 import moment from "moment";
@@ -550,6 +564,7 @@ export default {
       farmList: [],
       allServices: [],
       managerList: [],
+      driverList: [],
       menu2: false,
       weightShow: false,
       servicePrice: 0,
@@ -597,7 +612,6 @@ export default {
       $(".service-time-timing-out .pretty").hide();
 
       $.each(slot_type, function (index, value) {
-        console.log(value);
         $(".service-time-timing-out :input[value='" + value + "']")
           .parent()
           .css({display:'inline-block'});
@@ -692,6 +706,17 @@ export default {
         value: farm.id,
         latitude: farm.latitude,
         longitude: farm.longitude,
+      };
+    });
+
+    /** Collection of drivers */
+    const {
+      data: { drivers },
+    } = await DriverService.list();
+    this.driverList = [...drivers].map((driver) => {
+      return {
+        text: driver.full_name,
+        value: driver.id
       };
     });
 

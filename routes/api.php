@@ -37,7 +37,7 @@ Route::group(['middleware' => 'auth:api', 'prefix' => 'my', 'as' => 'my'], funct
     Route::get('jobs', 'JobController@myJobs')->name('jobs');
     Route::get('jobs/upcoming', 'JobController@myUpcomingJobs')->name('upcoming.jobs');
     Route::get('farms', 'CustomerController@myFarms')->name('farms');
-    Route::get('managers', 'CustomerController@myManagers')->name('list-all');
+    Route::get('managers/{id?}', 'CustomerController@myManagers')->name('list-all');
 });
 
 Route::group(['middleware' => 'auth:api', 'prefix' => 'customer', 'as' => 'customer'], function () {

@@ -3,13 +3,22 @@ import FarmService from "../services/FarmService";
 
 export default {
     fields: [{
+            type: "select",
+            values: ["Mr.", "Miss", "Mrs."],
+            label: "Salutation",
+            model: "manager_prefix",
+            required: false,
+            validator: ["required"],
+            styleClasses: 'col-md-2 mb-0 pb-0'
+        },
+        {
             type: "input",
             inputType: "text",
             label: "First Name",
             model: "manager_first_name",
             required: true,
             validator: ["required"],
-            styleClasses: 'col-md-4 mb-0 pb-0'
+            styleClasses: 'col-md-3 mb-0 pb-0'
         },
         {
             type: "input",
@@ -18,7 +27,7 @@ export default {
             model: "manager_last_name",
             required: true,
             validator: ["required"],
-            styleClasses: 'col-md-4 mb-0 pb-0'
+            styleClasses: 'col-md-3 mb-0 pb-0'
         },
         {
             type: "input",
@@ -40,57 +49,57 @@ export default {
             ],
             styleClasses: 'col-md-4 mb-0 pb-0'
         },
-        // {
-        //     type: "input",
-        //     inputType: "text",
-        //     label: "Phone Number",
-        //     model: "manager_phone",
-        //     required: true,
-        //     validator: ["required"],
-        //     styleClasses: 'col-md-4 mb-0 pb-0'
-        // },
-        // {
-        //     type: "input",
-        //     inputType: "text",
-        //     label: "Address",
-        //     model: "manager_address",
-        //     required: true,
-        //     validator: ["required"],
-        //     styleClasses: 'col-md-4 mb-0 pb-0'
-        // },
-        // {
-        //     type: "input",
-        //     inputType: "text",
-        //     label: "City",
-        //     model: "manager_city",
-        //     required: true,
-        //     validator: ["required"],
-        //     styleClasses: 'col-md-4 mb-0 pb-0'
-        // },
-        // {
-        //     type: "input",
-        //     inputType: "text",
-        //     label: "Province",
-        //     model: "manager_province",
-        //     required: true,
-        //     validator: ["required"],
-        //     styleClasses: 'col-md-4 mb-0 pb-0'
-        // },
-        // {
-        //     type: "input",
-        //     inputType: "text",
-        //     label: "Zipcode",
-        //     model: "manager_zipcode",
-        //     required: true,
-        //     validator: [
-        //         "required",
-        //         (value, field, model) => {
-        //             var isValidZip = /(^\d{5}$)|(^\d{5}-\d{4}$)/.test(value);
-        //             return isValidZip ? [] : ["Invalid Zipcode"];
-        //         }
-        //     ],
-        //     styleClasses: 'col-md-4 mb-0 pb-0'
-        // },
+        {
+            type: "input",
+            inputType: "text",
+            label: "Phone Number",
+            model: "manager_phone",
+            required: true,
+            validator: ["required"],
+            styleClasses: 'col-md-4 mb-0 pb-0'
+        },
+        {
+            type: "input",
+            inputType: "text",
+            label: "Address",
+            model: "manager_address",
+            required: true,
+            validator: ["required"],
+            styleClasses: 'col-md-4 mb-0 pb-0'
+        },
+        {
+            type: "input",
+            inputType: "text",
+            label: "City",
+            model: "manager_city",
+            required: true,
+            validator: ["required"],
+            styleClasses: 'col-md-4 mb-0 pb-0'
+        },
+        {
+            type: "input",
+            inputType: "text",
+            label: "Province",
+            model: "manager_province",
+            required: true,
+            validator: ["required"],
+            styleClasses: 'col-md-4 mb-0 pb-0'
+        },
+        {
+            type: "input",
+            inputType: "text",
+            label: "Zipcode",
+            model: "manager_zipcode",
+            required: true,
+            validator: [
+                "required",
+                (value, field, model) => {
+                    var isValidZip = /(^\d{5}$)|(^\d{5}-\d{4}$)/.test(value);
+                    return isValidZip ? [] : ["Invalid Zipcode"];
+                }
+            ],
+            styleClasses: 'col-md-4 mb-0 pb-0'
+        },
         // {
         //     type: "input",
         //     inputType: "text",

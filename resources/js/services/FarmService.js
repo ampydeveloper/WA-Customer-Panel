@@ -21,17 +21,45 @@ class FarmService {
 
     static listManagers(farmId) {
         const token = window.localStorage.getItem("token");
-        return Axios.get(`/api/customer/farm/${farmId}/managers`, {
+        // return Axios.get(`/api/customer/farm/${farmId}/managers`, {
+        return Axios.get(`/api/my/managers`, {
             headers: {
                 Authorization: `Bearer ${token}`
             }
         });
     }
 
-    static createManager(managerRequest) {
+    static getManager(managerId) {
         const token = window.localStorage.getItem("token");
-        return Axios.put(
-            `/api/customer/farm/${managerRequest.farm_id}/manager`,
+        return Axios.get(`/api/my/managers/${managerId}`, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+    }
+
+    static createManager(managerRequest, farmId) {
+        const token = window.localStorage.getItem("token");
+        let farm = managerRequest.farm_id;
+        if (typeof(farm_id) == 'undefined') { farm = farmId; }
+        return Axios.post(
+            `/api/customer/farm/${farm}/manager`,
+            managerRequest, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            }
+        );
+    }
+
+    static saveManager(managerRequest, farmId, managerId) {
+        const token = window.localStorage.getItem("token");
+        let farm = managerRequest.farm_id;
+        let manager = managerRequest.id;
+        if (typeof(farm_id) == 'undefined') { farm = farmId; }
+        if (typeof(manager) == 'undefined') { manager = managerId; }
+        return Axios.post(
+            `/api/customer/farm/${farm}/manager/${manager}`,
             managerRequest, {
                 headers: {
                     Authorization: `Bearer ${token}`
@@ -43,6 +71,15 @@ class FarmService {
     static deleteManager(farmId, managerId) {
         const token = window.localStorage.getItem("token");
         return Axios.delete(`api/customer/farm/${farmId}/manager/${managerId}`, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+    }
+
+    static changeManager(farmId, managerId) {
+        const token = window.localStorage.getItem("token");
+        return Axios.get(`api/customer/farm/${farmId}/change-manager/${managerId}`, {
             headers: {
                 Authorization: `Bearer ${token}`
             }

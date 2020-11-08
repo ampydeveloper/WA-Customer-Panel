@@ -140,6 +140,14 @@
                     "placeholder",
                     "Search Farms by Farm Location / Manager"
                 );
+                $("#all-drivers-table_filter input").attr(
+                    "placeholder",
+                    "Search Drivers by Name / Email / Phone / Address"
+                );
+                $("#all-managers-table_filter input").attr(
+                    "placeholder",
+                    "Search Managers by Name / Email / Phone / Address"
+                );
             });
         }, 1000);
         AOS.init({

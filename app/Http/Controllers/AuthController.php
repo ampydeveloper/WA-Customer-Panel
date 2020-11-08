@@ -474,6 +474,7 @@ class AuthController extends Controller
                     'city' => $request->city,
                     'state' => $request->state,
                     'zip_code' => $request->zip_code,
+                    'payment_mode' => $request->payment_mode == 'null' ? null : $request->payment_mode
                 ];
 
                 if ($request->user_image) {

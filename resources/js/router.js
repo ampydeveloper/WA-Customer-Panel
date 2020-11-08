@@ -161,18 +161,18 @@ const router = new VueRouter({
                     component: CreateFarm,
                     meta: { requiresAuth: [Role.Customer, Role.Hauler] }
                 },
-                {
-                    path: ":farmId/managers",
-                    name: "managerList",
-                    component: ManagerList,
-                    meta: { requiresAuth: [Role.Customer, Role.Hauler] }
-                },
-                {
-                    path: ":farmId/managers/create",
-                    name: "createManager",
-                    component: CreateManager,
-                    meta: { requiresAuth: [Role.Customer, Role.Hauler] }
-                },
+                // {
+                //     path: ":farmId/managers",
+                //     name: "managerList",
+                //     component: ManagerList,
+                //     meta: { requiresAuth: [Role.Customer, Role.Hauler] }
+                // },
+                // {
+                //     path: ":farmId/managers/create",
+                //     name: "createManager",
+                //     component: CreateManager,
+                //     meta: { requiresAuth: [Role.Customer, Role.Hauler] }
+                // },
                 {
                     path: ":farmId/edit",
                     name: "editFarm",
@@ -198,6 +198,11 @@ const router = new VueRouter({
             children: [{
                     path: "",
                     name: "JobsDashboard",
+                    component: JobsDashboard
+                },
+                {
+                    path: ":farmId/farm",
+                    name: "FarmJobsDashboard",
                     component: JobsDashboard
                 },
                 {
@@ -240,6 +245,30 @@ const router = new VueRouter({
                     path: ":driverId/edit",
                     name: "editDriver",
                     component: EditDriver
+                }
+            ]
+        },
+        {
+            path: "/managers",
+            component: Drivers,
+            beforeEnter: checkAuthentication,
+            children: [{
+                    path: "",
+                    name: "ManagersDashboard",
+                    component: ManagerList,
+                    meta: { requiresAuth: [Role.Customer, Role.Hauler] }
+                },
+                {
+                    path: "create",
+                    name: "createManager",
+                    component: CreateManager,
+                    meta: { requiresAuth: [Role.Customer, Role.Hauler] }
+                },
+                {
+                    path: ":managerId/edit",
+                    name: "editManager",
+                    component: CreateManager,
+                    meta: { requiresAuth: [Role.Customer, Role.Hauler] }
                 }
             ]
         },
