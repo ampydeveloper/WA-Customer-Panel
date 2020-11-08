@@ -10,7 +10,8 @@
         <div class="owl-carousel owl-theme" id="service-slide-home">
           <div class="item" v-for="item in services">
             <div class="service-block-img">
-              <img :src="item.service_image" alt />
+              <!-- <img :src="'http://wellington.leagueofclicks.com/'+item.service_image" alt /> -->
+                <div class="img" v-bind:style="{ backgroundImage: 'url(http://wellington.leagueofclicks.com/' + item.service_image + ')' }" ></div>
             </div>
             <div class="service-block-custom-inner">
               <h4>{{ item.service_name }}</h4>

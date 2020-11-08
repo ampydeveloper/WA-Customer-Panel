@@ -54,6 +54,14 @@ class ServiceController extends Controller
                         ], 200);
     }
     
+    public function newsListTwo() {
+        return response()->json([
+                    'status' => true,
+                    'message' => 'News List',
+                    'data' => News::limit(2)->get()
+                        ], 200);
+    }
+    
     public function faqList() {
         return response()->json([
                     'status' => true,

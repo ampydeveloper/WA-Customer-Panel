@@ -19,6 +19,7 @@ Route::group(['prefix' => 'customer', 'as' => 'customer'], function () {
        Route::get('all', 'ServiceController@serviceForAll')->name('all');
         });
          Route::get('news-list', 'ServiceController@newsList')->name('news-list');
+         Route::get('news-two', 'ServiceController@newsListTwo')->name('news-two');
          Route::get('faq-list', 'ServiceController@faqList')->name('faq-list');
 });
 Route::group(['prefix' => 'auth'], function () {
@@ -45,6 +46,9 @@ Route::group(['middleware' => 'auth:api', 'prefix' => 'my', 'as' => 'my'], funct
     Route::get('jobs/upcoming', 'JobController@myUpcomingJobs')->name('upcoming.jobs');
     Route::get('farms', 'CustomerController@myFarms')->name('farms');
     Route::get('managers', 'CustomerController@myManagers')->name('list-all');
+    
+     Route::post('job-chat', 'JobController@jobChat');
+    Route::get('chat-members/{job_id}', 'JobController@chatMembers');
 });
 
 Route::group(['middleware' => 'auth:api', 'prefix' => 'customer', 'as' => 'customer'], function () {

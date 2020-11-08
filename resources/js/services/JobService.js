@@ -82,6 +82,15 @@ class JobService {
         });
     }
 
+    static newsTwo() {
+        const token = window.localStorage.getItem("token");
+        return Axios.get(`/api/customer/news-two`, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+    }
+
     static faqForAll() {
         const token = window.localStorage.getItem("token");
         return Axios.get(`/api/customer/faq-list`, {
@@ -115,6 +124,24 @@ class JobService {
     static myUpcomingJobs() {
         const token = window.localStorage.getItem("token");
         return Axios.get(`/api/my/jobs/upcoming`, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+    }
+
+    static chatUsers(jobId) {
+        const token = window.localStorage.getItem("token");
+        return Axios.get(`/api/my/jobs/chat-members/${jobId}`, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+    }
+
+    static getJobChatMessages(data) {
+        const token = window.localStorage.getItem("token");
+        return Axios.post(`/api/my/jobs/job-chat`, data, {
             headers: {
                 Authorization: `Bearer ${token}`
             }

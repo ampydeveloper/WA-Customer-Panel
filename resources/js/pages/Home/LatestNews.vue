@@ -32,7 +32,7 @@
                 <div class="news-latest-cols">
                   <div class="nes-im">
                     <a href="#">
-                      <img :src="item.image" alt />
+                      <div class="img" v-bind:style="{ backgroundImage: 'url(http://wellington.leagueofclicks.com/' + item.image + ')' }" ></div>
                     </a>
                   </div>
                   <span class="vendor">News</span>

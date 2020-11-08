@@ -1,14 +1,14 @@
 export default {
     fields: [
-        // {
-        //   type: "input",
-        //   inputType: "text",
-        //   label: "Address",
-        //   model: "farm_address",
-        //   required: true,
-        //   validator: ["required", "string"],
-        //   styleClasses:'col-md-4'
-        // },
+        {
+          type: "input",
+          inputType: "text",
+          label: "Address",
+          model: "farm_address",
+          required: true,
+          validator: ["required", "string"],
+          styleClasses:'col-md-4'
+        },
         {
             type: "input",
             inputType: "text",

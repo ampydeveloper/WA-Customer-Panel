@@ -31,45 +31,30 @@
             <div class="tab-content">
               <div class="tab-pane fade active show">
                 <div class="products-inner row">
-                  <div class="col-md-12">
+                  <div class="col-md-12" v-for="item in news">
                     <div class="news-latest-cols">
                       <div class="nes-im">
                         <a href="#">
-                          <img src="img/news-1.jpg" alt />
+                          <div
+                            class="img"
+                            v-bind:style="{
+                              backgroundImage:
+                                'url(http://wellington.leagueofclicks.com/' +
+                                item.image +
+                                ')',
+                            }"
+                          ></div>
                         </a>
                       </div>
-                      <span class="vendor">Work</span>
+                      <span class="vendor">News</span>
                       <div class="news-right">
                         <h3>
                           <a href="#">
-                            Donec nec justo eget felis facilisis digniss Aliquam
+                            {{ item.heading }}
                           </a>
                         </h3>
                         <p>
-                          Adapting wild plants and animals for people to use is
-                          called farmers were domestication....
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div class="col-md-12">
-                    <div class="news-latest-cols">
-                      <div class="nes-im">
-                        <a href="#">
-                          <img src="img/news-2.jpg" alt />
-                        </a>
-                      </div>
-                      <span class="vendor">Work</span>
-                      <div class="news-right">
-                        <h3>
-                          <a href="#">
-                            Donec nec justo eget felis facilisis digniss Aliquam
-                          </a>
-                        </h3>
-                        <p>
-                          Adapting wild plants and animals for people to use is
-                          called farmers were domestication....
+                          {{ item.description }}
                         </p>
                       </div>
                     </div>
@@ -125,16 +110,15 @@
             <!-------------post-end------------>
 
             <div class="insta-post">
-          <a href="#">
-            <div class="insta-im">
-              <img src="img/instagram-6.jpg" alt />
+              <a href="#">
+                <div class="insta-im">
+                  <img src="img/instagram-6.jpg" alt />
+                </div>
+                <div class="insta-overlay">
+                  <h4>Donec nec justo eget</h4>
+                </div>
+              </a>
             </div>
-            <div class="insta-overlay">
-              <h4>Donec nec justo eget</h4>
-            </div>
-          </a>
-        </div>
-
           </div>
         </div>
       </div>
@@ -142,6 +126,31 @@
   </section>
 </template>
 
-        <script>
-export default {};
+<script>
+import JobService from "../../services/JobService";
+export default {
+  data() {
+    return {
+      news: [],
+    };
+  },
+  mounted() {
+    this.getResults();
+  },
+  methods: {
+    getResults() {
+      JobService.newsTwo().then((response) => {
+        if (response.status) {
+          this.news = response.data.data;
+        } else {
+          this.$toast.open({
+            message: response.message,
+            type: "error",
+            position: "top-right",
+          });
+        }
+      });
+    },
+  },
+};
 </script>

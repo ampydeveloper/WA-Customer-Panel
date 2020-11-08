@@ -16,6 +16,7 @@
         <div class="container">
           <div class="row">
             <div class="col-md-12">
+              <a :href='(routeName === "JobsDashboard" ? "/jobs" : "/jobs/upcoming")' class="btn btn-table-outline" v-text='routeName === "JobsDashboard" ? "All Jobs" : "Upcoming Jobs"'></a>
               <table
                 id="all-jobs-table"
                 class="table basic-table"
@@ -25,7 +26,7 @@
                     <th class="job-summ">Job Summary</th>
                     <th>Manager / Farm Location</th>
                     <th class="time-col">Date / Est. Time</th>
-                    <th>Quantity</th>
+                    <th>Weight</th>
                     <th>Payment Status</th>
                     <th>Job Status</th>
                     <th>Actions</th>
@@ -77,11 +78,11 @@
                       </template>                  
                     </td>
                     <td>
+                      <router-link v-if="job.job_status == 0" :to="{ name: 'editJob', params: { jobId: job.id }}" class="btn btn-table-outline">Edit</router-link>
                       <a class="btn btn-table-outline" v-if="job.job_status == 0" @click="cancelJob(job.id)">
                        Cancel
                       </a>
-                      <!--<router-link :to="{ name: 'ViewJob', params: { jobId: job.id }}" class="btn btn-table-outline">  View Details</router-link>
-                    <router-link v-if="job.job_status == 0" :to="{ name: 'editJob', params: { jobId: job.id }}" class="btn btn-table-outline">Edit</router-link>-->
+                      <router-link v-if="job.job_status == 1" :to="{ name: 'ViewJob', params: { jobId: job.id }}" class="btn btn-table-outline"> Track</router-link>
                     </td>
                   </tr>
                 </tbody>
@@ -121,6 +122,7 @@ export default {
   },
   data: () => ({
     dialog: false,
+    routeName: 'myJobs',
     jobList: {}, 
     alljobs: {
     },
@@ -128,7 +130,14 @@ export default {
 
   created() {
     const { name: routeName } = this.$route;
-    JobService[routeName === "JobsDashboard" ? "myJobs" : "myUpcomingJobs"](
+    console.log(this.$route.params.farmId, typeof(this.$route.params.farmId), routeName);
+    this.routeName = (routeName === "JobsDashboard" ? "upcomingJobsDashboard" : "JobsDashboard");
+    let getRouteName = (routeName === "JobsDashboard" ? "myJobs" : "myUpcomingJobs");
+    if(typeof(this.$route.params.farmId) !== "undefined"){
+      this.routeName = (routeName === "FarmJobsDashboard" ? "upcomingJobsDashboard" : "JobsDashboard");
+      getRouteName = (routeName === "FarmJobsDashboard" ? "list" : "upcomingJobsList");
+    }
+    JobService[getRouteName](
       this.$route.params.farmId
     ).then((response) => {
       this.alljobs = response.data.data;
@@ -146,7 +155,11 @@ export default {
           dismissible: false,
         });
         const { name: routeName } = this.$route;
-        JobService[routeName === "JobsDashboard" ? "myJobs" : "myUpcomingJobs"](
+        let getRouteName = (routeName === "JobsDashboard" ? "myJobs" : "myUpcomingJobs");
+        if(this.$route.params.farmId === undefined){
+            getRouteName = (routeName === "JobsDashboard" ? "list" : "upcomingJobsList");
+        }
+        JobService[getRouteName](
           this.$route.params.farmId
         ).then((response) => {
           this.alljobs = response.data.data;

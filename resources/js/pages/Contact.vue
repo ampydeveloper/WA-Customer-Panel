@@ -81,7 +81,7 @@
                   <v-text-field
                     v-model="addForm.first_name"
                     required
-                    :rules="[(v) => !!v || 'Please enter your first name.']"
+                    :rules="[(v) => !!v || 'Please enter your first name']"
                     placeholder="Fill in your first name"
                     class="form-control"
                   ></v-text-field>
@@ -101,7 +101,7 @@
                   <v-text-field
                     v-model="addForm.last_name"
                     required
-                    :rules="[(v) => !!v || 'Please enter your last name.']"
+                    :rules="[(v) => !!v || 'Please enter your last name']"
                     placeholder="Fill in your last name"
                     class="form-control"
                   ></v-text-field>
@@ -121,7 +121,7 @@
                   <v-text-field
                     v-model="addForm.email"
                     required
-                    :rules="[(v) => !!v || 'Please enter your email.']"
+                    :rules="[(v) => !!v || 'Please enter your email']"
                     placeholder="Fill in your email address"
                     class="form-control"
                   ></v-text-field>
@@ -143,7 +143,7 @@
                     rows="3"
                     auto-grow
                     v-model="addForm.message"
-                    :rules="[(v) => !!v || 'Write your message.']"
+                    :rules="[(v) => !!v || 'Write your message']"
                     placeholder="Fill your message"
                     class="form-control"
                     required

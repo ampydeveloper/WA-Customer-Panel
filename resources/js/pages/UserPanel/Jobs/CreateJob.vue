@@ -645,7 +645,7 @@ export default {
         }
         let self = this;
         FarmService.listManagers(farmId).then(function(managers){
-          managers = managers.data.data;
+          managers = managers.data.farms;
           if(managers != undefined && managers.length > 0){
             self.managerList = [...managers].map(manager => {
               return {

@@ -531,7 +531,7 @@ ul.contact-apge-addss li {
     width: 100%;
     height: 50px;
     border: none;
-    border-bottom: 2px solid #999;
+    /*border-bottom: 2px solid #999;*/
     border-radius: 0;
     appearance: none;
     -webkit-appearance: none;
@@ -593,7 +593,9 @@ ul.contact-apge-addss li {
     font-family: "Gilroy-Bold";
     color: #000;
     font-size: 19px;
-    letter-spacing: -1px;
+    /*letter-spacing: -1px;*/
+        background: #fff;
+    text-transform: capitalize;
 }
 
 .form-submit button#form-submit:hover i,
@@ -1077,9 +1079,15 @@ span.lets-str-icon {
     position: relative;
     overflow: hidden;
 }
-
 .nes-im img {
     transition: all 0.5s ease-in-out;
+}
+
+.nes-im .img {
+    width: 100%;
+    height: 220px;
+    background-size: cover;
+    background-position: center center;
 }
 
 .news-latest-cols:hover .nes-im img {
