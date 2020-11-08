@@ -64,6 +64,54 @@ class JobService {
         });
     }
 
+    static servicesForAll() {
+        const token = window.localStorage.getItem("token");
+        return Axios.get(`/api/customer/service/all`, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+    }
+
+    static newsForAll() {
+        const token = window.localStorage.getItem("token");
+        return Axios.get(`/api/customer/news-list`, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+    }
+
+    static newsTwo() {
+        const token = window.localStorage.getItem("token");
+        return Axios.get(`/api/customer/news-two`, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+    }
+
+    static faqForAll() {
+        const token = window.localStorage.getItem("token");
+        return Axios.get(`/api/customer/faq-list`, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+    }
+
+    static addContact(addRequest) {
+        const token = window.localStorage.getItem("token");
+        return Axios.put(
+            `/api/customer/add-contact`,
+            addRequest, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        }
+        );
+    }
+
     static myJobs() {
         const token = window.localStorage.getItem("token");
         return Axios.get(`/api/my/jobs`, {
@@ -76,6 +124,24 @@ class JobService {
     static myUpcomingJobs() {
         const token = window.localStorage.getItem("token");
         return Axios.get(`/api/my/jobs/upcoming`, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+    }
+
+    static chatUsers(jobId) {
+        const token = window.localStorage.getItem("token");
+        return Axios.get(`/api/my/jobs/chat-members/${jobId}`, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+    }
+
+    static getJobChatMessages(data) {
+        const token = window.localStorage.getItem("token");
+        return Axios.post(`/api/my/jobs/job-chat`, data, {
             headers: {
                 Authorization: `Bearer ${token}`
             }

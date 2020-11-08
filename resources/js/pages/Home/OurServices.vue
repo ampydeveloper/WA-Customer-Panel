@@ -8,18 +8,16 @@
 
       <div class="services-slider">
         <div class="owl-carousel owl-theme" id="service-slide-home">
-          <div class="item">
+          <div class="item" v-for="item in services">
             <div class="service-block-img">
-              <img src="/img/signup-bg-im.jpg" alt />
+              <!-- <img :src="'http://wellington.leagueofclicks.com/'+item.service_image" alt /> -->
+                <div class="img" v-bind:style="{ backgroundImage: 'url(http://wellington.leagueofclicks.com/' + item.service_image + ')' }" ></div>
             </div>
             <div class="service-block-custom-inner">
-              <h4>20 YARD SERVICE</h4>
+              <h4>{{ item.service_name }}</h4>
               <p>
-                This service is most commonly used by our customers. It includes
-                20 yard service of your farm including manure pickup and taking
-                it to our dumping station.
+                {{ item.description }}
               </p>
-
               <ul>
                 <li>Year Round Service</li>
                 <li>Weekly or Daily Schedule</li>
@@ -27,91 +25,10 @@
                 <li>Auto Pick Up</li>
                 <li>Largest Volume</li>
               </ul>
-
-              <a href="#" class="schedule-now">
+                <router-link class="schedule-now" to="/jobs/create">
                 <i class="fa fa-angle-right" aria-hidden="true"></i>
                 Schedule Now
-              </a>
-            </div>
-          </div>
-
-          <div class="item">
-            <div class="service-block-img">
-              <img src="/img/signup-bg-im.jpg" alt />
-            </div>
-            <div class="service-block-custom-inner">
-              <h4>STANDARD LOAD</h4>
-              <p>
-                This service is most commonly used by our customers. It includes
-                20 yard service of your farm including manure pickup and taking
-                it to our dumping station.
-              </p>
-
-              <ul>
-                <li>25 yards</li>
-                <li>Largest Load Removal</li>
-                <li>Online Booking</li>
-                <li>Available On Any Day</li>
-                <li>Use It When Needed</li>
-              </ul>
-
-              <a href="#" class="schedule-now">
-                <i class="fa fa-angle-right" aria-hidden="true"></i>
-                Schedule Now
-              </a>
-            </div>
-          </div>
-          <div class="item">
-            <div class="service-block-img">
-              <img src="/img/signup-bg-im.jpg" alt />
-            </div>
-            <div class="service-block-custom-inner">
-              <h4>20 YARD SERVICE</h4>
-              <p>
-                This service is most commonly used by our customers. It includes
-                20 yard service of your farm including manure pickup and taking
-                it to our dumping station.
-              </p>
-
-              <ul>
-                <li>Year Round Service</li>
-                <li>Weekly or Daily Schedule</li>
-                <li>Scale Back In The Summer</li>
-                <li>Auto Pick Up</li>
-                <li>Largest Volume</li>
-              </ul>
-
-              <a href="#" class="schedule-now">
-                <i class="fa fa-angle-right" aria-hidden="true"></i>
-                Schedule Now
-              </a>
-            </div>
-          </div>
-
-          <div class="item">
-            <div class="service-block-img">
-              <img src="/img/signup-bg-im.jpg" alt />
-            </div>
-            <div class="service-block-custom-inner">
-              <h4>STANDARD LOAD</h4>
-              <p>
-                This service is most commonly used by our customers. It includes
-                20 yard service of your farm including manure pickup and taking
-                it to our dumping station.
-              </p>
-
-              <ul>
-                <li>25 yards</li>
-                <li>Largest Load Removal</li>
-                <li>Online Booking</li>
-                <li>Available On Any Day</li>
-                <li>Use It When Needed</li>
-              </ul>
-
-              <a href="#" class="schedule-now">
-                <i class="fa fa-angle-right" aria-hidden="true"></i>
-                Schedule Now
-              </a>
+                </router-link>
             </div>
           </div>
         </div>
@@ -121,5 +38,30 @@
 </template>
 
 <script>
-export default {};
+import JobService from "../../services/JobService";
+export default {
+  data() {
+    return {
+      services: [],
+    };
+  },
+  mounted() {
+    this.getResults();
+  },
+  methods: {
+    getResults() {
+      JobService.servicesForAll().then((response) => {
+        if (response.status) {
+          this.services = response.data.data;
+        } else {
+          this.$toast.open({
+            message: response.message,
+            type: "error",
+            position: "top-right",
+          });
+        }
+      });
+    },
+  },
+};
 </script>

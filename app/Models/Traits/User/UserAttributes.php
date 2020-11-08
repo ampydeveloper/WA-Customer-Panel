@@ -12,6 +12,6 @@ trait UserAttributes
 
     public function getImageUrlAttribute()
     {
-        return ($this->user_image) ? Storage::disk('user_images')->url($this->id.'/'.$this->user_image) : $this->defaultImageUrl();
+        return ($this->user_image) ? Storage::disk('user_images')->url('/user_images/'.$this->id.'/'.$this->user_image) : $this->defaultImageUrl();
     }
 }

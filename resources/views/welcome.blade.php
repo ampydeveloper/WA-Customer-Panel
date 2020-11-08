@@ -23,7 +23,9 @@
     <!--<link href="css/owl.theme.css" rel="stylesheet">-->
     <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/@mdi/font@4.x/css/materialdesignicons.min.css" rel="stylesheet">
-    <script async src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCZ3PTWFGfTu4UYGIDiXJvMTxVcIpjWJGM&libraries=geometry,places"></script>
+    <script async src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAJNnFDVwxq7H2eFWW5MZTQc8Pg7uD47Dk&libraries=geometry,places"></script>
+    <!-- <script async src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAQEbFYBxoq9qSepomK_1KEM7TxU3vSOyw&libraries=geometry,places"></script> -->
+    
 </head>
 
 <body class="home-page">
@@ -48,6 +50,7 @@
         }
         $(document).ready(function() {
             feather.replace();
+            setTimeout(function(){
             $('#service-slide-home').owlCarousel({
                 loop: true,
                 pagination: false,
@@ -89,8 +92,7 @@
                     }
                 }
             })
-
-
+        }, 200);
         });
     </script>
 

@@ -21,7 +21,9 @@
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
           <ul class="navbar-nav ml-auto">
             <li class="nav-item active" v-if="isCustomer">
-              <a class="nav-link" href="javascript:void(0);">Services</a>
+              <router-link class="nav-link" to="/services"
+                >Services</router-link
+              >
             </li>
 
             <li class="nav-item dropdown">
@@ -51,12 +53,56 @@
                 <!-- <a class="dropdown-item" href="/jobs/create">
                   <i data-feather="briefcase"></i> Create Job</a
                 >
-                <a class="dropdown-item" href="/farms" v-if="isCustomer">
-                  <i data-feather="circle"></i> Farm Dashboard</a
+                <router-link
+                  class="dropdown-item"
+                  v-if="!isHauler"
+                  to="/farms/create"
+                  ><i data-feather="pie-chart"></i> 
+                  Create Farm</router-link
                 >
-                <a class="dropdown-item" href="/farms/create" v-if="isCustomer">
-                  <i data-feather="pie-chart"></i> Create Farm</a
-                > -->
+                <router-link class="dropdown-item" v-if="isHauler" to="/drivers"
+                  ><svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    class="feather feather-users"
+                  >
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="9" cy="7" r="4"></circle>
+                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                  </svg>
+                  Driver Dashboard</router-link
+                >
+                <router-link
+                  class="dropdown-item"
+                  v-if="isHauler"
+                  to="/drivers/create"
+                  ><svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    class="feather feather-user-plus"
+                  >
+                    <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="8.5" cy="7" r="4"></circle>
+                    <line x1="20" y1="8" x2="20" y2="14"></line>
+                    <line x1="23" y1="11" x2="17" y2="11"></line>
+                  </svg>
+                  Create Driver</router-link
+                >
               </div>
             </li>
             <li class="nav-item active">
@@ -94,12 +140,8 @@
                 aria-haspopup="true"
                 aria-expanded="false"
               >
-                <img
-                  :src="user.image_url"
-                  alt="name"
-                  class="user_header_img"
-                />
-                <span class="full_name">{{ (user) ? user.full_name : '' }}</span>
+                <img :src="user.image_url" alt="name" class="user_header_img" />
+                <span class="full_name">{{ user ? user.full_name : "" }}</span>
               </a>
               <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                 <router-link
@@ -126,11 +168,11 @@
 export default {
   data: () => {
     return {
-      showNoti:false,
-      user: null
+      showNoti: false,
+      user: null,
     };
   },
-  created: function(){
+  created: function () {
     this.user = JSON.parse(window.localStorage.getItem("user"));
   },
   methods: {

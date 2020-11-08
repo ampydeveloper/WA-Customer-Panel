@@ -356,6 +356,55 @@ class JobController extends Controller
         ], 200);
     }
     
+    public function chatMembers(Request $request) {
+        die('REDD');
+        $chatMembers = Job::whereId($request->job_id)->select('id', 'customer_id', 'manager_id', 'truck_driver_id', 'skidsteer_driver_id')->with(['customer' => function($q) {
+            $q->select('id', 'first_name', 'user_image');
+        }]) ->with(['manager' => function($q) {
+        
+            $q->select('id', 'first_name', 'user_image');
+        }])->with(['truck_driver' => function($q) {
+        
+            $q->select('id', 'first_name', 'user_image');
+        }])->with(['skidsteer_driver' => function($q) {
+        
+            $q->select('id', 'first_name', 'user_image');
+        }])->first();
+        return response()->json([
+                    'status' => true,
+                    'message' => 'Chat members',
+                    'data' => $chatMembers
+                        ], 200);
+    }
+    
+    public function jobChat(Request $request) {
+        $data = array(
+            'jobId' => $request->job_id,
+        );
+        $postData = json_encode($data);
+
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, "http://" . env('SOCKET_SERVER_IP') . ":" . env('SOCKET_SERVER_PORT') . "/job-chat");
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type:application/json'));
+        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $postData);
+        $output = curl_exec($ch);
+        curl_close($ch);
+//        print_r($output);
+//        die('re');
+        $messages = json_decode($output);
+        $messages = array_reverse($messages);
+        
+            return response()->json([
+                    'status' => true,
+                    'message' => 'Chat messages',
+                    'data' => $messages
+                        ], 200);
+            
+    }
+    
 //    public function getServiceSlots(Request $request)
 //    {
 //        $service = Service::whereId($request->service_id)->first();

@@ -19,12 +19,11 @@ app.use(bodyParser.urlencoded({
 
 app.use(bodyParser.json());
 
-//app.post('/job-chat', (req, res) => {
-//    Chat.find({job_id:req.body.jobId}).sort('-date').limit(10).then(messages => {
-//         console.log(messages);
-//        res.json(messages);
-//    }).catch(err => console.error(err));
-//});
+app.post('/job-chat', (req, res) => {
+    Chat.find({job_id:req.body.jobId}).sort('-date').limit(10).then(messages => {
+        res.json(messages);
+    }).catch(err => console.error(err));
+});
 
 //app.post('/private-chat', (req, res) => {
 //

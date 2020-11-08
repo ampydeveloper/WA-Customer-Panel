@@ -30,33 +30,35 @@
             <div class="nav-list1">
               <ul class="list-unstyled">
                 <li>
-                  <a href="/about">About</a>
+                  <router-link to="/about"> About</router-link>
                 </li>
                 <li>
-                  <a href="/services">Services</a>
+                  <router-link to="/services">Services</router-link>
                 </li>
                 <li>
-                  <a href="/faq">FAQ</a>
+                  <router-link to="/faq">FAQ</router-link>
                 </li>
                 <li>
-                  <a href="/contact">Contact</a>
+                  <router-link to="/contact">Contact</router-link>
                 </li>
               </ul>
             </div>
             <div class="nav-list2" v-if="!isLoggedIn">
               <ul class="list-unstyled">
                 <li>
-                  <a href="/sign-in">Sign In</a>
+                  <router-link to="/sign-in">Sign In</router-link>
                 </li>
                 <li>
-                  <a href="/sign-up">Sign Up</a>
+                  <router-link to="/sign-up">Sign Up</router-link>
                 </li>
               </ul>
             </div>
             <div class="btn-store-app">
               <h2>Create your account now or download our apps.</h2>
               <div class="footer-download-btn clearfix">
-                <a href="/sign-up" class="btn btn-account">Create Account</a>
+                <router-link to="/sign-up" class="btn btn-account"
+                  >Create Account</router-link
+                >
                 <a href="#" class="btn-link">
                   <img src="img/app-stor-icon-gray.png" alt />
                 </a>
@@ -96,18 +98,16 @@
             </div>
           </div>
           <div class="col-sm-5 services-slider d-none d-lg-block">
-            <div class="item">
+            <div class="item" v-for="item in services">
               <div class="service-block-img">
-                <img src="/img/signup-bg-im.jpg" alt />
+               <!-- <img :src="item.service_image" alt /> -->
+                 <div class="img" v-bind:style="{ backgroundImage: 'url(http://wellington.leagueofclicks.com/' + item.service_image + ')' }" ></div>
               </div>
               <div class="service-block-custom-inner">
-                <h4>20 YARD SERVICE</h4>
+                <h4>{{ item.service_name }}</h4>
                 <p>
-                  This service is most commonly used by our customers. It
-                  includes 20 yard service of your farm including manure pickup
-                  and taking it to our dumping station.
+                 {{ item.description }}
                 </p>
-
                 <ul>
                   <li>Year Round Service</li>
                   <li>Weekly or Daily Schedule</li>
@@ -115,11 +115,10 @@
                   <li>Auto Pick Up</li>
                   <li>Largest Volume</li>
                 </ul>
-
-                <a href="#" class="schedule-now">
-                  <i class="fa fa-angle-right" aria-hidden="true"></i>
-                  Schedule Now
-                </a>
+   <router-link class="schedule-now" to="/jobs/create">
+                <i class="fa fa-angle-right" aria-hidden="true"></i>
+                Schedule Now
+                </router-link>
               </div>
             </div>
           </div>
@@ -130,15 +129,34 @@
 </template>
 
 <script>
+import JobService from "../../services/JobService";
 export default {
   data: () => {
-    return {};
+    return {
+      services: [],
+    };
+  },
+  mounted() {
+    this.getResults();
   },
   methods: {
     logout: () => {
       window.localStorage.removeItem("token");
       window.localStorage.removeItem("user");
       window.location.href = "/";
+    },
+    getResults() {
+      JobService.servicesForAll().then((response) => {
+        if (response.status) {
+          this.services = response.data.data;
+        } else {
+          this.$toast.open({
+            message: response.message,
+            type: "error",
+            position: "top-right",
+          });
+        }
+      });
     },
   },
   computed: {

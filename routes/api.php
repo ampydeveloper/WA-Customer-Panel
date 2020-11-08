@@ -13,7 +13,15 @@ use Illuminate\Support\Facades\Route;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
-
+Route::group(['prefix' => 'customer', 'as' => 'customer'], function () {
+    // Services related routes
+    Route::group(['prefix' => 'service', 'as' => 'service'], function () {
+       Route::get('all', 'ServiceController@serviceForAll')->name('all');
+        });
+         Route::get('news-list', 'ServiceController@newsList')->name('news-list');
+         Route::get('news-two', 'ServiceController@newsListTwo')->name('news-two');
+         Route::get('faq-list', 'ServiceController@faqList')->name('faq-list');
+});
 Route::group(['prefix' => 'auth'], function () {
     Route::post('signup', 'AuthController@signup')->name('signup');
     Route::get('confirm-email/{decode_code}', 'AuthController@confirmEmail')->name('confirm.email');
@@ -38,6 +46,9 @@ Route::group(['middleware' => 'auth:api', 'prefix' => 'my', 'as' => 'my'], funct
     Route::get('jobs/upcoming', 'JobController@myUpcomingJobs')->name('upcoming.jobs');
     Route::get('farms', 'CustomerController@myFarms')->name('farms');
     Route::get('managers/{id?}', 'CustomerController@myManagers')->name('list-all');
+    
+     Route::post('job-chat', 'JobController@jobChat');
+    Route::get('chat-members/{job_id}', 'JobController@chatMembers');
 });
 
 Route::group(['middleware' => 'auth:api', 'prefix' => 'customer', 'as' => 'customer'], function () {

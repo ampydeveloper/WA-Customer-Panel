@@ -122,8 +122,8 @@ const emptyFarmRequest = {
   farm_zipcode: "",
   farm_place: "",
   farm_active: 1,
-  latitude: "",
-  longitude: "",
+  latitude: "54",
+  longitude: "54",
   manager_details: [],
 };
 
@@ -147,17 +147,17 @@ export default {
       schema: {
         styleClasses: "row",
         fields: [
-          {
-            label: 'Address',
-            type: "vueGoogleAutocomplete",
-            model: "farm_address",
-            required: true,
-            validator: ["required", "string"],
-            styleClasses:'col-md-4'  ,
-            onGetAddressData : ($event) => {
-              console.log($event);
-            }
-          },
+          // {
+          //   label: 'Address',
+          //   type: "vueGoogleAutocomplete",
+          //   model: "farm_address",
+          //   required: true,
+          //   validator: ["required", "string"],
+          //   styleClasses:'col-md-4'  ,
+          //   onGetAddressData : ($event) => {
+          //     console.log($event);
+          //   }
+          // },
           ...farmFormSchema.fields,
           {
             type: "filepond",
@@ -166,7 +166,7 @@ export default {
               load(Date.now());
             },
             required: true,
-            validator: ["required"],
+            // validator: ["required"],
             styleClasses: "col-md-4",
           },
           // {
