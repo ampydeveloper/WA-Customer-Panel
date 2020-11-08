@@ -357,8 +357,7 @@ class JobController extends Controller
     }
     
     public function chatMembers(Request $request) {
-        die('REDD');
-        $chatMembers = Job::whereId($request->job_id)->select('id', 'customer_id', 'manager_id', 'truck_driver_id', 'skidsteer_driver_id')->with(['customer' => function($q) {
+        $chatMembers = Job::whereId($request->job_id)->with(['customer' => function($q) {
             $q->select('id', 'first_name', 'user_image');
         }]) ->with(['manager' => function($q) {
         
@@ -392,10 +391,7 @@ class JobController extends Controller
         curl_setopt($ch, CURLOPT_POSTFIELDS, $postData);
         $output = curl_exec($ch);
         curl_close($ch);
-//        print_r($output);
-//        die('re');
-        $messages = json_decode($output);
-        $messages = array_reverse($messages);
+        $messages = array_reverse(json_decode($output));
         
             return response()->json([
                     'status' => true,
