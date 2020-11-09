@@ -4,7 +4,11 @@
       <div class="container">
         <div class="row">
           <div class="col-md-12">
-            <h2>Farms Dashboard</h2>
+            <h2>
+              Farms
+              <br />
+              <span class="bg-custom-thickness"> Dashboard </span>
+            </h2>
           </div>
         </div>
       </div>
@@ -29,16 +33,22 @@
                     {{ farm.farm_address }} {{ farm.farm_city }} <br />
                     {{ farm.farm_province }} {{ farm.farm_zipcode }}
                   </td>
-                  <td v-if="!farm.primary_manager"> N/A </td>
-                  <td v-if="farm.primary_manager"> {{ farm.primary_manager.full_name }} / {{ farm.primary_manager.phone }} / {{ farm.primary_manager.email }}</td>
+                  <td v-if="!farm.primary_manager">N/A</td>
+                  <td v-if="farm.primary_manager">
+                    {{ farm.primary_manager.full_name }} /
+                    {{ farm.primary_manager.phone }} /
+                    {{ farm.primary_manager.email }}
+                  </td>
                   <td>
                     <span class="badge-tag">{{ farm.total_jobs }} </span>
-                    <router-link :to="{
-                                      name: 'FarmJobsDashboard',
-                                      params: { farmId: farm.id },
-                                    }"
-                        class="btn btn-table-outline"
-                      > <i data-feather="view"></i> View</router-link
+                    <router-link
+                      :to="{
+                        name: 'FarmJobsDashboard',
+                        params: { farmId: farm.id },
+                      }"
+                      class="btn btn-table-outline"
+                    >
+                      <i data-feather="view"></i> View</router-link
                     >
                   </td>
                   <td>
@@ -49,7 +59,8 @@
                       }"
                       class="btn btn-table-outline"
                       v-if="isCustomer || isHauler"
-                      > <i data-feather="edit-3"></i> Edit</router-link
+                    >
+                      <i data-feather="edit-3"></i> Edit</router-link
                     >
                     <!-- <router-link
                       :to="{
@@ -64,9 +75,10 @@
                       v-if="!isManager"
                       @click="deleteFarm(farm.id)"
                       class="btn btn-table-outline"
-                    > <i data-feather="x"></i>  Delete
+                    >
+                      <i data-feather="x"></i> Delete
                     </button>
-                    <i v-if='!isCustomer && !isHauler'>NA</i>
+                    <i v-if="!isCustomer && !isHauler">NA</i>
                   </td>
                 </tr>
               </tbody>
@@ -75,9 +87,9 @@
         </div>
       </div>
 
-       <sub-footer />
+      <sub-footer />
     </section>
-    
+
     <span id="table-chevron-left" class="d-none">
       <i data-feather="chevron-left"></i>
     </span>
@@ -100,7 +112,7 @@ import FarmService from "../../../services/FarmService";
 export default {
   components: {
     DashboardHeader,
-      subFooter,
+    subFooter,
   },
   data() {
     return {
@@ -112,7 +124,7 @@ export default {
     FarmService.list().then((response) => {
       this.farmList = response.data.farms;
     });
-    this.user = JSON.parse(window.localStorage.getItem('user'));
+    this.user = JSON.parse(window.localStorage.getItem("user"));
   },
   methods: {
     deleteFarm: async function (farmId) {
@@ -149,6 +161,6 @@ export default {
         }
       });
     },
-  }
+  },
 };
 </script>

@@ -5,11 +5,14 @@ export default {
     fields: [{
             type: "select",
             values: ["Mr.", "Miss", "Mrs."],
-            label: "Salutation",
+            label: "Prefix",
             model: "manager_prefix",
             required: false,
             validator: ["required"],
-            styleClasses: 'col-md-2 mb-0 pb-0'
+            selectOptions: {
+                noneSelectedText: "Select Prefix"
+                },
+            styleClasses: 'col-md-4 mb-0 pb-0'
         },
         {
             type: "input",
@@ -18,7 +21,7 @@ export default {
             model: "manager_first_name",
             required: true,
             validator: ["required"],
-            styleClasses: 'col-md-3 mb-0 pb-0'
+            styleClasses: 'col-md-4 mb-0 pb-0'
         },
         {
             type: "input",
@@ -27,7 +30,7 @@ export default {
             model: "manager_last_name",
             required: true,
             validator: ["required"],
-            styleClasses: 'col-md-3 mb-0 pb-0'
+            styleClasses: 'col-md-4 mb-0 pb-0'
         },
         {
             type: "input",

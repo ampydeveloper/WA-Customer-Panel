@@ -50,7 +50,7 @@
                 <!-- <a class="dropdown-item" href="/jobs">
                   <i data-feather="grid"></i> Job Dashboard</a
                 > -->
-                <!-- <a class="dropdown-item" href="/jobs/create">
+                 <!-- <a class="dropdown-item" href="/jobs/create">
                   <i data-feather="briefcase"></i> Create Job</a
                 >
                 <router-link
@@ -59,7 +59,7 @@
                   to="/farms/create"
                   ><i data-feather="pie-chart"></i> 
                   Create Farm</router-link
-                >
+                > -->
                 <router-link class="dropdown-item" v-if="isHauler" to="/drivers"
                   ><svg
                     xmlns="http://www.w3.org/2000/svg"

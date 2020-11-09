@@ -22,9 +22,10 @@
               <div class="custom-forms">
                 <h5 class="heading2" v-if='!standalone' v-text='isEdit === false ? "Add Manager Details" : "Edit Manager"'></h5>
                 <v-row align="center" v-if='standalone'>
-                  <v-col class="d-flex" cols="12" sm="6">
-                    <label for='farms' class="font-weight-bold mr-5" style="width:15%;"><span>Select Farm</span></label><br/>
+                  <v-col class="d-flex pb-0 mb-0" cols="12" sm="4">
+                    <label for='farms' class="font-weight-bold mr-2"><span>Farm</span></label><br/>
                     <select class="form-control required" v-model="farmId">
+                      <option value="">Select Farm</option>
                       <option :value="farm.value" v-bind:key='farm.value' v-for='farm in farms' v-text='farm.text'></option>
                     </select>
                     <!-- <v-select data-app v-model='farmId' :items="farms" item-text="text" item-value="value"></v-select> -->
@@ -40,13 +41,13 @@
                     @validated="onValidated"
                   />
                 </form>
-                <button
+                <!-- <button
                     class="btn btn-outline-green"
                     :style="isEdit === false ? 'display: none': ''"
                     @click="cancel"
                   >
                     Cancel
-                  </button>
+                  </button> -->
               </div>
             </div>
           </div>

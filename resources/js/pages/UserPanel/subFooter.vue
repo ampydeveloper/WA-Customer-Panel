@@ -76,7 +76,7 @@
             <div class="insta-post">
               <a href="#">
                 <div class="insta-im">
-                  <img src="img/instagram-1.jpg" alt />
+                  <div class="insta-im-img" style="background-image:url('img/instagram-1.jpg')"></div>
                 </div>
                 <div class="insta-overlay">
                   <h4>Donec nec justo eget</h4>
@@ -88,7 +88,7 @@
             <div class="insta-post">
               <a href="#">
                 <div class="insta-im">
-                  <img src="img/instagram-2.jpg" alt />
+                       <div class="insta-im-img" style="background-image:url('img/instagram-2.jpg')"></div>
                 </div>
                 <div class="insta-overlay">
                   <h4>Donec nec justo eget</h4>
@@ -100,7 +100,7 @@
             <div class="insta-post">
               <a href="#">
                 <div class="insta-im">
-                  <img src="img/instagram-3.jpg" alt />
+                   <div class="insta-im-img" style="background-image:url('img/instagram-3.jpg')"></div>
                 </div>
                 <div class="insta-overlay">
                   <h4>Donec nec justo eget</h4>
@@ -112,7 +112,7 @@
             <div class="insta-post">
               <a href="#">
                 <div class="insta-im">
-                  <img src="img/instagram-6.jpg" alt />
+                     <div class="insta-im-img" style="background-image:url('img/instagram-4.jpg')"></div>
                 </div>
                 <div class="insta-overlay">
                   <h4>Donec nec justo eget</h4>

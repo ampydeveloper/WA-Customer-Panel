@@ -5,7 +5,11 @@
         <div class="container">
           <div class="row">
             <div class="col-md-12">
-              <h2>Manager Dashboard</h2>
+              <h2>
+                Manager
+                <br />
+                <span class="bg-custom-thickness"> Dashboard </span>
+              </h2>
             </div>
           </div>
         </div>
@@ -15,15 +19,15 @@
         <div class="container">
           <div class="row">
             <div class="col-md-12">
-              <table class="table basic-table" id='all-managers-table'>
+              <table class="table basic-table" id="all-managers-table">
                 <thead>
                   <tr>
                     <th class="job-summ">Manager Name</th>
                     <th>Email</th>
                     <th class="time-col">Phone</th>
                     <th>Address</th>
-                    <th>Actions</th>
                     <th>Farm</th>
+                    <th>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -33,7 +37,29 @@
                     <td>{{ manager.phone }}</td>
                     <td>{{ manager.address }}</td>
                     <td>
-                      <router-link :to="{ name: 'editManager', params: { managerId: manager.id }}" class="btn btn-table-outline">Edit</router-link>
+                      <select
+                        class="form-control"
+                        v-model="manager.farm_id"
+                        @change="updateFarm(manager.id, $event)"
+                      >
+                        <option
+                          :value="farm.value"
+                          v-bind:key="farm.value"
+                          :selected="manager.farm_id == farm.value"
+                          v-for="farm in farms"
+                          v-text="farm.text"
+                        ></option>
+                      </select>
+                    </td>
+                    <td>
+                      <router-link
+                        :to="{
+                          name: 'editManager',
+                          params: { managerId: manager.id },
+                        }"
+                        class="btn btn-table-outline"
+                        >Edit</router-link
+                      >
                       <button
                         @click="deleteManager(manager.id)"
                         class="btn btn-table-outline"
@@ -41,57 +67,61 @@
                         Delete
                       </button>
                     </td>
-                    <td>
-                      <select class="form-control" v-model='manager.farm_id' @change='updateFarm(manager.id, $event)'>
-                        <option :value="farm.value" v-bind:key='farm.value' :selected='manager.farm_id == farm.value' v-for='farm in farms' v-text='farm.text'></option>
-                      </select>
-                    </td>
+                  
                   </tr>
                 </tbody>
               </table>
             </div>
           </div>
         </div>
+        <sub-footer />
       </section>
     </div>
   </div>
 </template>
 
 <script>
+import subFooter from "../../subFooter";
 import FarmService from "../../../../services/FarmService";
 import JobService from "../../../../services/JobService";
 
 export default {
+  components: {
+    subFooter,
+  },
   data() {
     return {
       managerList: [],
-      farms: []
+      farms: [],
     };
   },
   created() {
-    FarmService.listManagers().then(response => {
+    FarmService.listManagers().then((response) => {
       // console.log(response.data);
       this.managerList = response.data.data;
     });
-    FarmService.list().then(response => {
-      this.farms = [...response.data.farms.map((farm) => {
-                                  return {
-                                    text: farm.farm_address,
-                                    value: farm.id,
-                                  }
-                                })];
+    FarmService.list().then((response) => {
+      this.farms = [
+        ...response.data.farms.map((farm) => {
+          return {
+            text: farm.farm_address,
+            value: farm.id,
+          };
+        }),
+      ];
     });
   },
   methods: {
-    updateFarm(managerId, $event){
-      FarmService.changeManager($event.target.value, managerId).then((response) => {
-        this.$toast.open({
-          message: response.data.message,
-          type: "success",
-          position: "top-right",
-          dismissible: false,
-        });
-      },
+    updateFarm(managerId, $event) {
+      FarmService.changeManager($event.target.value, managerId).then(
+        (response) => {
+          this.$toast.open({
+            message: response.data.message,
+            type: "success",
+            position: "top-right",
+            dismissible: false,
+          });
+        },
         (error) => {
           this.$toast.open({
             message: error.response.data.message,
@@ -102,7 +132,7 @@ export default {
         }
       );
     },
-    deleteManager: async function(managerId) {
+    deleteManager: async function (managerId) {
       this.$swal({
         title: "Are you sure?",
         text: "You won't be able to revert this!",
@@ -110,8 +140,8 @@ export default {
         showCancelButton: true,
         confirmButtonColor: "#1ec285",
         cancelButtonColor: "#d33",
-        confirmButtonText: "Yes, delete it!"
-      }).then(async result => {
+        confirmButtonText: "Yes, delete it!",
+      }).then(async (result) => {
         if (result.isConfirmed) {
           try {
             const response = await FarmService.deleteManager(
@@ -122,10 +152,10 @@ export default {
               message: response.data.message,
               type: "success",
               position: "top-right",
-              dismissible: false
+              dismissible: false,
             });
             const managerIndex = this.managerList.findIndex(
-              manager => manager.id === managerId
+              (manager) => manager.id === managerId
             );
             this.managerList.splice(managerIndex, 1);
           } catch (error) {
@@ -133,12 +163,12 @@ export default {
               message: error.response.data.message,
               type: "error",
               position: "bottom-right",
-              dismissible: false
+              dismissible: false,
             });
           }
         }
       });
-    }
-  }
+    },
+  },
 };
 </script>

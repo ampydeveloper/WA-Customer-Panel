@@ -6,7 +6,10 @@
         <div class="container">
           <div class="row">
             <div class="col-md-12">
-              <h2>Job Dashboard</h2>
+              <h2>Job 
+                  <br />
+                <span class="bg-custom-thickness"> Dashboard </span>
+              </h2>
             </div>
           </div>
         </div>
