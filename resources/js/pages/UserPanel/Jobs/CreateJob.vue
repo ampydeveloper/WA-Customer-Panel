@@ -4,12 +4,21 @@
       <section class="page-section-top" data-aos="">
         <div class="container">
           <div class="row">
-            <div class="col-md-12">
+            <div class="col-md-6">
               <h2>
-                Create<br />
-                <span class="bg-custom-thickness"> Job </span>
+                Schedule a<br />
+                <span class="bg-custom-thickness"> Pickup </span>
               </h2>
             </div>
+            <div class="col-md-6">
+              <div class="desc-details pickup-desc-details">
+                 <h2>
+                   Select a <span class="bg-custom-thickness">Service</span>, 
+                     <span class="bg-custom-thickness">Date</span>,  
+                       <span class="bg-custom-thickness">Weight</span> & schedule a pickup.
+                </h2>
+              </div>
+              </div>
           </div>
         </div>
       </section>
@@ -116,21 +125,6 @@
                       <label>Service Time</label>
                     </div>
                     <div class="pt-0 pb-0 service-time-timing-out">
-                      <!-- <v-radio-group
-                        v-model="selectedTimePeriod"
-                        row
-                        :rules="requiredRules"
-                        label=""
-                        color="black"
-                      >
-                        <v-radio
-                          v-for="(n, i) in Object.keys(serviceTimeSlotMap)"
-                          :key="i"
-                          :label="`${timePeriod[n]}`"
-                          :value="n"
-                          color="black"
-                        ></v-radio>
-                      </v-radio-group> -->
 
                       <div class="pretty p-default p-round">
                         <input type="radio" name="slot_type" v-model="jobRequest.time_slots_id" value="1" />
@@ -189,15 +183,6 @@
                           <v-checkbox color="success" v-model="jobRequest.repeating_days" label="Sunday" value="sunday" hide-details></v-checkbox>
                         </v-col>
                       </v-row>
-
-                      <!-- <v-text-field
-                        v-model="jobRequest.repeating_days"
-                        required
-                        type="number"
-                        :rules="requiredRules"
-                        v-if="jobRequest.is_repeating_job"
-                        label="Repeating Days"
-                      ></v-text-field> -->
                     </div>
                   </v-col>
 
@@ -229,7 +214,7 @@
 
                   <v-col cols="12" md="12" class="job-p-inner pt-0 pb-0">
                     <div class="label-align pt-0">
-                      <label class="label_text">Job Photos</label>
+                      <label class="label_text">Important Photos</label>
                     </div>
                     <div class="pt-0 pb-0">
                       <file-pond
@@ -252,6 +237,7 @@
                         v-model="jobRequest.farm_id"
                         :items="farmList"
                         placeholder="Select Farm"
+                        required
                         :rules="[(v) => !!v || 'Farms is required.']"
                       ></v-select>
                      
@@ -266,6 +252,7 @@
                           v-model="jobRequest.manager_id"
                           :items="managerList"
                           placeholder="Select Manager"
+                          required
                           :rules="[(v) => !!v || 'Manager is required.']"
                         ></v-select>
                       </div>
@@ -286,14 +273,6 @@
               </div>
 
               <div class="col-sm-6 content-right-outer content-right-outer-wid">
-                <!-- <div class="farm-manager">
-                <img
-                  src="https://pixinvent.com/demo/vuexy-vuejs-admin-dashboard-template/demo-1/img/avatar-s-5.99691e54.jpg"
-                  alt="name"
-                />
-                <h5>Andreson Riggs</h5>
-              </div> -->
-
                 <div class="estimate-price">
                   <h5>Estimated Price</h5>
 
@@ -381,6 +360,7 @@
                             v-model="jobRequest.card.name"
                             :rules="[(v) => !!v || 'Name on card is required.']"
                             placeholder="Enter Name on Card"
+                            required
                           ></v-text-field>
                         </div>
                       </div>
@@ -392,6 +372,7 @@
                           <v-text-field
                             v-model="jobRequest.card.card_number"
                             size="20"
+                            required
                             :rules="[
                               (v) => !!v || 'Card Number is required.',
                               (v) =>
@@ -415,6 +396,7 @@
                             data-stripe="exp_month"
                             id="exp_month"
                             :items="expiryMonths"
+                            required
                             placeholder="Select Expiry Month"
                             :rules="[(v) => !!v || 'Expiry Month is required.']"
                           ></v-select>
@@ -431,6 +413,7 @@
                             data-stripe="exp_year"
                             :items="expiryYears"
                             placeholder="Select Expiry Year"
+                            required
                             :rules="[(v) => !!v || 'Expiry Year is required.']"
                           ></v-select>
                         </div>
@@ -479,8 +462,7 @@
 
                 <div class="info-box">
                   <span><i data-feather="info"></i></span>
-                  Shift on weekdays is rush hour. There might be delay in
-                  service.
+                  Important administrative messages from Wellington Agricultural Services.
                 </div>
               </div>
             </div>
@@ -659,7 +641,7 @@ export default {
         }
         let self = this;
         FarmService.listManagers(farmId).then(function(managers){
-          managers = managers.data.farms;
+          managers = managers.data.farms.manager_details;
           if(managers != undefined && managers.length > 0){
             self.managerList = [...managers].map(manager => {
               return {

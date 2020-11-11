@@ -28,7 +28,7 @@
                   <div class="row">
                     <div class="col-sm-12 pt-0 pb-0">
                       <div class="profile-image" v-if="!profileUpload">
-                        <img v-if='userProfile.image_url' v-bind:src="userProfile.image_url.replace('/storage/', '/storage/user_images/')" alt="name" />
+                        <img :src='userProfile.image_url' alt="" />
                         <div class="image-edit" @click="showProfileUpload">
                           <i data-feather="edit-3"></i>
                         </div>

@@ -4,13 +4,20 @@
       <section class="page-section-top" data-aos="">
         <div class="container">
           <div class="row">
-            <div class="col-md-12">
+            <div class="col-md-6">
               <h2>
-                Manager
+               Farm 
                 <br />
-                <span class="bg-custom-thickness"> Dashboard </span>
+                <span class="bg-custom-thickness"> Managers </span>
               </h2>
             </div>
+            <div class="col-md-6">
+            <div class="desc-details pickup-desc-details">
+              <h2>
+                 <span class="bg-custom-thickness">Check</span> your farm managers. 
+              </h2>
+            </div>
+          </div>
           </div>
         </div>
       </section>

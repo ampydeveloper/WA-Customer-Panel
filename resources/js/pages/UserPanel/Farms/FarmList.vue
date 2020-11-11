@@ -3,12 +3,15 @@
     <section class="page-section-top" data-aos="">
       <div class="container">
         <div class="row">
-          <div class="col-md-12">
-            <h2>
-              Farms
-              <br />
-              <span class="bg-custom-thickness"> Dashboard </span>
-            </h2>
+          <div class="col-md-6">
+            <h2>Farms</h2>
+          </div>
+          <div class="col-md-6">
+            <div class="desc-details pickup-desc-details">
+              <h2>
+                 <span class="bg-custom-thickness">Check</span> your farms summary. 
+              </h2>
+            </div>
           </div>
         </div>
       </div>

@@ -3,12 +3,21 @@
     <section class="page-section-top" data-aos="">
       <div class="container">
         <div class="row">
-          <div class="col-md-12">
+          <div class="col-md-4">
             <h2>
               Create
               <br />
               <span class="bg-custom-thickness"> Farm </span>
             </h2>
+          </div>
+          <div class="col-md-8">
+            <div class="desc-details pickup-desc-details">
+              <h2>
+                Add <span class="bg-custom-thickness">farm details</span> &
+                <span class="bg-custom-thickness">manager details</span><br />
+                & create a farm.
+              </h2>
+            </div>
           </div>
         </div>
       </div>
@@ -42,7 +51,7 @@
 
             <div class="basic-grey-box">
               <create-manager
-                :key='managerKey'
+                :key="managerKey"
                 v-on:updatemanager="updateManager"
                 v-on:cancelEditManager="cancelEditManager"
                 v-bind:new-manager="newManager"
@@ -84,11 +93,12 @@
                   Create Farm <i data-feather="arrow-right"></i>
                 </button>
               </div>
-
             </div>
           </div>
         </div>
       </div>
+
+      <sub-footer />
     </section>
   </div>
 </template>
@@ -100,6 +110,7 @@ import CreateManager from "./Managers/CreateManager";
 import router from "../../../router";
 import _ from "lodash";
 import VFormBase from "vuetify-form-base";
+import subFooter from "../subFooter";
 
 const emptyManager = {
   manager_first_name: "",
@@ -131,6 +142,7 @@ export default {
   components: {
     CreateManager,
     VFormBase,
+    subFooter,
   },
   computed: {
     hasManager: function () {
@@ -214,13 +226,13 @@ export default {
         }
       }
 
-      this.model.manager_details.push({ ...manager});
+      this.model.manager_details.push({ ...manager });
       this.addManagers = false;
       this.newManager = { ...emptyManager };
       this.refreshManagerKey();
       this.isEdit = false;
     },
-    refreshManagerKey(){
+    refreshManagerKey() {
       this.managerKey = Math.random().toString(36).substring(7);
     },
     createFarm: function () {
@@ -312,6 +324,6 @@ export default {
       this.addManagers = true;
       this.isEdit = index;
     },
-  }
+  },
 };
 </script>

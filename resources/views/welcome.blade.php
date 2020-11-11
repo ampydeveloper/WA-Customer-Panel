@@ -127,7 +127,7 @@
                 $(".dataTables_filter").append($("#search-input-icon").html());
                 $(".dataTables_filter input").attr(
                     "placeholder",
-                    "Search Job by Job ID / Service Name / Farm Location"
+                    "Search Pickup by Pickup ID / Service Name / Farm Location"
                 );
                 $(".dataTables_paginate .paginate_button.previous").html(
                     $("#table-chevron-left").html()

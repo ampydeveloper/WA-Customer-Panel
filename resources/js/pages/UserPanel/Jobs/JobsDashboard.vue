@@ -5,12 +5,17 @@
       <section class="page-section-top" data-aos="">
         <div class="container">
           <div class="row">
-            <div class="col-md-12">
-              <h2>Job 
-                  <br />
-                <span class="bg-custom-thickness"> Dashboard </span>
+            <div class="col-md-6">
+              <h2>Pickups 
               </h2>
             </div>
+            <div class="col-md-6">
+              <div class="desc-details pickup-desc-details">
+                 <h2>
+               <span class="bg-custom-thickness">Check</span> your pickups summary. 
+                </h2>
+              </div>
+              </div>
           </div>
         </div>
       </section>
@@ -26,19 +31,19 @@
               >
                 <thead>
                   <tr>
-                    <th class="job-summ">Job Summary</th>
+                    <th class="job-summ">Pickup Summary</th>
                     <th>Manager / Farm Location</th>
                     <th class="time-col">Date / Est. Time</th>
                     <th>Weight</th>
                     <th>Payment Status</th>
-                    <th>Job Status</th>
+                    <th>Pickup Status</th>
                     <th>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr v-for="(job, index) in alljobs">
                     <td>
-                      <span class="basic-big">#JOB100{{ job.id }}</span>
+                      <span class="basic-big">#PICKUP100{{ job.id }}</span>
                       <span class="basic-info"
                         >${{ job.amount ? job.amount : 0 }}</span
                       >
@@ -85,7 +90,7 @@
                       <a class="btn btn-table-outline" v-if="job.job_status == 0" @click="cancelJob(job.id)">
                        Cancel
                       </a>
-                      <router-link v-if="job.job_status == 1" :to="{ name: 'ViewJob', params: { jobId: job.id }}" class="btn btn-table-outline"> Track</router-link>
+                      <router-link v-if="job.job_status == 1" :to="{ name: 'ViewJob', params: { jobId: job.id }}" class="btn btn-table-outline pickup-btn-outline"> View Details</router-link>
                     </td>
                   </tr>
                 </tbody>
