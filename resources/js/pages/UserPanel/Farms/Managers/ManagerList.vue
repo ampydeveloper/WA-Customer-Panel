@@ -31,7 +31,7 @@
                   </tr>
                 </thead>
                 <tbody>
-                  <tr v-for="manager in managerList" :key="manager.id">
+                  <tr v-for="(manager, index) in managerList" :key="manager.id">
                     <td>{{ manager.full_name }}</td>
                     <td>{{ manager.email }}</td>
                     <td>{{ manager.phone }}</td>
@@ -96,22 +96,25 @@ export default {
     };
   },
   created() {
-    FarmService.listManagers().then((response) => {
-      // console.log(response.data);
-      this.managerList = response.data.data;
-    });
-    FarmService.list().then((response) => {
-      this.farms = [
-        ...response.data.farms.map((farm) => {
-          return {
-            text: farm.farm_address,
-            value: farm.id,
-          };
-        }),
-      ];
-    });
+    this.getManagers();
   },
   methods: {
+    getManagers(){
+      FarmService.listManagers().then((response) => {
+        // console.log(response.data);
+        this.managerList = response.data.data;
+      });
+      FarmService.list().then((response) => {
+        this.farms = [
+          ...response.data.farms.map((farm) => {
+            return {
+              text: farm.farm_address,
+              value: farm.id,
+            };
+          }),
+        ];
+      });
+    },
     updateFarm(managerId, $event) {
       FarmService.changeManager($event.target.value, managerId).then(
         (response) => {
@@ -123,6 +126,7 @@ export default {
           });
         },
         (error) => {
+          this.getManagers();
           this.$toast.open({
             message: error.response.data.message,
             type: "error",
