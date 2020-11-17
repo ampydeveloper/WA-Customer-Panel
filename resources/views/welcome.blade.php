@@ -109,6 +109,7 @@
 
         setTimeout(function() {
             $(document).ready(function() {
+                if (!$.fn.dataTable.isDataTable(".basic-table")) {
                 $(".basic-table").DataTable({
                     "bSort": false,
                     oLanguage: {
@@ -135,9 +136,7 @@
                 $(".dataTables_paginate .paginate_button.next").html(
                     $("#table-chevron-right").html()
                 );
-                $(".basic-table").css({
-                    opacity: 1
-                });
+                
                 $("#all-farms-table_filter input").attr(
                     "placeholder",
                     "Search Farms by Farm Location / Manager"
@@ -150,6 +149,10 @@
                     "placeholder",
                     "Search Managers by Name / Email / Phone / Address"
                 );
+            }
+            $(".basic-table").css({
+                    opacity: 1
+                });
             });
         }, 1000);
         $(".go-to-link").click(function() {

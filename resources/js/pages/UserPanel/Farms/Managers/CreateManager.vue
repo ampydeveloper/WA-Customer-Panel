@@ -256,6 +256,9 @@ export default {
         this.model.manager_is_active = 1;
       });
     }
+    $(document).ready(function() {
+               feather.replace();
+            });
   }
 };
 </script>

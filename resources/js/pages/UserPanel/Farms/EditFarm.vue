@@ -167,18 +167,18 @@ export default {
       isEdit: false,
       schema: {
         fields: [
-          {
-            label: 'Address',
-            type: "vueGoogleAutocomplete",
-            required: false,
-            placeHolder: 'farm_address',
-            // validator: ["required", "string"],
-            styleClasses:'col-md-4'  ,
-            onPlaceChanged : (addressData) => {
-              this.model.farm_address = addressData;
-              console.log($event);
-            }
-          },
+          // {
+          //   label: 'Address',
+          //   type: "vueGoogleAutocomplete",
+          //   required: false,
+          //   placeHolder: 'farm_address',
+          //   // validator: ["required", "string"],
+          //   styleClasses:'col-md-4',
+          //   onPlaceChanged : (addressData) => {
+          //     this.model.farm_address = addressData;
+          //     console.log($event);
+          //   }
+          // },
           ...farmFormSchema.fields,
           {
             type: "filepond",
@@ -261,6 +261,10 @@ export default {
     if(this.model.farm_image != null){
       this.model.farm_image = JSON.parse(this.model.farm_image);
     }
+
+    $(document).ready(function() {
+               feather.replace();
+            });
   },
   methods: {
     updateManager: function (manager, isEdit) {

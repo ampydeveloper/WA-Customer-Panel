@@ -566,6 +566,10 @@ export default {
       }
     };
     this.selectedTimePeriod = 1;
+
+    $(document).ready(function() {
+               feather.replace();
+            });
   },
   methods: {
     formSubmit: async function() {

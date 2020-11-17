@@ -83,6 +83,18 @@
         </div>
         <sub-footer />
       </section>
+
+      <span id="table-chevron-left" class="d-none">
+      <i data-feather="chevron-left"></i>
+    </span>
+    <span id="table-chevron-right" class="d-none">
+      <i data-feather="chevron-right"></i>
+    </span>
+    <span id="search-input-icon" class="d-none">
+      <span class="search-input-outer">
+        <i data-feather="search"></i>
+      </span>
+    </span>
     </div>
   </div>
 </template>
@@ -104,6 +116,47 @@ export default {
   },
   created() {
     this.getManagers();
+$(document).ready(function() {
+               feather.replace();
+  });
+    setTimeout(function() {
+            $(document).ready(function() {
+             
+                if (!$.fn.dataTable.isDataTable(".basic-table")) {
+                $(".basic-table").DataTable({
+                    "bSort": false,
+                    oLanguage: {
+                        sSearch: "",
+                        "sEmptyTable": "No data available."
+                    },
+                    drawCallback: function(settings) {
+                        $(".dataTables_paginate .paginate_button.previous").html(
+                            $("#table-chevron-left").html()
+                        );
+                        $(".dataTables_paginate .paginate_button.next").html(
+                            $("#table-chevron-right").html()
+                        );
+                    },
+                });
+                $(".dataTables_filter").append($("#search-input-icon").html());
+                $(".dataTables_filter input").attr(
+                    "placeholder",
+                    "Search Managers by Name / Email / Phone / Address"
+                );
+                $(".dataTables_paginate .paginate_button.previous").html(
+                    $("#table-chevron-left").html()
+                );
+                $(".dataTables_paginate .paginate_button.next").html(
+                    $("#table-chevron-right").html()
+                );
+                
+            }
+            $(".basic-table").css({
+                    opacity: 1
+                });
+            });
+        }, 1000);
+
   },
   methods: {
     getManagers(){

@@ -25,7 +25,7 @@
         <div class="container">
           <div class="row">
             <div class="col-md-12">
-              <a
+              <!-- <a
                 :href="
                   routeName === 'JobsDashboard' ? '/jobs' : '/jobs/upcoming'
                 "
@@ -33,7 +33,7 @@
                 v-text="
                   routeName === 'JobsDashboard' ? 'All Jobs' : 'Upcoming Jobs'
                 "
-              ></a>
+              ></a> -->
               <table id="all-jobs-table" class="table basic-table">
                 <thead>
                   <tr>
@@ -174,7 +174,7 @@ export default {
       this.alljobs = response.data.data;
     });
     const verifyEmail = window.localStorage.getItem("verifyEmail");
-    if (verifyEmail != "") {
+    if (verifyEmail != "" && verifyEmail != null) {
       this.$toast.open({
         message: verifyEmail,
         type: "success",
@@ -182,6 +182,47 @@ export default {
         dismissible: false,
       });
     }
+  $(document).ready(function() {
+               feather.replace();
+  });
+setTimeout(function() {
+            $(document).ready(function() {
+              
+                if (!$.fn.dataTable.isDataTable(".basic-table")) {
+                $(".basic-table").DataTable({
+                    "bSort": false,
+                    oLanguage: {
+                        sSearch: "",
+                        "sEmptyTable": "No data available."
+                    },
+                    drawCallback: function(settings) {
+                        $(".dataTables_paginate .paginate_button.previous").html(
+                            $("#table-chevron-left").html()
+                        );
+                        $(".dataTables_paginate .paginate_button.next").html(
+                            $("#table-chevron-right").html()
+                        );
+                    },
+                });
+                $(".dataTables_filter").append($("#search-input-icon").html());
+                $(".dataTables_filter input").attr(
+                    "placeholder",
+                    "Search Pickup by Pickup ID / Service Name / Farm Location"
+                );
+                $(".dataTables_paginate .paginate_button.previous").html(
+                    $("#table-chevron-left").html()
+                );
+                $(".dataTables_paginate .paginate_button.next").html(
+                    $("#table-chevron-right").html()
+                );
+                
+            }
+            $(".basic-table").css({
+                    opacity: 1
+                });
+            });
+        }, 1000);
+
   },
 
   methods: {

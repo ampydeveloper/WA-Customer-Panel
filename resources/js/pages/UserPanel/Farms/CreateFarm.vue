@@ -203,6 +203,11 @@ export default {
       addManagers: false,
     };
   },
+   created: async function () {
+$(document).ready(function() {
+               feather.replace();
+            });
+   },
   methods: {
     updateManager: function (manager, isEdit) {
       if (isEdit !== false) {

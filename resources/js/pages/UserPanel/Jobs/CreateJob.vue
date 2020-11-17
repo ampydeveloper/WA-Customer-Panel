@@ -693,6 +693,7 @@ export default {
     });
 
     /** Collection of drivers */
+    if(user.role_id == 6){
     const {
       data: { drivers },
     } = await DriverService.list();
@@ -702,10 +703,15 @@ export default {
         value: driver.id
       };
     });
+    }
 
     CardService.list().then((response) => {
       this.cardList = response.data.data;
     });
+
+            $(document).ready(function() {
+               feather.replace();
+            });
   },
   methods: {
     formSubmit: async function () {

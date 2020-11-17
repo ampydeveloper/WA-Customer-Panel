@@ -733,6 +733,10 @@ export default {
         dismissible: false,
       });
     }
+
+    $(document).ready(function() {
+               feather.replace();
+  });
   },
 };
 </script>

@@ -65,6 +65,9 @@ export default {
   },
   mounted() {
     this.getResults();
+    $(document).ready(function() {
+               feather.replace();
+  });
   },
   methods: {
     getResults() {
