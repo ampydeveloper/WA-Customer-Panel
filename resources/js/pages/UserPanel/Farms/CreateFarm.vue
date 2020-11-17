@@ -5,7 +5,7 @@
         <div class="row">
           <div class="col-md-4">
             <h2>
-              Create
+              Create A
               <br />
               <span class="bg-custom-thickness"> Farm </span>
             </h2>
@@ -179,7 +179,7 @@ export default {
             },
             required: true,
             // validator: ["required"],
-            styleClasses: "col-md-4",
+            styleClasses: "col-md-4"
           },
           // {
           //   type: "submit",

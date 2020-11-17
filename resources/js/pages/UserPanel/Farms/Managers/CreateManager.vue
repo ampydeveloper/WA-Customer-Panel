@@ -6,14 +6,14 @@
         <div class="row">
           <div class="col-md-6">
             <h2>
-              <h2 v-text='isEditS === false ? "Create" : "Edit"'></h2>
+              <h2 v-text='isEditS === false ? "Create" : "Edit"'></h2> A Farm
               <span class="bg-custom-thickness"> Manager </span>
             </h2>
           </div>
           <div class="col-md-6">
               <div class="desc-details pickup-desc-details">
                  <h2>
-                   Add <span class="bg-custom-thickness">manager details</span><br> & create a manager.
+                   Add the <span class="bg-custom-thickness">farm manager details</span><br> & create a <span class="bg-custom-thickness">manager</span>.
                 </h2>
               </div>
               </div>
@@ -27,7 +27,7 @@
           <div class="col-md-12">
             <div :class="{'basic-grey-box':standalone}">
               <div class="custom-forms">
-                <h5 class="heading2" v-if='!standalone' v-text='isEdit === false ? "Add Manager Details" : "Edit Manager"'></h5>
+                <h5 class="heading2" v-if='!standalone' v-text='isEdit === false ? "Add Farm Manager Details" : "Edit Farm Manager Details"'></h5>
                 <v-row align="center" v-if='standalone'>
                   <v-col class="d-flex pb-0 mb-0" cols="12" sm="4">
                     <label for='farms' class="font-weight-bold mr-2"><span>Farm</span></label><br/>

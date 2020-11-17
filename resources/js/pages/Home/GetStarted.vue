@@ -70,7 +70,7 @@
               <span>desktop or mobile</span> applications
             </h4>
             <div class="download-from-strore">
-              <a href="/sign-up" class="btnpblack">Create Account</a>
+              <router-link to="/sign-up" class="btnpblack">Create Account</router-link>
               <a href="#">
                 <img src="img/app-stor-icon-gray.png" alt />
               </a>

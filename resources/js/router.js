@@ -5,6 +5,7 @@ import Home from "./pages/Home";
 import Contact from "./pages/Contact.vue";
 import Services from "./pages/Services.vue";
 import FAQ from "./pages/FAQ.vue";
+import NewsSingle from "./pages/NewsSingle.vue";
 import SignUp from "./pages/SignUp.vue";
 import SignIn from "./pages/SignIn.vue";
 import { Role } from "./role";
@@ -34,6 +35,7 @@ import CreateJob from "./pages/UserPanel/Jobs/CreateJob.vue";
 import EditJob from "./pages/UserPanel/Jobs/EditJob.vue";
 import JobsDashboard from "./pages/UserPanel/Jobs/JobsDashboard.vue";
 import ViewJob from "./pages/UserPanel/Jobs/ViewJob.vue";
+import ServicesLogin from "./pages/ServicesLogin.vue";
 
 /* Driver Imports */
 import Drivers from "./pages/UserPanel/Drivers";
@@ -85,6 +87,11 @@ const router = new VueRouter({
             path: "/faq",
             name: "faq",
             component: FAQ
+        },
+        {
+            path: "/news/:newsId",
+            name: "newsSingle",
+            component: NewsSingle
         },
         {
             path: "/sign-up",
@@ -224,7 +231,12 @@ const router = new VueRouter({
                     path: ":jobId/edit",
                     name: "editJob",
                     component: EditJob
-                }
+                },
+                {
+                    path: "services",
+                    name: "servicesLogin",
+                    component: ServicesLogin
+                },
             ]
         },
         {

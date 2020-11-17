@@ -1,8 +1,7 @@
 <template>
   <div>
-    <app-header />
     <div class="main-wrapper">
-      <section class="page-section-top" data-aos="fade-down">
+      <section class="page-section-top">
         <div class="container">
           <div class="row">
             <div class="col-md-6">
@@ -50,18 +49,14 @@
         </div>
       </div>
     </div>
-    <app-footer />
   </div>
 </template>
 
 <script>
-import AppHeader from "../shared/components/AppHeader";
-import AppFooter from "../shared/components/AppFooter";
 import JobService from "../services/JobService";
 export default {
   components: {
-    AppHeader,
-    AppFooter,
+    
   },
    data() {
     return {

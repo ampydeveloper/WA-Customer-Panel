@@ -70,27 +70,27 @@
             <div class="bootm-social-links">
               <ul>
                 <li>
-                  <a href="#">
+                  <a href="https://www.facebook.com/wellingtonagricultural/">
                     <i class="fa fa-facebook-square" aria-hidden="true"></i>
                   </a>
                 </li>
                 <li>
-                  <a href="#">
+                  <a href="https://www.instagram.com/wellingtonagricultural/">
                     <i class="fa fa-instagram" aria-hidden="true"></i>
                   </a>
                 </li>
                 <li>
-                  <a href="#">
+                  <a href="https://twitter.com/wellingtonAg1">
                     <i class="fa fa-twitter" aria-hidden="true"></i>
                   </a>
                 </li>
                 <li>
-                  <a href="#">
-                    <i class="fa fa-pinterest" aria-hidden="true"></i>
+                  <a href="https://www.youtube.com/channel/UCy1HGr7-iLfV8tLqs6dvMxw">
+                    <i class="fa fa-youtube" aria-hidden="true"></i>
                   </a>
                 </li>
                 <li>
-                  <a href="#">
+                  <a href="https://www.linkedin.com/in/jose-gomez-32741b84/">
                     <i class="fa fa-linkedin" aria-hidden="true"></i>
                   </a>
                 </li>
@@ -100,13 +100,20 @@
           <div class="col-sm-5 services-slider d-none d-lg-block">
             <div class="item" v-for="item in services">
               <div class="service-block-img">
-               <!-- <img :src="item.service_image" alt /> -->
-                 <div class="img" v-bind:style="{ backgroundImage: 'url(http://wellington.leagueofclicks.com/' + item.service_image + ')' }" ></div>
+                <div
+                  class="img"
+                  v-bind:style="{
+                    backgroundImage:
+                      'url(' +
+                      item.service_image +
+                      ')',
+                  }"
+                ></div>
               </div>
               <div class="service-block-custom-inner">
                 <h4>{{ item.service_name }}</h4>
                 <p>
-                 {{ item.description }}
+                  {{ item.description }}
                 </p>
                 <ul>
                   <li>Year Round Service</li>
@@ -115,9 +122,9 @@
                   <li>Auto Pick Up</li>
                   <li>Largest Volume</li>
                 </ul>
-   <router-link class="schedule-now" to="/jobs/create">
-                <i class="fa fa-angle-right" aria-hidden="true"></i>
-                Schedule Now
+                <router-link class="schedule-now" to="/jobs/create">
+                  <i class="fa fa-angle-right" aria-hidden="true"></i>
+                  Schedule Now
                 </router-link>
               </div>
             </div>

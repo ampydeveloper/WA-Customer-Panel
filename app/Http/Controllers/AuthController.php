@@ -14,8 +14,9 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Validator;
+
 //use GuzzleHttp\Exception\GuzzleException;
-use App\Http\Requests\Auth\{
+use App\Http\Requests\Auth\ {
     SignUpRequest,
     LoginRequest,
     ForgotPasswordRequest,
@@ -23,11 +24,9 @@ use App\Http\Requests\Auth\{
     UpdateProfileRequest
 };
 
-class AuthController extends Controller
-{
+class AuthController extends Controller {
 
-    public function signup(SignUpRequest $request)
-    {
+    public function signup(SignUpRequest $request) {
         if ($request->role_id == config('constant.roles.Customer') || $request->role_id == config('constant.roles.Haulers')) {
             try {
                 $user = new User([
@@ -48,41 +47,48 @@ class AuthController extends Controller
                 if ($user->save()) {
                     $this->_welcomeEmail($user);
                 }
+                $created_user = User::where('email', $request->email)->first();
+                $tokenResult = $created_user->createToken('Personal Access Token');
+                $token = $tokenResult->token;
+                $token->save();
                 return response()->json([
-                    'status' => true,
-                    'message' => 'Your account is successfully created. We have sent you an e-mail to confirm your account.',
-                    'data' => []
-                ], 200);
+                            'status' => true,
+                            'message' => 'Your account is successfully created. We have sent you an e-mail to confirm your account.',
+                            'data' => [
+                                'access_token' => $tokenResult->accessToken,
+                                'token_type' => 'Bearer',
+                                'expires_at' => Carbon::parse($tokenResult->token->expires_at)->toDateTimeString(),
+                                'user' => $created_user
+                            ]
+                                ], 200);
             } catch (\Exception $e) {
                 return response()->json([
-                    'status' => false,
-                    'message' => json_encode($e->getMessage()),
-                    'data' => []
-                ], 500);
+                            'status' => false,
+                            'message' => json_encode($e->getMessage()),
+                            'data' => []
+                                ], 500);
             }
         }
         return response()->json([
-            'status' => false,
-            'message' => 'Please check the type of user.',
-            'data' => []
-        ], 500);
+                    'status' => false,
+                    'message' => 'Please check the type of user.',
+                    'data' => []
+                        ], 500);
     }
-
 
     /**
      * social login
      */
-    public function SocialSignup($provider, Request $request)
-    {
+    public function SocialSignup($provider, Request $request) {
         $validator = Validator::make($request->all(), [
-            'role_id' => 'required'
+                    'role_id' => 'required'
         ]);
         if ($validator->fails()) {
             return response()->json([
-                'status' => false,
-                'message' => 'The given data was invalid.',
-                'data' => $validator->errors()
-            ], 422);
+                        'status' => false,
+                        'message' => 'The given data was invalid.',
+                        'data' => $validator->errors()
+                            ], 422);
         }
         try {
             $user = Socialite::driver($provider)->stateless()->user();
@@ -130,24 +136,24 @@ class AuthController extends Controller
             $token = $tokenResult->token;
             $token->save();
             return response()->json([
-                'status' => true,
-                'message' => 'Login Successful',
-                'data' => array(
-                    'access_token' => $tokenResult->accessToken,
-                    'token_type' => 'Bearer',
-                    'expires_at' => Carbon::parse(
-                        $tokenResult->token->expires_at
-                    )->toDateTimeString(),
-                    'user' => $user
-                )
+                        'status' => true,
+                        'message' => 'Login Successful',
+                        'data' => array(
+                            'access_token' => $tokenResult->accessToken,
+                            'token_type' => 'Bearer',
+                            'expires_at' => Carbon::parse(
+                                    $tokenResult->token->expires_at
+                            )->toDateTimeString(),
+                            'user' => $user
+                        )
             ]);
         } catch (\Exception $e) {
             Log::error(json_encode($e->getMessage()));
             return response()->json([
-                'status' => false,
-                'message' => $e->getMessage(),
-                'data' => []
-            ], 500);
+                        'status' => false,
+                        'message' => $e->getMessage(),
+                        'data' => []
+                            ], 500);
         }
     }
 
@@ -158,8 +164,7 @@ class AuthController extends Controller
      *
      * @return void
      */
-    public function _welcomeEmail(User $user)
-    {
+    public function _welcomeEmail(User $user) {
         $name = $user->first_name . ' ' . $user->last_name;
         $data = array(
             'name' => $name,
@@ -168,7 +173,7 @@ class AuthController extends Controller
         );
 
         Mail::send('email_templates.welcome_email', $data, function ($message) use ($user, $name) {
-            $message->to($user->email, $name)->subject('Email Confirmation');
+            $message->to($user->email, $name)->subject('WAG Email Confirmation');
             $message->from(env('MAIL_USERNAME'), env('MAIL_USERNAME'));
         });
     }
@@ -238,54 +243,53 @@ class AuthController extends Controller
      *
      * @return JSON response.
      */
-    public function login(LoginRequest $request)
-    {
+    public function login(LoginRequest $request) {
         try {
             $user = User::where('email', $request->email)->first();
 
             if (!$user) {
                 return response()->json([
-                    'status' => false,
-                    'message' => 'These credentials do not match our records.',
-                    'data' => []
-                ], 401);
+                            'status' => false,
+                            'message' => 'These credentials do not match our records.',
+                            'data' => []
+                                ], 401);
             }
 
             if ($user->is_confirmed == 0) {
                 return response()->json([
-                    'status' => false,
-                    'message' => 'Your account is not confirmed. Please click the confirmation link in your e-mail box.',
-                    'data' => []
-                ], 401);
+                            'status' => false,
+                            'message' => 'Your account is not confirmed. Please click the confirmation link in your e-mail box.',
+                            'data' => []
+                                ], 401);
             }
             $credentials = request(['email', 'password']);
             if (!Auth::attempt($credentials)) {
                 return response()->json([
-                    'status' => false,
-                    'message' => 'These credentials do not match our records.',
-                    'data' => []
-                ], 401);
+                            'status' => false,
+                            'message' => 'These credentials do not match our records.',
+                            'data' => []
+                                ], 401);
             }
             $tokenResult = $user->createToken('Personal Access Token');
             $token = $tokenResult->token;
             $token->save();
 
             return response()->json([
-                'status' => true,
-                'message' => 'Login Successful.',
-                'data' => [
-                    'access_token' => $tokenResult->accessToken,
-                    'token_type' => 'Bearer',
-                    'expires_at' => Carbon::parse($tokenResult->token->expires_at)->toDateTimeString(),
-                    'user' => $user
-                ]
+                        'status' => true,
+                        'message' => 'Login Successful.',
+                        'data' => [
+                            'access_token' => $tokenResult->accessToken,
+                            'token_type' => 'Bearer',
+                            'expires_at' => Carbon::parse($tokenResult->token->expires_at)->toDateTimeString(),
+                            'user' => $user
+                        ]
             ]);
         } catch (\Exception $e) {
             return response()->json([
-                'status' => false,
-                'message' => json_encode($e->getMessage()),
-                'data' => []
-            ], 500);
+                        'status' => false,
+                        'message' => json_encode($e->getMessage()),
+                        'data' => []
+                            ], 500);
         }
     }
 
@@ -296,16 +300,15 @@ class AuthController extends Controller
      *
      * @return JSON response.
      */
-    public function forgotPassword(ForgotPasswordRequest $request)
-    {
+    public function forgotPassword(ForgotPasswordRequest $request) {
         try {
             $user = User::whereEmail($request->email)->first();
             if (!$user) {
                 return response()->json([
-                    'status' => false,
-                    'message' => 'Email not found!',
-                    'data' => []
-                ], 404);
+                            'status' => false,
+                            'message' => 'Email not found!',
+                            'data' => []
+                                ], 404);
             }
             $name = $user->first_name . ' ' . $user->last_name;
             $data = [
@@ -315,25 +318,24 @@ class AuthController extends Controller
             ];
 
             $sendForGotEmail = Mail::send('email_templates.forgot_password', $data, function ($message) use ($user, $name) {
-                $message->to($user->email, $name)->subject('Change Password');
-                $message->from(env('MAIL_USERNAME'), env('MAIL_USERNAME'));
-            });
+                        $message->to($user->email, $name)->subject('WAG Change Password');
+                        $message->from(env('MAIL_USERNAME'), env('MAIL_USERNAME'));
+                    });
 
             return response()->json([
-                'status' => true,
-                'message' => 'We have sent you a email with a change password link. Please check email and proceed further.',
-                'data' => []
+                        'status' => true,
+                        'message' => 'We have sent you a email with a change password link. Please check email and proceed further.',
+                        'data' => []
             ]);
         } catch (\Exception $e) {
             Log::error(json_encode($e->getMessage()));
             return response()->json([
-                'status' => false,
-                'message' => $e->getMessage(),
-                'data' => []
-            ], 500);
+                        'status' => false,
+                        'message' => $e->getMessage(),
+                        'data' => []
+                            ], 500);
         }
     }
-
 
     /**
      * @method changePassword: Function to handle change password feature.
@@ -342,17 +344,16 @@ class AuthController extends Controller
      *
      * @return JSON response.
      */
-    public function changePassword(ChangePasswordRequest $request)
-    {
+    public function changePassword(ChangePasswordRequest $request) {
         $userEmail = base64_decode($request->token);
         $user = User::where('email', $userEmail)->first();
 
         if (!$user) {
             return response()->json([
-                'status' => false,
-                'message' => 'Invalid token.',
-                'data' => []
-            ], 404);
+                        'status' => false,
+                        'message' => 'Invalid token.',
+                        'data' => []
+                            ], 404);
         }
 
         $user->password = bcrypt($request->password);
@@ -367,43 +368,42 @@ class AuthController extends Controller
             $errCode = 400;
         }
         return response()->json([
-            'status' => $status,
-            'message' => $message,
-            'data' => []
-        ], $errCode);
+                    'status' => $status,
+                    'message' => $message,
+                    'data' => []
+                        ], $errCode);
     }
 
     /**
      * @method recoverPassword : Function to recover password.
      */
-    public function recoverPassword(Request $request)
-    {
+    public function recoverPassword(Request $request) {
         $validator = Validator::make($request->all(), [
-            'password' => 'required|confirmed'
+                    'password' => 'required|confirmed'
         ]);
         if ($validator->fails()) {
             return response()->json([
-                'status' => false,
-                'message' => 'The given data was invalid.',
-                'data' => $validator->errors()
-            ], 422);
+                        'status' => false,
+                        'message' => 'The given data was invalid.',
+                        'data' => $validator->errors()
+                            ], 422);
         }
         $user = User::whereEmail(base64_decode($request->hash_code))->first();
         if (!$user) {
             return response()->json([
-                'status' => false,
-                'message' => 'Link Expired!',
-                'data' => []
-            ], 422);
+                        'status' => false,
+                        'message' => 'Link Expired!',
+                        'data' => []
+                            ], 422);
         } else {
             $user->password = bcrypt($request->password);
             $user->password_changed_at = Carbon::now();
             $user->save();
             return response()->json([
-                'status' => true,
-                'message' => 'Password changed successfully',
-                'data' => []
-            ], 200);
+                        'status' => true,
+                        'message' => 'Password changed successfully',
+                        'data' => []
+                            ], 200);
         }
     }
 
@@ -414,8 +414,7 @@ class AuthController extends Controller
      * @param string email : base64 encoded email address.
      *
      */
-    public function confirmEmail(Request $request, string $email)
-    {
+    public function confirmEmail(Request $request, string $email) {
         $userEmail = base64_decode($email);
         $getUser = User::where('email', $userEmail)->first();
 
@@ -439,12 +438,11 @@ class AuthController extends Controller
      *
      * @return JSON
      */
-    public function profile(Request $request)
-    {
+    public function profile(Request $request) {
         return response()->json([
-            'success' => true,
-            'message' => 'User details.',
-            'data' => $request->user()
+                    'success' => true,
+                    'message' => 'User details.',
+                    'data' => $request->user()
         ]);
     }
 
@@ -453,12 +451,11 @@ class AuthController extends Controller
      *
      * @return JSON
      */
-    public function updateProfile(UpdateProfileRequest $request)
-    {
+    public function updateProfile(UpdateProfileRequest $request) {
 //        dd($request->all());
         $user = Auth::user();
         if ($user->role_id == config('constant.roles.Customer') || $user->role_id == config('constant.roles.Customer_Manager') || $user->role_id == config('constant.roles.Haulers') || $user->role_id == config('constant.roles.Hauler_driver')) {
-            
+
             if ($request->email != '' && $request->email != null) {
                 if ($user->email !== $request->email) {
                     $confirmed = 0;
@@ -481,7 +478,7 @@ class AuthController extends Controller
                     $imageName = $user->putImage($request->user_image);
                     $data['user_image'] = $imageName;
                 }
-                if(isset($confirmed)) {
+                if (isset($confirmed)) {
                     $data['is_confirmed'] = $confirmed;
                 }
                 if ($request->password != '' && $request->password != null) {
@@ -491,44 +488,44 @@ class AuthController extends Controller
                 $user->update($data);
                 if (isset($confirmed)) {
                     $this->_updateEmail($user, $request->email);
-                        $request->user()->token()->revoke();
-                        return response()->json([
-                                    'status' => true,
-                                    'message' => 'Please confirm email and login again',
-                                    'data' => []
-                        ]);
+                    $request->user()->token()->revoke();
+                    return response()->json([
+                                'status' => true,
+                                'message' => 'Please confirm email and login again',
+                                'data' => []
+                    ]);
                 }
 
                 return response()->json([
-                    'status' => true,
-                    'message' => 'Your profile is successfully updated.',
-                    'data' => $user
-                ], 200);
+                            'status' => true,
+                            'message' => 'Your profile is successfully updated.',
+                            'data' => $user
+                                ], 200);
             } catch (\Exception $e) {
                 return response()->json([
-                    'status' => false,
-                    'message' => json_encode($e->getMessage()),
-                    'data' => []
-                ], 500);
+                            'status' => false,
+                            'message' => json_encode($e->getMessage()),
+                            'data' => []
+                                ], 500);
             }
         }
     }
+
     /**
      * Logout user (Revoke the token)
      *
      * @return [string] message
      */
-    public function logout(Request $request)
-    {
+    public function logout(Request $request) {
         $request->user()->token()->revoke();
 
         return response()->json([
-            'status' => true,
-            'message' => 'Successfully logged out.',
-            'data' => []
+                    'status' => true,
+                    'message' => 'Successfully logged out.',
+                    'data' => []
         ]);
     }
-    
+
     public function _updateEmail($user, $email) {
         $name = $user->first_name . ' ' . $user->last_name;
         $data = array(
@@ -542,4 +539,5 @@ class AuthController extends Controller
             $message->from(env('MAIL_USERNAME'), env('MAIL_USERNAME'));
         });
     }
+
 }

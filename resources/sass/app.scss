@@ -780,8 +780,8 @@ select.form-control {
         border-radius: 6px;
         margin-bottom: 25px;
         color: #37c698;
-        position: absolute;
-        bottom: 80px;
+        // position: absolute;
+        // bottom: 80px;
         width: 100%;
 
         svg {
@@ -798,8 +798,8 @@ select.form-control {
         padding: 17px 25px;
         border-radius: 6px;
         margin-bottom: 25px;
-        position: absolute;
-        bottom: 0;
+        // position: absolute;
+        // bottom: 0;
         width: 100%;
 
         svg {
@@ -817,7 +817,7 @@ select.form-control {
     .create-job-but {
         text-align: center;
         position: absolute;
-        bottom: 186px;
+        bottom: 13px;
 
         svg {
             position: absolute;
@@ -830,7 +830,7 @@ select.form-control {
     }
 
     .content-right-outer-wid {
-        padding-bottom: 166px;
+        padding-bottom: 45px;
     }
 
     // .farm-manager {
@@ -1529,7 +1529,7 @@ select.form-control {
   .desc-details{
     text-align: right;
     h2{
-        font-size: 39px !important;
+        font-size: 2.4vw !important;
          span:after{
             top: 20px !important;
             bottom: 8px !important;
@@ -1543,4 +1543,23 @@ select.form-control {
     width: 80px;
     line-height: 30px !important;
     margin: 0;
+  }
+  .news-single-image{
+    width: 100%;
+    height: 420px;
+    background-size: cover;
+    background-position: center center;
+    margin-bottom: 35px;
+  }
+  .news-single-marg{
+    margin: 0 auto;
+    h2{
+        margin: 0;
+    }
+  }
+  .page-section-top.page-top-title {
+    padding: 50px 0 50px 0;
+  }
+  .btn-pickup-desc{
+    margin-top: 10px;
   }

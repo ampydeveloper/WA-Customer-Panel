@@ -136,6 +136,7 @@ export default {
     ).then((response) => {
       this.jobList = response.data.data;
     });
+    
   },
   methods: {
     cancelJob: async function (jobId) {

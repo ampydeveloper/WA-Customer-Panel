@@ -25,7 +25,7 @@
     <link href="https://cdn.jsdelivr.net/npm/@mdi/font@4.x/css/materialdesignicons.min.css" rel="stylesheet">
     <script async src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAJNnFDVwxq7H2eFWW5MZTQc8Pg7uD47Dk&libraries=geometry,places"></script>
     <!-- <script async src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAQEbFYBxoq9qSepomK_1KEM7TxU3vSOyw&libraries=geometry,places"></script> -->
-    
+
 </head>
 
 <body class="home-page">
@@ -50,49 +50,49 @@
         }
         $(document).ready(function() {
             feather.replace();
-            setTimeout(function(){
-            $('#service-slide-home').owlCarousel({
-                loop: true,
-                pagination: false,
-                navigation: false, // Show next and prev buttons
-                autoplay: true,
-                autoplayTimeout: 5000,
-                margin: 0,
-                nav: true,
-                responsive: {
-                    0: {
-                        items: 1
-                    },
-                    600: {
-                        items: 1
-                    },
-                    1000: {
-                        items: 2
+            setTimeout(function() {
+                $('#service-slide-home').owlCarousel({
+                    loop: true,
+                    pagination: false,
+                    navigation: false, // Show next and prev buttons
+                    autoplay: true,
+                    autoplayTimeout: 5000,
+                    margin: 0,
+                    nav: true,
+                    responsive: {
+                        0: {
+                            items: 1
+                        },
+                        600: {
+                            items: 1
+                        },
+                        1000: {
+                            items: 2
+                        }
                     }
-                }
-            })
+                })
 
-            $('#testimonial-slide-home').owlCarousel({
-                loop: true,
-                pagination: false,
-                navigation: false, // Show next and prev buttons
-                autoplay: true,
-                autoplayTimeout: 5000,
-                margin: 0,
-                nav: true,
-                responsive: {
-                    0: {
-                        items: 1
-                    },
-                    600: {
-                        items: 1
-                    },
-                    1000: {
-                        items: 2
+                $('#testimonial-slide-home').owlCarousel({
+                    loop: true,
+                    pagination: false,
+                    navigation: false, // Show next and prev buttons
+                    autoplay: true,
+                    autoplayTimeout: 5000,
+                    margin: 0,
+                    nav: true,
+                    responsive: {
+                        0: {
+                            items: 1
+                        },
+                        600: {
+                            items: 1
+                        },
+                        1000: {
+                            items: 2
+                        }
                     }
-                }
-            })
-        }, 200);
+                })
+            }, 200);
         });
     </script>
 
@@ -110,7 +110,7 @@
         setTimeout(function() {
             $(document).ready(function() {
                 $(".basic-table").DataTable({
-                    "bSort" : false,
+                    "bSort": false,
                     oLanguage: {
                         sSearch: "",
                         "sEmptyTable": "No data available."
@@ -152,9 +152,15 @@
                 );
             });
         }, 1000);
+        $(".go-to-link").click(function() {
+            var href = $(this).attr(href);
+            $('html, body').animate({
+                scrollTop: $(href).offset().top
+            }, 2000);
+        });
         AOS.init({
             duration: 1200,
-        })
+        });
     </script>
 
 </body>

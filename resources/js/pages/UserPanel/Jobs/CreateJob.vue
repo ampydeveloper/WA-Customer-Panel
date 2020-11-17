@@ -160,26 +160,26 @@
                         }`"
                       ></v-switch>
 
-                      <v-row v-if="jobRequest.is_repeating_job">
-                        <v-col cols="12" sm="2" md="2">
+                      <v-row v-if="jobRequest.is_repeating_job" class="mb-3">
+                        <v-col cols="12" sm="4" md="4" class="pt-0 pb-0" style="height: 29px;">
                           <v-checkbox color="success" v-model="jobRequest.repeating_days" label="Monday" value="monday"></v-checkbox>
                         </v-col>
-                        <v-col cols="12" sm="2" md="2">
+                        <v-col cols="12" sm="4" md="4" class="pt-0 pb-0" style="height: 29px;">
                           <v-checkbox color="success" v-model="jobRequest.repeating_days" label="Tuesday" value="tuesday" hide-details></v-checkbox>
                         </v-col>
-                        <v-col cols="12" sm="2" md="2">
+                        <v-col cols="12" sm="4" md="4" class="pt-0 pb-0" style="height: 29px;">
                           <v-checkbox color="success" v-model="jobRequest.repeating_days" label="Wednesday" value="wednesday" hide-details></v-checkbox>
                         </v-col>
-                        <v-col cols="12" sm="2" md="2">
+                        <v-col cols="12" sm="4" md="4" class="pt-0 pb-0">
                           <v-checkbox color="success" v-model="jobRequest.repeating_days" label="Thursday" value="thursday" hide-details></v-checkbox>
                         </v-col>
-                        <v-col cols="12" sm="2" md="2">
+                        <v-col cols="12" sm="4" md="4" class="pt-0 pb-0">
                           <v-checkbox color="success" v-model="jobRequest.repeating_days" label="Friday" value="friday" hide-details></v-checkbox>
                         </v-col>
-                        <v-col cols="12" sm="2" md="2">
+                        <v-col cols="12" sm="4" md="4" class="pt-0 pb-0">
                           <v-checkbox color="success" v-model="jobRequest.repeating_days" label="Saturday" value="saturday" hide-details></v-checkbox>
                         </v-col>
-                        <v-col cols="12" sm="3" md="3">
+                        <v-col cols="12" sm="4" md="4" class="pt-0 pb-0">
                           <v-checkbox color="success" v-model="jobRequest.repeating_days" label="Sunday" value="sunday" hide-details></v-checkbox>
                         </v-col>
                       </v-row>
@@ -273,6 +273,17 @@
               </div>
 
               <div class="col-sm-6 content-right-outer content-right-outer-wid">
+                <div class="reach-out">
+                  <span><i data-feather="phone"></i></span>
+                  React out to us at +91 (561) 790-2347 for any issue. We're all
+                  ears!
+                </div>
+
+                <div class="info-box">
+                  <span><i data-feather="info"></i></span>
+                  Important administrative messages from Wellington Agricultural Services.
+                </div>
+
                 <div class="estimate-price">
                   <h5>Estimated Price</h5>
 
@@ -282,7 +293,7 @@
                 </div>
 
                 <div class="send-payment" v-if="isCustomer">
-                  <h5 class="heading2">Initiate Payment</h5>
+                  <h5 class="heading2">Payment Options</h5>
                   <!-- <v-radio-group
                     v-model="jobRequest.attach_card"
                     row
@@ -454,16 +465,6 @@
                   ></v-btn>
                 </v-col>
 
-                <div class="reach-out">
-                  <span><i data-feather="phone"></i></span>
-                  React out to us at +91 (345)-7867-787 for any issue. We're all
-                  ears!
-                </div>
-
-                <div class="info-box">
-                  <span><i data-feather="info"></i></span>
-                  Important administrative messages from Wellington Agricultural Services.
-                </div>
               </div>
             </div>
           </v-form>

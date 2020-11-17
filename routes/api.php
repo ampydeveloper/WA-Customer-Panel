@@ -19,6 +19,7 @@ Route::group(['prefix' => 'customer', 'as' => 'customer'], function () {
        Route::get('all', 'ServiceController@serviceForAll')->name('all');
         });
          Route::get('news-list', 'ServiceController@newsList')->name('news-list');
+         Route::get('news-single/{newsId}', 'ServiceController@newsSingle')->name('news-single');
          Route::get('news-two', 'ServiceController@newsListTwo')->name('news-two');
          Route::get('faq-list', 'ServiceController@faqList')->name('faq-list');
 });

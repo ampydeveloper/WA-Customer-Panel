@@ -82,6 +82,15 @@ class JobService {
         });
     }
 
+    static newsSingle(newsId) {
+        const token = window.localStorage.getItem("token");
+        return Axios.get(`/api/customer/news-single/${newsId}`, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+    }
+
     static newsTwo() {
         const token = window.localStorage.getItem("token");
         return Axios.get(`/api/customer/news-two`, {

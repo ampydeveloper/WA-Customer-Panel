@@ -1,6 +1,6 @@
 
 <template>
-  <section class="how-it-work" data-aos="fade-down">
+  <section class="how-it-work" id="how-it-work" data-aos="fade-down">
     <div class="container">
       <div class="row">
         <div class="col-md-12 text-center">

@@ -1,6 +1,6 @@
 <template>
   <div class="logged-in-page">
-    <footer class="site-footer" style="padding: 100px 0 0 0 !important;">
+    <footer class="site-footer" style="padding: 100px 0 0 0 !important">
       <div class="container">
         <div class="row">
           <div class="col-md-12 foo-top-text">
@@ -18,10 +18,10 @@
                   <h4>Resources</h4>
                   <ul class="footer-links">
                     <li>
-                      <a href="#">How it Works</a>
+                      <a href="#how-it-work">How it works</a>
                     </li>
                     <li>
-                      <a href="#">FAQ</a>
+                      <router-link to="/faq">FAQ</router-link>
                     </li>
                   </ul>
                 </div>
@@ -29,30 +29,30 @@
                   <h4>Company</h4>
                   <ul class="footer-links">
                     <li>
-                      <a href="#">About</a>
+                      <router-link to="/about"> About</router-link>
                     </li>
                     <li>
-                      <a href="#">Contact</a>
+                      <router-link to="/contact">Contact</router-link>
                     </li>
                     <li>
-                      <a href="#">Term & Conditions</a>
+                      <router-link to="/terms">Terms & Conditions</router-link>
                     </li>
                     <li>
-                      <a href="#">Privacy Policy</a>
+                      <router-link to="/privacy-policy">Privacy Policy</router-link>
                     </li>
                   </ul>
                 </div>
                 <div class="col-md-6">
                   <h4>Get in touch</h4>
                   <div class="footer-address">
-                    <p>33565 NW 59th ST Miami, Florida</p>
+                    <p>132 Nottingham Rd, Royal Palm Beach, FL 33411</p>
                     <p>
                       <a href="mailto:info@wellingtonagricultural.com"
                         >info@wellingtonagricultural.com</a
                       >
                     </p>
                     <p>
-                      <a href="tel:+052-5401-3322">(+052) 5401 3322</a>
+                      <a href="tel:56179023472">(561) 790-2347</a>
                     </p>
                   </div>
                 </div>
@@ -64,7 +64,10 @@
                 apps.
               </h2>
               <div class="footer-download-btn">
-                <a href="/sign-up" class="btn btn-account">Create Account</a>
+                <!-- <a href="/sign-up" class="btn btn-account">Create Account</a> -->
+                <router-link to="/sign-up" class="btn btn-account"
+                  >Create Account</router-link
+                >
                 <a href="#">
                   <img src="img/app-stor-icon-gray.png" alt />
                 </a>
@@ -82,27 +85,27 @@
             <div class="bootm-social-links col-md-6">
               <ul>
                 <li>
-                  <a href="#">
+                  <a href="https://www.facebook.com/wellingtonagricultural/">
                     <i class="fa fa-facebook-square" aria-hidden="true"></i>
                   </a>
                 </li>
                 <li>
-                  <a href="#">
+                  <a href="https://www.instagram.com/wellingtonagricultural/">
                     <i class="fa fa-instagram" aria-hidden="true"></i>
                   </a>
                 </li>
                 <li>
-                  <a href="#">
+                  <a href="https://twitter.com/wellingtonAg1">
                     <i class="fa fa-twitter" aria-hidden="true"></i>
                   </a>
                 </li>
                 <li>
-                  <a href="#">
-                    <i class="fa fa-pinterest" aria-hidden="true"></i>
+                  <a href="https://www.youtube.com/channel/UCy1HGr7-iLfV8tLqs6dvMxw">
+                    <i class="fa fa-youtube" aria-hidden="true"></i>
                   </a>
                 </li>
                 <li>
-                  <a href="#">
+                  <a href="https://www.linkedin.com/in/jose-gomez-32741b84/">
                     <i class="fa fa-linkedin" aria-hidden="true"></i>
                   </a>
                 </li>

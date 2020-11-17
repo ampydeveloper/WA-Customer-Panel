@@ -46,6 +46,7 @@ Vue.use(VueSweetalert2, sweetAlertOptions);
 Vue.use(VueToast);
 
 Vue.mixin(authorizationMixin);
+var siteUrl = 'http://wa.customer.leagueofclicks.com/';
 
 // Vue.use(
 //   new VueSocketIO({

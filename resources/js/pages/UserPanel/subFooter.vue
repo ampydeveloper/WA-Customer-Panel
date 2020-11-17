@@ -39,7 +39,7 @@
                             class="img"
                             v-bind:style="{
                               backgroundImage:
-                                'url(http://wellington.leagueofclicks.com/' +
+                                'url(' +
                                 item.image +
                                 ')',
                             }"

@@ -1,7 +1,7 @@
 <template>
   <div>
     <app-header />
-    <div class="main-wrapper" style="padding-top: 0;">
+    <div class="main-wrapper" style="padding-top: 0">
       <div class="sign-up-form-outer">
         <div class="sign-up-form-inner">
           <div class="row">
@@ -64,7 +64,15 @@ export default {
               AuthService.forgotPassword(model)
                 .then(
                   (response) => {
-                    window.location.href = "/sign-in";
+                    this.$toast.open({
+                      message: response.data.message,
+                      type: "success",
+                      position: "top-right",
+                      dismissible: false,
+                    });
+                    setTimeout(function () {
+                      window.location.href = "/sign-in";
+                    }, 4000);
                   },
                   (error) => {
                     this.$toast.open({

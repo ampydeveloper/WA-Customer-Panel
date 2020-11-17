@@ -357,6 +357,7 @@ class JobController extends Controller
     }
     
     public function chatMembers(Request $request) {
+        die('red');
         $chatMembers = Job::whereId($request->job_id)->with(['customer' => function($q) {
             $q->select('id', 'first_name', 'user_image');
         }]) ->with(['manager' => function($q) {

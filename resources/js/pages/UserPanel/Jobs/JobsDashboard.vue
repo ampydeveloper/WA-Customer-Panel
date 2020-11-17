@@ -6,16 +6,17 @@
         <div class="container">
           <div class="row">
             <div class="col-md-6">
-              <h2>Pickups 
-              </h2>
+              <h2>Pickups</h2>
             </div>
             <div class="col-md-6">
               <div class="desc-details pickup-desc-details">
-                 <h2>
-               <span class="bg-custom-thickness">Check</span> your pickups summary. 
+                <h2>
+                  <span class="bg-custom-thickness">Check</span> your pickups
+                  summary.
                 </h2>
+                <router-link class="btn btn-table-outline btn-pickup-desc" to="/jobs/create">Schedule a Pickup</router-link>
               </div>
-              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -24,11 +25,16 @@
         <div class="container">
           <div class="row">
             <div class="col-md-12">
-              <a :href='(routeName === "JobsDashboard" ? "/jobs" : "/jobs/upcoming")' class="btn btn-table-outline" v-text='routeName === "JobsDashboard" ? "All Jobs" : "Upcoming Jobs"'></a>
-              <table
-                id="all-jobs-table"
-                class="table basic-table"
-              >
+              <a
+                :href="
+                  routeName === 'JobsDashboard' ? '/jobs' : '/jobs/upcoming'
+                "
+                class="btn btn-table-outline"
+                v-text="
+                  routeName === 'JobsDashboard' ? 'All Jobs' : 'Upcoming Jobs'
+                "
+              ></a>
+              <table id="all-jobs-table" class="table basic-table">
                 <thead>
                   <tr>
                     <th class="job-summ">Pickup Summary</th>
@@ -55,12 +61,12 @@
                       <span class="basic-big">{{
                         job.customer.first_name
                       }}</span>
-                      <span class="basic-info" v-if="job.manager"
-                        >{{ job.manager.first_name }}</span
-                      >
+                      <span class="basic-info" v-if="job.manager">{{
+                        job.manager.first_name
+                      }}</span>
                       <span class="basic-info" v-if="job.farm">
                         {{ job.farm.farm_address }} {{ job.farm.farm_city }}
-                        {{ job.farm.farm_province }} 
+                        {{ job.farm.farm_province }}
                         {{ job.farm.farm_zipcode }}</span
                       >
                       <span class="basic-info" v-if="!job.farm">N/A</span>
@@ -81,16 +87,31 @@
                       </template>
                     </td>
                     <td>
-                     <template>
+                      <template>
                         <span class="badge-tag">{{ job.job_status_name }}</span>
-                      </template>                  
+                      </template>
                     </td>
                     <td>
-                      <router-link v-if="job.job_status == 0" :to="{ name: 'editJob', params: { jobId: job.id }}" class="btn btn-table-outline">Edit</router-link>
-                      <a class="btn btn-table-outline" v-if="job.job_status == 0" @click="cancelJob(job.id)">
-                       Cancel
+                      <router-link
+                        v-if="job.job_status == 0"
+                        :to="{ name: 'editJob', params: { jobId: job.id } }"
+                        class="btn btn-table-outline"
+                        >Edit</router-link
+                      >
+                      <a
+                        class="btn btn-table-outline"
+                        v-if="job.job_status == 0"
+                        @click="cancelJob(job.id)"
+                      >
+                        Cancel
                       </a>
-                      <router-link v-if="job.job_status == 1" :to="{ name: 'ViewJob', params: { jobId: job.id }}" class="btn btn-table-outline pickup-btn-outline"> View Details</router-link>
+                      <router-link
+                        v-if="job.job_status == 1"
+                        :to="{ name: 'ViewJob', params: { jobId: job.id } }"
+                        class="btn btn-table-outline pickup-btn-outline"
+                      >
+                        View Details</router-link
+                      >
                     </td>
                   </tr>
                 </tbody>
@@ -99,7 +120,7 @@
           </div>
         </div>
 
-         <sub-footer />
+        <sub-footer />
       </section>
     </div>
     <span id="table-chevron-left" class="d-none">
@@ -126,29 +147,41 @@ export default {
   components: {
     AppSmallHeader,
     AppSmallFooter,
-      subFooter,
+    subFooter,
   },
   data: () => ({
     dialog: false,
-    routeName: 'myJobs',
-    jobList: {}, 
-    alljobs: {
-    },
+    routeName: "myJobs",
+    jobList: {},
+    alljobs: {},
   }),
 
   created() {
     const { name: routeName } = this.$route;
-    this.routeName = (routeName === "JobsDashboard" ? "upcomingJobsDashboard" : "JobsDashboard");
-    let getRouteName = (routeName === "JobsDashboard" ? "myJobs" : "myUpcomingJobs");
-    if(typeof(this.$route.params.farmId) !== "undefined"){
-      this.routeName = (routeName === "FarmJobsDashboard" ? "upcomingJobsDashboard" : "JobsDashboard");
-      getRouteName = (routeName === "FarmJobsDashboard" ? "list" : "upcomingJobsList");
+    this.routeName =
+      routeName === "JobsDashboard" ? "upcomingJobsDashboard" : "JobsDashboard";
+    let getRouteName =
+      routeName === "JobsDashboard" ? "myJobs" : "myUpcomingJobs";
+    if (typeof this.$route.params.farmId !== "undefined") {
+      this.routeName =
+        routeName === "FarmJobsDashboard"
+          ? "upcomingJobsDashboard"
+          : "JobsDashboard";
+      getRouteName =
+        routeName === "FarmJobsDashboard" ? "list" : "upcomingJobsList";
     }
-    JobService[getRouteName](
-      this.$route.params.farmId
-    ).then((response) => {
+    JobService[getRouteName](this.$route.params.farmId).then((response) => {
       this.alljobs = response.data.data;
     });
+    const verifyEmail = window.localStorage.getItem("verifyEmail");
+    if (verifyEmail != "") {
+      this.$toast.open({
+        message: verifyEmail,
+        type: "success",
+        position: "top-right",
+        dismissible: false,
+      });
+    }
   },
 
   methods: {
@@ -162,13 +195,13 @@ export default {
           dismissible: false,
         });
         const { name: routeName } = this.$route;
-        let getRouteName = (routeName === "JobsDashboard" ? "myJobs" : "myUpcomingJobs");
-        if(this.$route.params.farmId === undefined){
-            getRouteName = (routeName === "JobsDashboard" ? "list" : "upcomingJobsList");
+        let getRouteName =
+          routeName === "JobsDashboard" ? "myJobs" : "myUpcomingJobs";
+        if (this.$route.params.farmId === undefined) {
+          getRouteName =
+            routeName === "JobsDashboard" ? "list" : "upcomingJobsList";
         }
-        JobService[getRouteName](
-          this.$route.params.farmId
-        ).then((response) => {
+        JobService[getRouteName](this.$route.params.farmId).then((response) => {
           this.alljobs = response.data.data;
         });
       } catch (error) {
@@ -181,6 +214,5 @@ export default {
       }
     },
   },
-  
 };
 </script>

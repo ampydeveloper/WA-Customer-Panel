@@ -4,12 +4,12 @@ export default {
     fields: [
         {
             type: "input",
-            inputType: "password",
-            label: "Password*",
-            model: "password",
+            inputType: "text",
+            label: "Email*",
+            model: "email",
             min: 6,
             required: true,
-            validator: ["required", "string"]
+            validator: VueFormGenerator.validators.email
         }
     ]
 };
