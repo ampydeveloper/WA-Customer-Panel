@@ -53,9 +53,9 @@
                       <span class="basic-info"
                         >${{ job.amount ? job.amount : 0 }}</span
                       >
-                      <span class="basic-info">{{
-                        job.service.service_name
-                      }}</span>
+                      <span class="basic-info" v-if='job.service'>
+                        {{ job.service.service_name }}
+                      </span>
                     </td>
                     <td>
                       <span class="basic-big">{{

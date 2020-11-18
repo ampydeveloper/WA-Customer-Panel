@@ -66,78 +66,150 @@
                               <v-date-picker
                                 v-model="jobRequest.job_providing_date"
                                 @input="menu2 = false"
-                                min="1970-10-03"
+                                :min="jobRequest.job_providing_date"
                               ></v-date-picker>
                             </v-menu>
                           </div>
                         </v-col>
+                        <v-col cols="6" md="6" class="pt-0 pb-0" v-if='isHauler || isHaulerDriver'>
+                        <div class="label-align pt-0">
+                          <label>Time</label>
+                        </div>
+                        <div class="pt-0 pb-0">
+                          <v-menu
+                            ref="time"
+                            v-model="timeMenu"
+                            :close-on-content-click="false"
+                            :nudge-right="40"
+                            :return-value.sync="jobRequest.job_providing_time"
+                            transition="scale-transition"
+                            offset-y
+                            max-width="290px"
+                            min-width="290px"
+                          >
+                            <template v-slot:activator="{ on, attrs }">
+                              <v-text-field
+                                v-model="jobRequest.job_providing_time"
+                                readonly
+                                v-bind="attrs"
+                                v-on="on"
+                              ></v-text-field>
+                            </template>
+                            <v-time-picker
+                              v-if="timeMenu"
+                              v-model="jobRequest.job_providing_time"
+                              full-width
+                              format="24hr"
+                              @click:minute="$refs.time.save(jobRequest.job_providing_time)"
+                            ></v-time-picker>
+                          </v-menu>
+                        </div>
+                      </v-col>
 
                         <v-col
                           cols="6"
                           md="6"
                           class="pt-0 pb-0"
-                          v-if="weightShow"
+                          v-if="weightShow || isHauler || isHaulerDriver"
                         >
                           <div class="label-align pt-0">
                             <label>Weight</label>
                           </div>
                           <div class="pt-0 pb-0">
-                            <v-text-field
+                            <v-select 
+                              required
+                              v-model="jobRequest.weight" 
+                              :items=[5,10,15,20,25] 
+                              :rules="[(v) => !!v || 'Weight is required.']"
+                              hint="Tons"
+                              persistent-hint
+                            ></v-select>
+                            <!-- <v-text-field
                               v-model="jobRequest.weight"
                               required
                               placeholder="Enter Weight"
                               type="number"
                               :rules="[(v) => !!v || 'Weight is required.']"
-                            ></v-text-field>
+                            ></v-text-field> -->
                           </div>
                         </v-col>
                       </v-row>
                     </v-col>
 
+                    
                     <v-col
                       cols="12"
                       md="12"
                       class="t-s-inner pt-0 service-time-timing-outer"
                     >
-                      <div class="label-align pt-0">
-                        <label>Service Time</label>
-                      </div>
-                      <div class="pt-0 pb-0 service-time-timing-out">
-                        <!-- <v-radio-group
-                          v-model="selectedTimePeriod"
-                          row
-                          :rules="requiredRules"
-                          label=""
-                          color="black"
+                      <v-row>
+                        <v-col
+                          cols="4"
+                          md="4"
+                          class="pt-0 pb-0"
+                          v-if='weightShow || isHauler || isHaulerDriver'
                         >
-                          <v-radio
-                            v-for="(n, i) in Object.keys(serviceTimeSlotMap)"
-                            :key="i"
-                            :label="`${timePeriod[n]}`"
-                            :value="n"
-                            color="black"
-                          ></v-radio>
-                        </v-radio-group> -->
+                          <div class="label-align pt-0">
+                            <label>Weight</label>
+                          </div>
+                          <div class="pt-0 pb-0">
+                            <v-select 
+                              required
+                              v-model="jobRequest.weight" 
+                              :items=[5,10,15,20,25] 
+                              :rules="[(v) => !!v || 'Weight is required.']"
+                              hint="Tons"
+                              persistent-hint
+                            ></v-select>
+                          </div>
+                        </v-col>
+                        <v-col
+                          cols="8"
+                          md="8"
+                          class="pt-0 pb-0"
+                          v-if='weightShow || isHauler || isHaulerDriver'
+                        >
+                          <div class="label-align pt-0">
+                            <label>Service Time</label>
+                          </div>
+                          <div class="pt-0 pb-0 service-time-timing-out">
+                            <!-- <v-radio-group
+                              v-model="selectedTimePeriod"
+                              row
+                              :rules="requiredRules"
+                              label=""
+                              color="black"
+                            >
+                              <v-radio
+                                v-for="(n, i) in Object.keys(serviceTimeSlotMap)"
+                                :key="i"
+                                :label="`${timePeriod[n]}`"
+                                :value="n"
+                                color="black"
+                              ></v-radio>
+                            </v-radio-group> -->
 
-                        <div class="pretty p-default p-round">
-                          <input type="radio" name="slot_type" v-model="jobRequest.time_slots_id" value="1" />
-                          <div class="state">
-                            <label>Morning</label>
+                            <div class="pretty p-default p-round">
+                              <input type="radio" name="slot_type" v-model="jobRequest.time_slots_id" value="1" />
+                              <div class="state">
+                                <label>Morning</label>
+                              </div>
+                            </div>
+                            <div class="pretty p-default p-round">
+                              <input type="radio" name="slot_type" v-model="jobRequest.time_slots_id" value="2" />
+                              <div class="state">
+                                <label>Afternoon</label>
+                              </div>
+                            </div>
+                            <div class="pretty p-default p-round">
+                              <input type="radio" name="slot_type" v-model="jobRequest.time_slots_id" value="3" />
+                              <div class="state">
+                                <label>Evening</label>
+                              </div>
+                            </div>
                           </div>
-                        </div>
-                        <div class="pretty p-default p-round">
-                          <input type="radio" name="slot_type" v-model="jobRequest.time_slots_id" value="2" />
-                          <div class="state">
-                            <label>Afternoon</label>
-                          </div>
-                        </div>
-                        <div class="pretty p-default p-round">
-                          <input type="radio" name="slot_type" v-model="jobRequest.time_slots_id" value="3" />
-                          <div class="state">
-                            <label>Evening</label>
-                          </div>
-                        </div>
-                      </div>
+                        </v-col>
+                      </v-row>
                     </v-col>
 
                     <v-col cols="12" md="12" class="pt-0 pb-0">
@@ -154,24 +226,28 @@
                         ></v-switch>
 
                         <v-row v-if="jobRequest.is_repeating_job">
-                          <v-col cols="12" sm="2" md="2">
+                          <v-col cols="12" sm="4" md="4">
                             <v-checkbox color="success" v-model="jobRequest.repeating_days" label="Monday" value="monday"></v-checkbox>
                           </v-col>
-                          <v-col cols="12" sm="2" md="2">
+                          <v-col cols="12" sm="4" md="4">
                             <v-checkbox color="success" v-model="jobRequest.repeating_days" label="Tuesday" value="tuesday" hide-details></v-checkbox>
                           </v-col>
-                          <v-col cols="12" sm="2" md="2">
+                          <v-col cols="12" sm="4" md="4">
                             <v-checkbox color="success" v-model="jobRequest.repeating_days" label="Wednesday" value="wednesday" hide-details></v-checkbox>
                           </v-col>
-                          <v-col cols="12" sm="2" md="2">
+                        </v-row>
+                        <v-row v-if="jobRequest.is_repeating_job">
+                          <v-col cols="12" sm="4" md="4">
                             <v-checkbox color="success" v-model="jobRequest.repeating_days" label="Thursday" value="thursday" hide-details></v-checkbox>
                           </v-col>
-                          <v-col cols="12" sm="2" md="2">
+                          <v-col cols="12" sm="4" md="4">
                             <v-checkbox color="success" v-model="jobRequest.repeating_days" label="Friday" value="friday" hide-details></v-checkbox>
                           </v-col>
-                          <v-col cols="12" sm="2" md="2">
+                          <v-col cols="12" sm="4" md="4">
                             <v-checkbox color="success" v-model="jobRequest.repeating_days" label="Saturday" value="saturday" hide-details></v-checkbox>
                           </v-col>
+                        </v-row>
+                        <v-row v-if="jobRequest.is_repeating_job">
                           <v-col cols="12" sm="3" md="3">
                             <v-checkbox color="success" v-model="jobRequest.repeating_days" label="Sunday" value="sunday" hide-details></v-checkbox>
                           </v-col>
@@ -294,7 +370,7 @@
                         ></v-select>
                       </div>
                     </v-col>
-                    <v-col cols="12" md="12" class="pt-0 pb-0" v-if="isCustomer">
+                    <v-col cols="12" md="12" class="pt-0 pb-0" v-if="isCustomer || isManager">
                         <div
                           id="farm_map"
                           class="contain"
@@ -557,7 +633,7 @@ export default {
         weight: job.weight,
         gate_no: job.gate_no,
         manager_id: job.manager_id,
-        payment_mode: payment_mode,
+        payment_mode: job.payment_mode,
         job_providing_date: job.job_providing_date,
         is_repeating_job: job.is_repeating_job,
         repeating_days: job.repeating_days != null ? JSON.parse(job.repeating_days) : job.repeating_days,

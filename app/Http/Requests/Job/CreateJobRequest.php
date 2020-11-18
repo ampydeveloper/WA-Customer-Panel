@@ -30,6 +30,7 @@ class CreateJobRequest extends FormRequest
             'service_id' => 'required',
             'payment_mode' => 'required',
             'job_providing_date' => 'required|date|date_format:Y-m-d',
+            'job_providing_time' => 'nullable',
             'is_repeating_job' => 'required',
             'amount' => 'required',
             'repeating_days' => 'required_if:is_repeating_job,==,true',

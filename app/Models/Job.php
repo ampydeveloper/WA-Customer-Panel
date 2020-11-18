@@ -20,7 +20,7 @@ class Job extends Model
      * @var array
      */
     protected $fillable = [
-        'job_created_by','customer_id', 'card_id', 'manager_id', 'farm_id', 'gate_no', 'service_id', 'time_slots_id', 'job_providing_date', 'weight', 'is_repeating_job', 'repeating_days', 'images',
+        'job_created_by','customer_id', 'card_id', 'manager_id', 'farm_id', 'gate_no', 'service_id', 'time_slots_id', 'job_providing_date', 'job_providing_time', 'weight', 'is_repeating_job', 'repeating_days', 'images',
         'notes', 'amount', 'payment_mode', 'job_status', 'payment_status', 'quick_book', 'truck_id', 'truck_driver_id', 'skidsteer_id', 'skidsteer_driver_id', 'start_time', 'end_time'
     ];
 

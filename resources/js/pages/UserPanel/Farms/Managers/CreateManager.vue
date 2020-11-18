@@ -102,20 +102,20 @@ export default {
       schema: {
         fields: [
           ...managerFormSchema.fields,
-          {
-            type: "filepond",
-            label: "Card Image",
-            allowMultiple: false,
-            onFilePondDrop: (fieldName, file, metadata, load) => {
-              this.model.manager_card_image = [];
-              // console.log(file);
-              this.model.manager_card_image.push(file);
-              window.ttt=file;
-              load(Date.now());
-            },
-            required: true,
-            styleClasses:'col-md-4'
-          },
+          // {
+          //   type: "filepond",
+          //   label: "Card Image",
+          //   allowMultiple: false,
+          //   onFilePondDrop: (fieldName, file, metadata, load) => {
+          //     this.model.manager_card_image = [];
+          //     // console.log(file);
+          //     this.model.manager_card_image.push(file);
+          //     window.ttt=file;
+          //     load(Date.now());
+          //   },
+          //   required: true,
+          //   styleClasses:'col-md-4'
+          // },
           {
             type: "submit",
             styleClasses: "submit-button col-md-12",
@@ -204,6 +204,11 @@ export default {
       }
     };
   },
+  watch:{
+    '$route' (to, from) {
+      window.location.reload();
+    }
+  },
   methods: {
     cancel: function() {
       if(this.standalone == true){
@@ -257,8 +262,8 @@ export default {
       });
     }
     $(document).ready(function() {
-               feather.replace();
-            });
+      feather.replace();
+    });
   }
 };
 </script>

@@ -15,7 +15,7 @@ class DriverController extends Controller
         if(Auth::user()->role_id == config('constant.roles.Haulers')) {
             return response()->json([
                 'status' => true,
-                'message' => 'Customer farms details',
+                'message' => 'Hauler Driver details',
                 'data' => User::where('role_id', config('constant.roles.Hauler_driver'))->where('created_by', Auth::user()->id)->get()
             ], 200);
         }

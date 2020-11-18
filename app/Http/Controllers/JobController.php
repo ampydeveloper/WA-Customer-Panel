@@ -46,7 +46,7 @@ class JobController extends Controller
     {
         $user = Auth::user();
         if($user->role_id == config('constant.roles.Customer') || $user->role_id == config('constant.roles.Haulers')) {
-            if($user->authorize_net_id == null) {
+            if($user->authorize_net_id == null && $createJobRequest->attach_card == 0) {
                 return response()->json([
                     'status' => false,
                     'message' => 'No card added',
@@ -55,7 +55,7 @@ class JobController extends Controller
             }
         } else {
             $Owner = User::whereId($user->created_by)->first();
-            if($Owner->authorize_net_id == null) {
+            if($Owner->authorize_net_id == null && $createJobRequest->attach_card == 0) {
                 return response()->json([
                     'status' => false,
                     'message' => 'No card added',
@@ -72,6 +72,7 @@ class JobController extends Controller
                 'gate_no' => (isset($createJobRequest->gate_no) && $createJobRequest->gate_no != '' && $createJobRequest->gate_no != null) ? $createJobRequest->gate_no : null,
                 'time_slots_id' => (isset($createJobRequest->time_slots_id) && $createJobRequest->time_slots_id != '' && $createJobRequest->time_slots_id != null) ? $createJobRequest->time_slots_id : null,
                 'job_providing_date' => $createJobRequest->job_providing_date,
+                'job_providing_time' => $createJobRequest->job_providing_time ? $createJobRequest->job_providing_time : null,
                 'weight' => (isset($createJobRequest->weight) && $createJobRequest->weight != '' && $createJobRequest->weight != null) ? $createJobRequest->weight : null,
                 'is_repeating_job' => ($createJobRequest->is_repeating_job == false) ? 1 : 2,
                 'repeating_days' => (isset($createJobRequest->repeating_days) && $createJobRequest->repeating_days != '' && $createJobRequest->repeating_days != null) ? json_encode(explode(',', $createJobRequest->repeating_days)) : null,
@@ -190,6 +191,7 @@ class JobController extends Controller
                     'farm_id' => 'sometimes|required',
                     'service_id' => 'required',
                     'job_providing_date' => 'required',
+                    'job_providing_time' => 'nullable',
                     'is_repeating_job' => 'required',
                     'payment_mode' => 'required',
                     'repeating_days' => 'required_if:is_repeating_job,==,true',
@@ -227,6 +229,7 @@ class JobController extends Controller
                     'service_id' => $request->service_id,
                     'time_slots_id' => (isset($request->time_slots_id) && $request->time_slots_id != '' && $request->time_slots_id != null) ? $request->time_slots_id : null,
                     'job_providing_date' => $request->job_providing_date,
+                    'job_providing_time' => $request->job_providing_time,
                     'weight' => (isset($request->weight) && $request->weight != '' && $request->weight != null) ? $request->weight : null,
                     'is_repeating_job' => ($request->is_repeating_job == false) ? 1 : 2,
                     'repeating_days' => (isset($request->repeating_days) && $request->repeating_days != '' && $request->repeating_days != null) ? json_encode(explode(',', $request->repeating_days)) : null,

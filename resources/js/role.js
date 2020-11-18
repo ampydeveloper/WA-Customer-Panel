@@ -15,7 +15,8 @@ export const authorizationMixin = {
             currentUser: {},
             isHauler: false,
             isCustomer: false,
-            isManager: false
+            isManager: false,
+            isHaulerDriver: false
         };
     },
     created: function() {

@@ -88,29 +88,44 @@
                             <v-date-picker
                               v-model="jobRequest.job_providing_date"
                               @input="menu2 = false"
-                              min="1970-10-03"
-                            ></v-date-picker>
+                              :min='tomorrowDate'
+                            >
+                            </v-date-picker>
                           </v-menu>
                         </div>
                       </v-col>
-
-                      <v-col
-                        cols="6"
-                        md="6"
-                        class="pt-0 pb-0"
-                        v-if="weightShow"
-                      >
+                      <v-col cols="6" md="6" class="pt-0 pb-0" v-if='isHauler || isHaulerDriver'>
                         <div class="label-align pt-0">
-                          <label>Weight</label>
+                          <label>Time</label>
                         </div>
                         <div class="pt-0 pb-0">
-                          <v-text-field
-                            v-model="jobRequest.weight"
-                            required
-                            placeholder="Enter Weight"
-                            type="number"
-                            :rules="[(v) => !!v || 'Weight is required.']"
-                          ></v-text-field>
+                          <v-menu
+                            ref="time"
+                            v-model="timeMenu"
+                            :close-on-content-click="false"
+                            :nudge-right="40"
+                            :return-value.sync="jobRequest.job_providing_time"
+                            transition="scale-transition"
+                            offset-y
+                            max-width="290px"
+                            min-width="290px"
+                          >
+                            <template v-slot:activator="{ on, attrs }">
+                              <v-text-field
+                                v-model="jobRequest.job_providing_time"
+                                readonly
+                                v-bind="attrs"
+                                v-on="on"
+                              ></v-text-field>
+                            </template>
+                            <v-time-picker
+                              v-if="timeMenu"
+                              v-model="jobRequest.job_providing_time"
+                              full-width
+                              format="24hr"
+                              @click:minute="$refs.time.save(jobRequest.job_providing_time)"
+                            ></v-time-picker>
+                          </v-menu>
                         </div>
                       </v-col>
                     </v-row>
@@ -119,32 +134,60 @@
                   <v-col
                     cols="12"
                     md="12"
-                    class="t-s-inner pt-0 service-time-timing-outer"
+                    class="t-s-inner pt-0"
                   >
-                    <div class="label-align pt-0" v-if='Object.keys({...serviceTimeSlotMap}).length > 0'>
-                      <label>Service Time</label>
-                    </div>
-                    <div class="pt-0 pb-0 service-time-timing-out">
+                    <v-row>
+                      <v-col
+                        cols="4"
+                        md="4"
+                        class="pt-0 pb-0"
+                        v-if='weightShow || isHauler || isHaulerDriver'
+                      >
+                        <div class="label-align pt-0">
+                          <label>Weight</label>
+                        </div>
+                        <div class="pt-0 pb-0">
+                          <v-select 
+                            required
+                            v-model="jobRequest.weight" 
+                            :items=[5,10,15,20,25] 
+                            :rules="[(v) => !!v || 'Weight is required.']"
+                            hint="Tons"
+                            persistent-hint
+                          ></v-select>
+                        </div>
+                      </v-col>
+                      <v-col
+                          cols="8"
+                          md="8"
+                          class="pt-0 pb-0 service-time-timing-outer"
+                        >
+                        <div class="label-align pt-0" v-if='slotTypes.length > 0'>
+                          <label>Service Time</label>
+                        </div>
+                        <div class="pt-0 pb-0 service-time-timing-out">
 
-                      <div class="pretty p-default p-round">
-                        <input type="radio" name="slot_type" v-model="jobRequest.time_slots_id" value="1" />
-                        <div class="state">
-                          <label>Morning</label>
+                          <div class="pretty p-default p-round">
+                            <input type="radio" name="slot_type" v-model="jobRequest.time_slots_id" value="1" />
+                            <div class="state">
+                              <label>Morning</label>
+                            </div>
+                          </div>
+                          <div class="pretty p-default p-round">
+                            <input type="radio" name="slot_type" v-model="jobRequest.time_slots_id" value="2" />
+                            <div class="state">
+                              <label>Afternoon</label>
+                            </div>
+                          </div>
+                          <div class="pretty p-default p-round">
+                            <input type="radio" name="slot_type" v-model="jobRequest.time_slots_id" value="3" />
+                            <div class="state">
+                              <label>Evening</label>
+                            </div>
+                          </div>
                         </div>
-                      </div>
-                      <div class="pretty p-default p-round">
-                        <input type="radio" name="slot_type" v-model="jobRequest.time_slots_id" value="2" />
-                        <div class="state">
-                          <label>Afternoon</label>
-                        </div>
-                      </div>
-                      <div class="pretty p-default p-round">
-                        <input type="radio" name="slot_type" v-model="jobRequest.time_slots_id" value="3" />
-                        <div class="state">
-                          <label>Evening</label>
-                        </div>
-                      </div>
-                    </div>
+                      </v-col>
+                    </v-row>
                   </v-col>
 
                   <v-col cols="12" md="12" class="pt-0 pb-0">
@@ -186,7 +229,7 @@
                     </div>
                   </v-col>
 
-                  <v-col cols="12" md="12" class="pt-0 pb-0">
+                  <v-col cols="12" md="12" class="pt-0 pb-0" v-if='isCustomer || isManager'>
                     <div class="label-align pt-0">
                       <label>Gate Number</label>
                     </div>
@@ -234,6 +277,7 @@
                     </div>
                     <div class="pt-0 pb-0 farm-conatiner">
                       <v-select
+                        ref="farmSelect"
                         v-model="jobRequest.farm_id"
                         :items="farmList"
                         placeholder="Select Farm"
@@ -257,7 +301,7 @@
                         ></v-select>
                       </div>
                     </v-col>
-                    <v-col cols="12" md="12" class="pt-0 pb-0" v-if="isCustomer">
+                    <v-col cols="12" md="12" class="pt-0 pb-0" v-if="isCustomer || isManager">
                        <div
                         id="farm_map"
                         class="contain"
@@ -292,7 +336,7 @@
                   </v-card-text>
                 </div>
 
-                <div class="send-payment" v-if="isCustomer">
+                <div class="send-payment" v-if="isCustomer || isManager">
                   <h5 class="heading2">Payment Options</h5>
                   <!-- <v-radio-group
                     v-model="jobRequest.attach_card"
@@ -319,7 +363,8 @@
                       <tr v-for="(card, index) in cardList" :key="card.id">
                         <td>
                           <div class="pretty p-default p-round">
-                            <input type="radio" name="radio1" />
+                            <!-- {{card.card_primary == 1 || index == 0 ? "checked":""}} -->
+                            <input type="radio" name="radio1" v-model="jobRequest.card_id" v-bind:key='"cardRadio"+card.id' :value="card.id"/>
                             <div class="state">
                               <label></label>
                             </div>
@@ -506,6 +551,7 @@ export default {
   },
   data() {
     return {
+      tomorrowDate: moment().add(1, 'days').format("YYYY-MM-DD"),
       map: null,
       coordinates: [],
       cardList: [],
@@ -518,10 +564,12 @@ export default {
       ),
       jobRequest: {
         farm_id: "",
+        card_id: null,
         service_id: "",
-        job_providing_date: moment().format("YYYY-MM-DD"),
+        job_providing_date: moment().add(1, 'days').format("YYYY-MM-DD"),
+        job_providing_time: null,
         time_slots_id: "",
-        weight: 1,
+        weight: 5,
         gate_no: "",
         manager_id: null,
         payment_mode: null,
@@ -549,7 +597,9 @@ export default {
       managerList: [],
       driverList: [],
       menu2: false,
+      timeMenu: false,
       weightShow: false,
+      slotTypes: [],
       servicePrice: 0,
       fileContainer: [],
       timePeriod: { 1: "Morning", 2: "Afternoon", 3: "Evening" },
@@ -600,6 +650,7 @@ export default {
           .css({display:'inline-block'});
       });
 
+      this.slotTypes = slot_type;
       this.weightShow = service_type === 1;
       this.jobRequest.amount = price;
       this.servicePrice = price;
@@ -642,7 +693,7 @@ export default {
         }
         let self = this;
         FarmService.listManagers(farmId).then(function(managers){
-          managers = managers.data.farms.manager_details;
+          managers = managers.data.data;
           if(managers != undefined && managers.length > 0){
             self.managerList = [...managers].map(manager => {
               return {
@@ -654,12 +705,16 @@ export default {
         });
       }
     },
+    "jobRequest.card.card_number": function (cardNum) {
+      this.jobRequest.attach_card = 1;
+    }
   },
   created: async function () {
     const user = JSON.parse(window.localStorage.getItem('user'));
     if(user.role_id == 4){
       this.jobRequest.payment_mode = user.payment_mode;
     }
+
     this.expiryMonths = [...this.expiryMonths].map((month) => {
       return month < 10 ? `0${month}` : month;
     });
@@ -680,44 +735,58 @@ export default {
     });
 
     /** Collection of farms */
-    const {
-      data: { farms },
-    } = await FarmService.list();
-    this.farmList = [...farms].map((farm) => {
-      return {
-        text: farm.farm_address,
-        value: farm.id,
-        latitude: farm.latitude,
-        longitude: farm.longitude,
-      };
-    });
+    try {
+      const {
+        data: { farms },
+      } = await FarmService.list();
+      if(farms){
+        this.farmList = [...farms].map((farm, i) => {
+          if(i==0){
+            this.jobRequest.farm_id=farm.id;
+          }
+          return {
+            text: farm.farm_address,
+            value: farm.id,
+            latitude: farm.latitude,
+            longitude: farm.longitude,
+          };
+        });
+      } 
+    } catch (error) {
+      // No Farms
+    }
 
     /** Collection of drivers */
     if(user.role_id == 6){
-    const {
-      data: { drivers },
-    } = await DriverService.list();
-    this.driverList = [...drivers].map((driver) => {
-      return {
-        text: driver.full_name,
-        value: driver.id
-      };
-    });
+      DriverService.list().then((response) => {
+        this.driverList = [...response.data.data].map((driver) => {
+          return {
+            text: driver.full_name,
+            value: driver.id
+          };
+        });
+      });
     }
 
     CardService.list().then((response) => {
       this.cardList = response.data.data;
+      if(this.cardList.length > 0){
+        [...this.cardList].forEach((card, ind) => {
+          if(ind == 0 || card.card_primary == 1){ this.jobRequest.card_id = card.id; }
+        });
+      }
     });
 
-            $(document).ready(function() {
-               feather.replace();
-            });
+    $(document).ready(function() {
+        feather.replace();
+    });
   },
   methods: {
     formSubmit: async function () {
       const isValidated = this.$refs.form.validate();
       if (isValidated === true) {
         try {
+          this.loading = true;
           var createJobRequest = new FormData();
 
           /**
@@ -757,12 +826,14 @@ export default {
           });
 
           setTimeout(() => {
+            this.loading = false;
             router.push({
               name: "ViewJob",
               params: { jobId: response.data.job_id },
             });
           }, 2000);
         } catch (error) {
+          this.loading = false;
           this.$toast.open({
             message: error.response.data.message,
             type: "error",

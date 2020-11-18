@@ -68,7 +68,7 @@
                         >Edit</router-link
                       >
                       <button
-                        @click="deleteManager(manager.id)"
+                        @click="deleteManager(manager.id, manager.farm_id)"
                         class="btn btn-table-outline"
                       >
                         Delete
@@ -196,7 +196,7 @@ $(document).ready(function() {
         }
       );
     },
-    deleteManager: async function (managerId) {
+    deleteManager: async function (managerId, farmId) {
       this.$swal({
         title: "Are you sure?",
         text: "You won't be able to revert this!",
@@ -209,7 +209,7 @@ $(document).ready(function() {
         if (result.isConfirmed) {
           try {
             const response = await FarmService.deleteManager(
-              this.$route.params.farmId,
+              farmId,
               managerId
             );
             this.$toast.open({
