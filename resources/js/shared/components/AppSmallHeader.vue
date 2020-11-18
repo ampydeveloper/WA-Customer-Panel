@@ -51,13 +51,13 @@
               </div>
             </li>
             <li class="nav-item active">
-              <a class="nav-link all-noti-link" href="#" @click="showNotiList">
+              <a class="nav-link all-noti-link" href="#" @click.prevent="showNotiList">
                 <span class="bell-outer"> <i data-feather="bell"></i></span>
                 <div class="all-noti-div" v-if="!showNoti">
                   <div class="each-noti clearfix">
                     <div class="details-one">
-                      <p class="title-item">New Message</p>
-                      <p class="desc-item">You got new order of goods</p>
+                      <p class="title-item">PICKUP100118</p>
+                      <p class="desc-item">Driver is on the way to your Farm.</p>
                     </div>
                     <div class="details-two">
                       <p class="date-item">10 min ago</p>
@@ -65,8 +65,98 @@
                   </div>
                   <div class="each-noti clearfix">
                     <div class="details-one">
-                      <p class="title-item">New Message</p>
-                      <p class="desc-item">You got new order of goods</p>
+                      <p class="title-item">PICKUP100118</p>
+                      <p class="desc-item">Pickup has been started.</p>
+                    </div>
+                    <div class="details-two">
+                      <p class="date-item">10 min ago</p>
+                    </div>
+                  </div>
+                  <div class="each-noti clearfix">
+                    <div class="details-one">
+                      <p class="title-item">PICKUP100118</p>
+                      <p class="desc-item">Pickup has ended.</p>
+                    </div>
+                    <div class="details-two">
+                      <p class="date-item">10 min ago</p>
+                    </div>
+                  </div>
+                  <div class="each-noti clearfix">
+                    <div class="details-one">
+                      <p class="title-item">PICKUP100118</p>
+                      <p class="desc-item">Payment has been initated and invoice is on the way.</p>
+                    </div>
+                    <div class="details-two">
+                      <p class="date-item">10 min ago</p>
+                    </div>
+                  </div>
+                  <div class="each-noti clearfix">
+                    <div class="details-one">
+                      <p class="title-item">PICKUP100118</p>
+                      <p class="desc-item">WAG manager just send a message to you.</p>
+                    </div>
+                    <div class="details-two">
+                      <p class="date-item">10 min ago</p>
+                    </div>
+                  </div>
+                  <div class="each-noti clearfix">
+                    <div class="details-one">
+                      <p class="title-item">PICKUP100118</p>
+                      <p class="desc-item">WAG driver just send a message to you.</p>
+                    </div>
+                    <div class="details-two">
+                      <p class="date-item">10 min ago</p>
+                    </div>
+                  </div>
+                  <div class="each-noti clearfix">
+                    <div class="details-one">
+                      <p class="title-item">PICKUP100118</p>
+                      <p class="desc-item">You request to cancel pickup has been submitted sucessfully.</p>
+                    </div>
+                    <div class="details-two">
+                      <p class="date-item">10 min ago</p>
+                    </div>
+                  </div>
+                  <div class="each-noti clearfix">
+                    <div class="details-one">
+                      <p class="title-item">PICKUP100118</p>
+                      <p class="desc-item">Payment has been declined from your card ending with 7856. Add a new card for sucessfull completion of pickup.</p>
+                    </div>
+                    <div class="details-two">
+                      <p class="date-item">10 min ago</p>
+                    </div>
+                  </div>
+                  <div class="each-noti clearfix">
+                    <div class="details-one">
+                      <p class="title-item">PICKUP100118</p>
+                      <p class="desc-item">WAG driver just send a message to you.</p>
+                    </div>
+                    <div class="details-two">
+                      <p class="date-item">10 min ago</p>
+                    </div>
+                  </div>
+                  <div class="each-noti clearfix">
+                    <div class="details-one">
+                      <p class="title-item">PICKUP100118</p>
+                      <p class="desc-item">WAG driver just send a message to you.</p>
+                    </div>
+                    <div class="details-two">
+                      <p class="date-item">10 min ago</p>
+                    </div>
+                  </div>
+                  <div class="each-noti clearfix">
+                    <div class="details-one">
+                      <p class="title-item">PICKUP100118</p>
+                      <p class="desc-item">WAG driver just send a message to you.</p>
+                    </div>
+                    <div class="details-two">
+                      <p class="date-item">10 min ago</p>
+                    </div>
+                  </div>
+                  <div class="each-noti clearfix">
+                    <div class="details-one">
+                      <p class="title-item">PICKUP100118</p>
+                      <p class="desc-item">WAG driver just send a message to you.</p>
                     </div>
                     <div class="details-two">
                       <p class="date-item">10 min ago</p>
@@ -113,7 +203,7 @@
 export default {
   data: () => {
     return {
-      showNoti: false,
+      showNoti: true,
       user: null,
     };
   },

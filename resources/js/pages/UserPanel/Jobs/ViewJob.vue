@@ -48,7 +48,7 @@
                 <div class="details-list-outer row">
                   <div class="each-details col-sm-6">
                     <p class="head-item">Pickup ID</p>
-                    <p class="detail-item">#JOB{{ job.id }}</p>
+                    <p class="detail-item">#PICKUP{{ job.id }}</p>
                   </div>
                   <div class="each-details col-sm-6">
                     <p class="head-item">Service</p>

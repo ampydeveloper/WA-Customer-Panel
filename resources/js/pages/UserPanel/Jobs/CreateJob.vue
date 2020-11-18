@@ -128,18 +128,9 @@
                           </v-menu>
                         </div>
                       </v-col>
-                    </v-row>
-                  </v-col>
-
-                  <v-col
-                    cols="12"
-                    md="12"
-                    class="t-s-inner pt-0"
-                  >
-                    <v-row>
                       <v-col
-                        cols="4"
-                        md="4"
+                        cols="6"
+                        md="6"
                         class="pt-0 pb-0"
                         v-if='weightShow || isHauler || isHaulerDriver'
                       >
@@ -157,9 +148,18 @@
                           ></v-select>
                         </div>
                       </v-col>
+                    </v-row>
+                  </v-col>
+
+                  <v-col
+                    cols="12"
+                    md="12"
+                    class="t-s-inner pt-0"
+                  >
+                    <v-row>
                       <v-col
-                          cols="8"
-                          md="8"
+                          cols="12"
+                          md="12"
                           class="pt-0 pb-0 service-time-timing-outer"
                         >
                         <div class="label-align pt-0" v-if='slotTypes.length > 0'>
