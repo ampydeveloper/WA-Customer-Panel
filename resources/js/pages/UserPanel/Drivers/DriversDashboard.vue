@@ -25,7 +25,6 @@
                     <th class="job-summ">Driver Name</th>
                     <th>Email</th>
                     <th class="time-col">Phone</th>
-                    <th>Address</th>
                     <th>Active</th>
                     <th>Actions</th>
                   </tr>
@@ -40,9 +39,6 @@
                     </td>
                     <td>
                       <span class="basic-big">{{ driver.phone }}</span>
-                    </td>
-                    <td>
-                      <span class="basic-big">{{ driver.address }}</span>
                     </td>
                     <td>
                       <span class="basic-big">

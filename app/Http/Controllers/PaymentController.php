@@ -254,6 +254,12 @@ class PaymentController extends Controller
         if (($response != null) && ($response->getMessages()->getResultCode() == "Ok")) {
             $paymentProfileId = $response->getCustomerPaymentProfileId();
             
+            if(CustomerCardDetail::where('customer_id', $customer->id)->exists()) {
+                $primaryCard = 0;
+            } else {
+                $primaryCard = 1;
+            }
+            
             $card = CustomerCardDetail::create([
                 'name' => $cardData->name,
                 'customer_id' => $customer->id,
@@ -262,7 +268,7 @@ class PaymentController extends Controller
                 'card_exp_month' => $cardData->card_exp_month,
                 'card_exp_year' => $cardData->card_exp_year,
                 'card_status' => 1,
-                'card_primary' => 0,
+                'card_primary' => $primaryCard,
             ]);
 
             return [

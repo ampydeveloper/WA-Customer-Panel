@@ -45,7 +45,7 @@ class JobController extends Controller
     public function create(CreateJobRequest $createJobRequest)
     {
         $user = Auth::user();
-        if($user->role_id == config('constant.roles.Customer') || $user->role_id == config('constant.roles.Haulers')) {
+        if($user->role_id == config('constant.roles.Customer')) {
             if($user->authorize_net_id == null && $createJobRequest->attach_card == 0) {
                 return response()->json([
                     'status' => false,
@@ -53,7 +53,7 @@ class JobController extends Controller
                     'data' => []
                         ], 421);
             }
-        } else {
+        } else if($user->role_id == config('constant.roles.Customer_Manager')) {
             $Owner = User::whereId($user->created_by)->first();
             if($Owner->authorize_net_id == null && $createJobRequest->attach_card == 0) {
                 return response()->json([
@@ -67,7 +67,7 @@ class JobController extends Controller
         try {
             $data = [
                 'job_created_by' => $user->id,
-                'card_id' => null,
+                'card_id' => $createJobRequest->card_id,
                 'service_id' => $createJobRequest->service_id,
                 'gate_no' => (isset($createJobRequest->gate_no) && $createJobRequest->gate_no != '' && $createJobRequest->gate_no != null) ? $createJobRequest->gate_no : null,
                 'time_slots_id' => (isset($createJobRequest->time_slots_id) && $createJobRequest->time_slots_id != '' && $createJobRequest->time_slots_id != null) ? $createJobRequest->time_slots_id : null,
