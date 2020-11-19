@@ -221,49 +221,49 @@ export default {
       });
     }
 
-    try {
-      const response = await JobService.chatUsers(this.$route.params.jobId);
-      var result = response.data.data;
-      var users = [];
-      users[response.data.customer_id] = result.customer;
-      users[response.data.manager_id] = result.manager;
-      users[response.data.skidsteer_driver_id] = result.skidsteer_driver;
-      users[response.data.truck_driver_id] = result.truck_driver;
-    } catch (error) {
-      this.$toast.open({
-        message: error.response.data.message,
-        type: "error",
-        position: "bottom-right",
-        dismissible: false,
-      });
-    }
+    // try {
+    //   const response = await JobService.chatUsers(this.$route.params.jobId);
+    //   var result = response.data.data;
+    //   var users = [];
+    //   users[response.data.customer_id] = result.customer;
+    //   users[response.data.manager_id] = result.manager;
+    //   users[response.data.skidsteer_driver_id] = result.skidsteer_driver;
+    //   users[response.data.truck_driver_id] = result.truck_driver;
+    // } catch (error) {
+    //   this.$toast.open({
+    //     message: error.response.data.message,
+    //     type: "error",
+    //     position: "bottom-right",
+    //     dismissible: false,
+    //   });
+    // }
 
-    try {
-      const response = await JobService.getJobChatMessages(
-        this.$route.params.jobId
-      );
-      if (response) {
-        response.data.data.forEach(function (val, index) {
-          const messageElement = document.createElement("div");
-          messageElement.className = "chat-receiver";
-          messageElement.innerHTML =
-            '<div class="chat-msg">' +
-            `${val.message}` +
-            '</div><div class="chat-img"><img src="' +
-            `${environment.baseUrl + "/images/avatar.png"}` +
-            '"></div>';
-          $(document).find("#message-container").prepend(messageElement);
-          $("#message-container .empty-message").remove();
-        });
-      }
-    } catch (error) {
-      this.$toast.open({
-        message: error.response.data.message,
-        type: "error",
-        position: "bottom-right",
-        dismissible: false,
-      });
-    }
+    // try {
+    //   const response = await JobService.getJobChatMessages(
+    //     this.$route.params.jobId
+    //   );
+    //   if (response) {
+    //     response.data.data.forEach(function (val, index) {
+    //       const messageElement = document.createElement("div");
+    //       messageElement.className = "chat-receiver";
+    //       messageElement.innerHTML =
+    //         '<div class="chat-msg">' +
+    //         `${val.message}` +
+    //         '</div><div class="chat-img"><img src="' +
+    //         `${environment.baseUrl + "/images/avatar.png"}` +
+    //         '"></div>';
+    //       $(document).find("#message-container").prepend(messageElement);
+    //       $("#message-container .empty-message").remove();
+    //     });
+    //   }
+    // } catch (error) {
+    //   this.$toast.open({
+    //     message: error.response.data.message,
+    //     type: "error",
+    //     position: "bottom-right",
+    //     dismissible: false,
+    //   });
+    // }
 
     $(document).ready(function() {
                feather.replace();
@@ -271,12 +271,15 @@ export default {
   },
 
   mounted() {
+    setTimeout(function(){
+    // console.log(job);
+    console.log(this.job);
     mapboxgl.accessToken =
       "pk.eyJ1IjoibG9jb25lIiwiYSI6ImNrYmZkMzNzbDB1ZzUyenM3empmbXE3ODQifQ.SiBnr9-6jpC1Wa8OTAmgVA";
     var map = new mapboxgl.Map({
       container: "map",
       style: "mapbox://styles/mapbox/light-v9",
-      center: [-122.662323, 45.523751], // starting position
+      center: [26.695145, -80.244859], // starting position
       zoom: 12,
     });
 
@@ -284,7 +287,7 @@ export default {
     var canvas = map.getCanvasContainer();
 
     // This is truck driver co-ordinates
-    var start = [-122.662323, 45.523751];
+    var start = [26.695145, -80.244859];
 
     // create a function to make a directions request
     function getRoute(start, end) {
@@ -351,7 +354,8 @@ export default {
     map.on("load", function () {
       // make an initial directions request that
       // starts and ends at the same location
-      getRoute(start, [-122.61365699963287, 45.51773726437733]);
+      getRoute(start, [this.job.farm.latitude, this.job.farm.longitude]);
+      // getRoute(start, [-122.61365699963287, 45.51773726437733]);
 
       map.addSource("truck", {
         type: "geojson",
@@ -391,13 +395,14 @@ export default {
       var el = document.createElement("div");
       el.className = "map-marker";
       new mapboxgl.Marker(el)
-        .setLngLat([-122.61365699963287, 45.51773726437733])
+        .setLngLat([this.job.farm.latitude, this.job.farm.longitude])
         .addTo(map);
 
-      getRoute(start, [-122.61365699963287, 45.51773726437733]);
+      getRoute(start, [this.job.farm.latitude, this.job.farm.longitude]);
     });
     window.lo = 45.523751;
     window.setInterval(function () {
+      console.log(job);
       lo = lo - 0.0001;
       start = [-122.662453, lo];
 
@@ -413,8 +418,9 @@ export default {
         center: start,
         speed: 0.5,
       });
-      getRoute(start, [-122.61365699963287, 45.51773726437733]);
+      getRoute(start, [this.job.farm.latitude, this.job.farm.longitude]);
     }, 2000);
+     },2000);
     //map END
 
     // this.getChatMembers();
@@ -449,7 +455,7 @@ export default {
         {}
       );
 
-      const socket = io.connect("http://13.235.151.113:3100", { secure: true });
+      // const socket = io.connect("http://13.235.151.113:3100", { secure: true });
       const messageContainer = document.getElementById("message-container");
       const messageForm = document.getElementById("send-container");
       const messageInput = document.getElementById("message-input");

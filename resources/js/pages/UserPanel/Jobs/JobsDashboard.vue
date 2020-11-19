@@ -238,7 +238,7 @@ setTimeout(function() {
         const { name: routeName } = this.$route;
         let getRouteName =
           routeName === "JobsDashboard" ? "myJobs" : "myUpcomingJobs";
-        if (this.$route.params.farmId === undefined) {
+        if (typeof this.$route.params.farmId === undefined) {
           getRouteName =
             routeName === "JobsDashboard" ? "list" : "upcomingJobsList";
         }

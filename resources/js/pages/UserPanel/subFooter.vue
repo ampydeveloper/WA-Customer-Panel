@@ -34,7 +34,7 @@
                   <div class="col-md-12" v-for="item in news">
                     <div class="news-latest-cols">
                       <div class="nes-im">
-                        <a href="#">
+                        <a :href="'/news/'+item.slug">
                           <div
                             class="img"
                             v-bind:style="{
@@ -49,7 +49,7 @@
                       <span class="vendor">News</span>
                       <div class="news-right">
                         <h3>
-                          <a href="#">
+                          <a :href="'/news/'+item.slug">
                             {{ item.heading }}
                           </a>
                         </h3>
