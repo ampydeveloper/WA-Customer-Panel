@@ -155,7 +155,6 @@
                         cols="8"
                         md="8"
                         class="pt-0 pb-0"
-                        v-if="weightShow || isHauler || isHaulerDriver"
                       >
                         <div class="label-align pt-0">
                           <label>Service Time</label>
@@ -593,13 +592,11 @@ export default {
       $(".service-time-timing-outer").show();
       $(".service-time-timing-out .pretty").hide();
 
-      // console.log(slot_type);
-      // $.each(JSON.parse(slot_type), function (index, value) {
-      // console.log(value);
-      // $(".service-time-timing-out :input[value='" + value + "']")
-      // .parent()
-      // .css({display:'inline-block'});
-      // });
+      $.each(slot_type, function (index, value) {
+        $(".service-time-timing-out :input[value='" + value + "']")
+        .parent()
+        .css({display:'inline-block'});
+      });
 
       this.weightShow = service_type === 1;
       this.jobRequest.amount = price;
@@ -704,7 +701,7 @@ export default {
         repeating_days:
           job.repeating_days != null
             ? JSON.parse(job.repeating_days)
-            : job.repeating_days,
+            : [],
         time_slots_id: job.time_slots_id,
         existingImages:
           job.images != null ? JSON.parse(job.images) : job.images,
@@ -721,6 +718,7 @@ export default {
       const isValidated = this.$refs.form.validate();
       if (isValidated === true) {
         try {
+          this.loading = true;
           var editJobRequest = new FormData();
 
           /**
@@ -753,12 +751,14 @@ export default {
             position: "top-right",
             dismissible: false,
           });
+          this.loading = false;
           setTimeout(() => {
-            router.push({ name: "jobsList" });
+            router.push({ name: "JobsDashboard" });
           }, 3000);
         } catch (error) {
+          this.loading = false;
           this.$toast.open({
-            message: error.response.data.message,
+            message: 'Pickup cannot be saved due to an error, please re-check data or contact support!',
             type: "error",
             position: "bottom-right",
             dismissible: false,

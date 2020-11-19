@@ -51,7 +51,7 @@
               </div>
             </li>
             <li class="nav-item active">
-              <a class="nav-link all-noti-link" href="#" @click.prevent="showNotiList">
+              <a class="nav-link all-noti-link" href="#" @click.prevent="showNoti=!showNoti">
                 <span class="bell-outer"> <i data-feather="bell"></i></span>
                 <div class="all-noti-div" v-if="!showNoti">
                   <div class="each-noti clearfix">
