@@ -549,6 +549,7 @@ export default {
       farmList: [],
       allServices: [],
       managerList: [],
+      slotTypes: [],
       menu2: false,
       timeMenu: false,
       weightShow: false,
@@ -600,6 +601,7 @@ export default {
         .css({display:'inline-block'});
       });
 
+      if(slot_type != null){ this.slotTypes = slot_type; }
       this.weightShow = service_type === 1;
       this.jobRequest.amount = price;
       this.servicePrice = price;
@@ -728,6 +730,15 @@ export default {
   methods: {
     formSubmit: async function () {
       const isValidated = this.$refs.form.validate();
+      if(this.slotTypes.length > 0 && this.jobRequest.time_slots_id.length == 0){
+        this.$toast.open({
+          message: 'Service Time Required!',
+          type: "error",
+          position: "bottom-right",
+          dismissible: false,
+        });
+        return false;
+      }
       if (isValidated === true) {
         try {
           this.loading = true;

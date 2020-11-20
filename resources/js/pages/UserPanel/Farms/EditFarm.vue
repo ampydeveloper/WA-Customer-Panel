@@ -300,6 +300,7 @@ export default {
     },
     cancelEditManager: function () {
       this.newManager = { ...emptyManager };
+      console.log(this.newManager);
       this.refreshManagerKey();
       this.addManagers = true;
       this.isEdit = false;

@@ -167,27 +167,39 @@
                           <label>Service Time</label>
                         </div>
                         <div class="pt-0 pb-0 service-time-timing-out">
-                          <v-radio-group
-                            v-model="jobRequest.time_slots_id"
-                            row
-                            :rules="[(v) => !!v || 'Service Time is required.']"
-                          >
-                            <v-radio
-                              label="Morning"
-                              :value=1
-                              key='time_slot1'
-                            ></v-radio>
-                            <v-radio
-                              label="Afternoon"
-                              :value=2
-                              key='time_slot2'
-                            ></v-radio>
-                            <v-radio
-                              label="Evening"
-                              :value=3
-                              key='time_slot3'
-                            ></v-radio>
-                          </v-radio-group>
+                          <div class="pretty p-default p-round">
+                            <input
+                              type="radio"
+                              name="slot_type"
+                              v-model="jobRequest.time_slots_id"
+                              value="1"
+                            />
+                            <div class="state">
+                              <label>Morning</label>
+                            </div>
+                          </div>
+                          <div class="pretty p-default p-round">
+                            <input
+                              type="radio"
+                              name="slot_type"
+                              v-model="jobRequest.time_slots_id"
+                              value="2"
+                            />
+                            <div class="state">
+                              <label>Afternoon</label>
+                            </div>
+                          </div>
+                          <div class="pretty p-default p-round">
+                            <input
+                              type="radio"
+                              name="slot_type"
+                              v-model="jobRequest.time_slots_id"
+                              value="3"
+                            />
+                            <div class="state">
+                              <label>Evening</label>
+                            </div>
+                          </div>
                         </div>
                       </v-col>
                     </v-row>
@@ -815,6 +827,15 @@ export default {
   methods: {
     formSubmit: async function () {
       const isValidated = this.$refs.form.validate();
+      if(this.slotTypes.length > 0 && this.jobRequest.time_slots_id.length == 0){
+        this.$toast.open({
+          message: 'Service Time Required!',
+          type: "error",
+          position: "bottom-right",
+          dismissible: false,
+        });
+        return false;
+      }
       if (isValidated === true) {
         try {
           this.loading = true;

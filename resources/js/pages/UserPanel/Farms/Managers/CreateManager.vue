@@ -250,7 +250,7 @@ export default {
           })[0];
           this.model.manager_is_active = 1;
         });
-      }else{
+      }else if(route.name != 'editFarm' && route.name != 'createFarm'){
         this.isEditS = false;
         this.farmId = null;
         this.managerId = null;

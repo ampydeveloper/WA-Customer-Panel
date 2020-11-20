@@ -217,7 +217,9 @@ export default {
     this.user = JSON.parse(window.localStorage.getItem("user"));
     this.cpToken = btoa(this.user.email);
     if((this.user.role_id == 5 || this.user.role_id == 7) && this.user.password_changed_at == null){
-      window.location.href = "/change-password/"+this.cpToken;
+      if(this.$route.name != 'changePassword'){
+        window.location.href = "/change-password/"+this.cpToken;
+      }
     }
   },
   methods: {

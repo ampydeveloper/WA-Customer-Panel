@@ -155,24 +155,13 @@ export default {
     jobList: {},
     alljobs: {},
   }),
-
-  created() {
-    const { name: routeName } = this.$route;
-    this.routeName =
-      routeName === "JobsDashboard" ? "upcomingJobsDashboard" : "JobsDashboard";
-    let getRouteName =
-      routeName === "JobsDashboard" ? "myJobs" : "myUpcomingJobs";
-    if (typeof this.$route.params.farmId !== "undefined") {
-      this.routeName =
-        routeName === "FarmJobsDashboard"
-          ? "upcomingJobsDashboard"
-          : "JobsDashboard";
-      getRouteName =
-        routeName === "FarmJobsDashboard" ? "list" : "upcomingJobsList";
+  watch:{
+    '$route' (to, from) {
+      this.getJobs(to);
     }
-    JobService[getRouteName](this.$route.params.farmId).then((response) => {
-      this.alljobs = response.data.data;
-    });
+  },
+  created() {
+    this.getJobs();
     const verifyEmail = window.localStorage.getItem("verifyEmail");
     if (verifyEmail != "" && verifyEmail != null) {
       this.$toast.open({
@@ -184,7 +173,7 @@ export default {
       window.localStorage.removeItem("verifyEmail");
     }
   $(document).ready(function() {
-               feather.replace();
+    feather.replace();
   });
   setTimeout(function() {
       $(document).ready(function() {
@@ -227,6 +216,24 @@ export default {
   },
 
   methods: {
+    getJobs: function(route=this.$route){
+      const { name: routeName } = route;
+      this.routeName =
+        routeName === "JobsDashboard" ? "upcomingJobsDashboard" : "JobsDashboard";
+      let getRouteName =
+        routeName === "JobsDashboard" ? "myJobs" : "myUpcomingJobs";
+      if (typeof route.params.farmId !== "undefined") {
+        this.routeName =
+          routeName === "FarmJobsDashboard"
+            ? "upcomingJobsDashboard"
+            : "JobsDashboard";
+        getRouteName =
+          routeName === "FarmJobsDashboard" ? "list" : "upcomingJobsList";
+      }
+      JobService[getRouteName](route.params.farmId).then((response) => {
+        this.alljobs = response.data.data;
+      });
+    },
     cancelJob: async function (jobId) {
       try {
         const response = await JobService.cancel(jobId);
