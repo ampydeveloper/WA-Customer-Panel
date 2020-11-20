@@ -20,7 +20,7 @@
 
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
           <ul class="navbar-nav ml-auto">
-            <li class="nav-item active" v-if="isCustomer">
+            <li class="nav-item active">
               <router-link class="nav-link" to="/jobs/services"
                 >Services</router-link
               >
@@ -184,6 +184,11 @@
                   class="dropdown-item"
                   ><i data-feather="user"></i> Profile</router-link
                 >
+                <router-link
+                  :to="{ name: 'changePassword', params: {token: cpToken} }"
+                  class="dropdown-item"
+                  ><i data-feather="key"></i> Change Password</router-link
+                >
                 <a
                   class="dropdown-item"
                   href="javascript:void()"
@@ -205,10 +210,15 @@ export default {
     return {
       showNoti: true,
       user: null,
+      cpToken: null
     };
   },
   created: function () {
     this.user = JSON.parse(window.localStorage.getItem("user"));
+    this.cpToken = btoa(this.user.email);
+    if((this.user.role_id == 5 || this.user.role_id == 7) && this.user.password_changed_at == null){
+      window.location.href = "/change-password/"+this.cpToken;
+    }
   },
   methods: {
     logout: () => {

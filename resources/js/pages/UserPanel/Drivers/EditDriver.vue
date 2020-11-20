@@ -37,7 +37,7 @@
                   </v-col>
                   <v-col sm="4" class="pt-0 pb-0">
                       <div class="profile-image" v-if="image_url != null && image_url != 'null' && uploadImage != true">
-                        <img v-bind:src="image_url" alt="name" @click="uploadImage = true" />
+                        <img v-bind:src="image_url" width="150" alt="name" @click="uploadImage = true" />
                       </div>
                       <file-pond
                       v-if='uploadImage'
@@ -68,7 +68,6 @@
                   </span>
                   <v-select
                     :items="prefixes"
-                    label="Salutation"
                     :rules="[v => !!v || 'Driver Salutation is required.']"
                     v-model='addForm.prefix'
                   ></v-select>
@@ -83,7 +82,6 @@
                       v-model="addForm.first_name"
                       :rules="[v => !!v || 'Driver First Name is required.']"
                       required
-                      label="Enter First Name"
                       placeholder
                     ></v-text-field>
                 </div>
@@ -97,7 +95,6 @@
                     v-model="addForm.last_name"
                     :rules="[v => !!v || 'Driver Last Name is required.']"
                     required
-                    label="Enter Last Name"
                     placeholder
                   ></v-text-field>
                 </div>
@@ -114,7 +111,6 @@
                     v-model="addForm.phone"
                     :rules="phoneRules"
                     required
-                    label="Enter Number"
                     placeholder
                     maxlength="10"
                   ></v-text-field>
@@ -130,7 +126,6 @@
                     :rules="emailRules"
                     name="email"
                     required
-                    label="Enter Email"
                     placeholder
                   ></v-text-field>
                 </div>
@@ -228,7 +223,7 @@ export default {
       console.log(response.data.data);
       let data = response.data.data;
       self.driverId = data.id;
-      self.image_url = data['image_url'] != null ? data['image_url'].replace('/storage/', '/storage/user_images/') : data['image_url'];
+      self.image_url = (data['image_url'] != null && !data['image_url'].includes('default-user.jpg')) ? data['image_url'].replace('/storage/', '/storage/user_images/') : data['image_url'];
       Object.keys({...this.addForm}).forEach((v, i) => {
         self.addForm[v] = data[v];
       });

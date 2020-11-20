@@ -107,6 +107,7 @@
                                 readonly
                                 v-bind="attrs"
                                 v-on="on"
+                                :rules="[(v) => !!v || 'Farms is required.']"
                               ></v-text-field>
                             </template>
                             <v-time-picker
@@ -207,7 +208,7 @@
                         color="success"
                         v-model="jobRequest.is_repeating_job"
                         :label="`${
-                          jobRequest.is_repeating_job === true ? 'Yes' : 'No'
+                          jobRequest.is_repeating_job == 2 ? 'Yes' : 'No'
                         }`"
                       ></v-switch>
 
@@ -549,6 +550,7 @@ export default {
       allServices: [],
       managerList: [],
       menu2: false,
+      timeMenu: false,
       weightShow: false,
       servicePrice: 0,
       fileContainer: [],
@@ -639,21 +641,29 @@ export default {
           });
         }
         let self = this;
-        FarmService.listManagers(farmId).then(function (managers) {
-          managers = managers.data.data;
-          if (managers != undefined && managers.length > 0) {
-            self.managerList = [...managers].map((manager) => {
-              return {
-                text: manager.full_name,
-                value: manager.id,
-              };
-            });
-          }
-        });
+        if(this.isCustomer){
+          FarmService.listManagers(farmId).then(function (managers) {
+            managers = managers.data.data;
+            if (managers != undefined && managers.length > 0) {
+              self.managerList = [...managers].map((manager) => {
+                return {
+                  text: manager.full_name,
+                  value: manager.id,
+                };
+              });
+            }
+          });
+        }
       }
     },
   },
   created: async function () {
+    const user = JSON.parse(window.localStorage.getItem('user'));
+
+    if(user.role_id == 4){
+      this.jobRequest.payment_mode = user.payment_mode;
+    }
+
     const {
       data: { data: serviceList },
     } = await JobService.listServices();
@@ -669,18 +679,20 @@ export default {
       };
     });
 
-    /** Collection of farms */
-    const {
-      data: { farms },
-    } = await FarmService.list();
-    this.farmList = [...farms].map((farm) => {
-      return {
-        text: farm.farm_address,
-        value: farm.id,
-        latitude: farm.latitude,
-        longitude: farm.longitude,
-      };
-    });
+    if(user.role_id == 4 || user.role_id == 5){
+      /** Collection of farms */
+      const {
+        data: { farms },
+      } = await FarmService.list();
+      this.farmList = [...farms].map((farm) => {
+        return {
+          text: farm.farm_address,
+          value: farm.id,
+          latitude: farm.latitude,
+          longitude: farm.longitude,
+        };
+      });
+    }
 
     const response = await JobService.get(this.$route.params.jobId);
     const job = response.data.data;
@@ -697,7 +709,7 @@ export default {
         manager_id: job.manager_id,
         payment_mode: job.payment_mode,
         job_providing_date: job.job_providing_date,
-        is_repeating_job: job.is_repeating_job,
+        is_repeating_job: job.is_repeating_job == 1 ? false : true,
         repeating_days:
           job.repeating_days != null
             ? JSON.parse(job.repeating_days)

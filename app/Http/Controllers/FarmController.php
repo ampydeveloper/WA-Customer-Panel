@@ -55,15 +55,16 @@ class FarmController extends Controller
                 'created_by' => $customer->id,
                 'distance' => $this->getDistance($request->latitude, $request->longitude, null, null, 'M')
             ]);
-            if ($request->farm_image && count($request->farm_image) > 0) {  
-                    $farmImages = [];
-                foreach ($request->farm_image as $image) {
-                    $imageName = $farmDetails->putImage($image);
-                    if ($imageName) {
-                        $farmImages[] = $imageName;
-                    }
-                }
-                $farmDetails['farm_image'] = json_encode($farmImages);
+            if ($request->farm_image && $request->farm_image != null) {  
+                $imageName = $customerFarm->putImage($request->farm_image);
+                $farmDetails['farm_image'] = json_encode([$imageName]);
+                // $farmImages = [];
+                // foreach ($request->farm_image as $image) {
+                //     $imageName = $farmDetails->putImage($image);
+                //     if ($imageName) {
+                //         $farmImages[] = $imageName;
+                //     }
+                // }
             }
 
             if ($farmDetails->save()) {
@@ -178,15 +179,16 @@ class FarmController extends Controller
                     'longitude' => $request->longitude,
                     'distance' => $this->getDistance($request->latitude, $request->longitude, null, null, 'M')
                 ]);
-                if ($request->farm_image && count($request->farm_image) > 0) {
-                    $farmImages = [];
-                    foreach ($request->farm_image as $image) {
-                        $imageName = $customerFarm->putImage($image);
-                        if ($imageName) {
-                            $farmImages[] = $imageName;
-                        }
-                    }
-                    $customerFarm->update(['farm_image' => json_encode($farmImages)]);
+                
+                if ($request->farm_image && $request->farm_image != null && $request->farm_image != 'null') {
+                    $imageName = $customerFarm->putImage($request->farm_image);
+                    $customerFarm->update(['farm_image' => json_encode([$imageName])]);
+                    // $farmImages = [];
+                    // foreach ($request->farm_image as $image) {
+                    //     if ($imageName) {
+                    //         $farmImages[] = $imageName;
+                    //     }
+                    // }
                 }
 
                 foreach ($request->manager_details as $manager) {
@@ -224,7 +226,7 @@ class FarmController extends Controller
                         $data['is_confirmed'] = $confirmed;
                     }
 
-                    if ($manager['manager_image']) {
+                    if (isset($manager['manager_image'])) {
                         $imageName = $request->user()->putImage($manager['manager_image']);
                         $data['user_image'] = json_encode($imageName);
                     }

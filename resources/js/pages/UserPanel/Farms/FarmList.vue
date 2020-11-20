@@ -61,7 +61,7 @@
                         params: { farmId: farm.id },
                       }"
                       class="btn btn-table-outline"
-                      v-if="isCustomer || isHauler"
+                      v-if="isCustomer || isManager"
                     >
                       <i data-feather="edit-3"></i> Edit</router-link
                     >
@@ -81,7 +81,7 @@
                     >
                       <i data-feather="x"></i> Delete
                     </button>
-                    <i v-if="!isCustomer && !isHauler">NA</i>
+                    <i v-if="!isCustomer && !isManager">NA</i>
                   </td>
                 </tr>
               </tbody>
@@ -129,47 +129,47 @@ export default {
     });
     this.user = JSON.parse(window.localStorage.getItem("user"));
 
-$(document).ready(function() {
-               feather.replace();
-  });
+    $(document).ready(function() {
+      feather.replace();
+    });
 
     setTimeout(function() {
-            $(document).ready(function() {
-             
-                if (!$.fn.dataTable.isDataTable(".basic-table")) {
-                $(".basic-table").DataTable({
-                    "bSort": false,
-                    oLanguage: {
-                        sSearch: "",
-                        "sEmptyTable": "No data available."
-                    },
-                    drawCallback: function(settings) {
-                        $(".dataTables_paginate .paginate_button.previous").html(
-                            $("#table-chevron-left").html()
-                        );
-                        $(".dataTables_paginate .paginate_button.next").html(
-                            $("#table-chevron-right").html()
-                        );
-                    },
-                });
-                $(".dataTables_filter").append($("#search-input-icon").html());
-                $(".dataTables_filter input").attr(
-                    "placeholder",
-                    "Search Farms by Farm Location / Manager"
-                );
-                $(".dataTables_paginate .paginate_button.previous").html(
-                    $("#table-chevron-left").html()
-                );
-                $(".dataTables_paginate .paginate_button.next").html(
-                    $("#table-chevron-right").html()
-                );
-                
-            }
-            $(".basic-table").css({
-                    opacity: 1
-                });
-            });
-        }, 1000);
+      $(document).ready(function() {
+        
+          if (!$.fn.dataTable.isDataTable(".basic-table")) {
+          $(".basic-table").DataTable({
+              "bSort": false,
+              oLanguage: {
+                  sSearch: "",
+                  "sEmptyTable": "No data available."
+              },
+              drawCallback: function(settings) {
+                  $(".dataTables_paginate .paginate_button.previous").html(
+                      $("#table-chevron-left").html()
+                  );
+                  $(".dataTables_paginate .paginate_button.next").html(
+                      $("#table-chevron-right").html()
+                  );
+              },
+          });
+          $(".dataTables_filter").append($("#search-input-icon").html());
+          $(".dataTables_filter input").attr(
+              "placeholder",
+              "Search Farms by Farm Location / Manager"
+          );
+          $(".dataTables_paginate .paginate_button.previous").html(
+              $("#table-chevron-left").html()
+          );
+          $(".dataTables_paginate .paginate_button.next").html(
+              $("#table-chevron-right").html()
+          );
+          
+      }
+      $(".basic-table").css({
+              opacity: 1
+          });
+      });
+    }, 1000);
 
   },
   methods: {

@@ -55,6 +55,7 @@ class JobController extends Controller
             }
         } else if($user->role_id == config('constant.roles.Customer_Manager')) {
             $Owner = User::whereId($user->created_by)->first();
+            $createJobRequest->payment_mode = $Owner->payment_mode;
             if($Owner->authorize_net_id == null && $createJobRequest->attach_card == 0) {
                 return response()->json([
                     'status' => false,
@@ -74,7 +75,7 @@ class JobController extends Controller
                 'job_providing_date' => $createJobRequest->job_providing_date,
                 'job_providing_time' => $createJobRequest->job_providing_time ? $createJobRequest->job_providing_time : null,
                 'weight' => (isset($createJobRequest->weight) && $createJobRequest->weight != '' && $createJobRequest->weight != null) ? $createJobRequest->weight : null,
-                'is_repeating_job' => ($createJobRequest->is_repeating_job == false) ? 1 : 2,
+                'is_repeating_job' => ($createJobRequest->is_repeating_job == "false" || $createJobRequest->is_repeating_job == false) ? 1 : 2,
                 'repeating_days' => (isset($createJobRequest->repeating_days) && $createJobRequest->repeating_days != '' && $createJobRequest->repeating_days != null) ? json_encode(explode(',', $createJobRequest->repeating_days)) : null,
                 'payment_mode' => $createJobRequest->payment_mode,
                 'notes' => (isset($createJobRequest->notes) && $createJobRequest->notes != '' && $createJobRequest->notes != null) ? $createJobRequest->notes : null,
@@ -355,7 +356,7 @@ class JobController extends Controller
             'status' => true,
             'message' => 'Upcoming Jobs',
             'now' => Carbon::now()->format('Y-m-d'),
-            'data' => Job::Where('farm_id', $customerFarm->id)->where('job_providing_date', '>', Carbon::now())->with('truck_driver', 'truck')->get()
+            'data' => Job::where('farm_id', $customerFarm->id)->where('job_providing_date', '>', Carbon::now())->with('truck_driver', 'truck')->get()
         ], 200);
     }
     

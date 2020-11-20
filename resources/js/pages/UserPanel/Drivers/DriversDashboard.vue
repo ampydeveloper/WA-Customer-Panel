@@ -89,8 +89,7 @@ export default {
   data: () => ({
     dialog: false,
     jobList: {}, 
-    alldrivers: {
-    },
+    alldrivers: []
   }),
 
   created() {
@@ -98,6 +97,44 @@ export default {
     DriverService["list"]().then((response) => {
       this.alldrivers = response.data.data;
     });
+
+    setTimeout(function() {
+      $(document).ready(function() {
+        
+          if (!$.fn.dataTable.isDataTable(".basic-table")) {
+          $(".basic-table").DataTable({
+              "bSort": false,
+              oLanguage: {
+                  sSearch: "",
+                  "sEmptyTable": "No data available."
+              },
+              drawCallback: function(settings) {
+                  $(".dataTables_paginate .paginate_button.previous").html(
+                      $("#table-chevron-left").html()
+                  );
+                  $(".dataTables_paginate .paginate_button.next").html(
+                      $("#table-chevron-right").html()
+                  );
+              },
+          });
+          $(".dataTables_filter").append($("#search-input-icon").html());
+          $(".dataTables_filter input").attr(
+              "placeholder",
+              "Search Farms by Farm Location / Manager"
+          );
+          $(".dataTables_paginate .paginate_button.previous").html(
+              $("#table-chevron-left").html()
+          );
+          $(".dataTables_paginate .paginate_button.next").html(
+              $("#table-chevron-right").html()
+          );
+          
+      }
+      $(".basic-table").css({
+              opacity: 1
+          });
+      });
+    }, 1000);
   },
 
   methods: {

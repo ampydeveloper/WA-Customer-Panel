@@ -39,7 +39,7 @@ export default {
             model: "email",
             required: true,
             validator: [
-                VueFormGenerator.validators.email,
+                // VueFormGenerator.validators.email,
                 async(value, field, model) => {
                     let result = [];
                     try {

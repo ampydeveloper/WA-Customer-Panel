@@ -55,7 +55,6 @@
                   </span>
                   <v-select
                     :items="prefixes"
-                    label="Salutation"
                     :rules="[v => !!v || 'Driver Salutation is required.']"
                     v-model='addForm.prefix'
                   ></v-select>
@@ -70,7 +69,6 @@
                       v-model="addForm.driver_first_name"
                       :rules="[v => !!v || 'Driver First Name is required.']"
                       required
-                      label="Enter First Name"
                       placeholder
                     ></v-text-field>
                 </div>
@@ -84,7 +82,6 @@
                     v-model="addForm.driver_last_name"
                     :rules="[v => !!v || 'Driver Last Name is required.']"
                     required
-                    label="Enter Last Name"
                     placeholder
                   ></v-text-field>
                 </div>
@@ -101,7 +98,6 @@
                     v-model="addForm.driver_phone"
                     :rules="phoneRules"
                     required
-                    label="Enter Number"
                     placeholder
                     maxlength="10"
                   ></v-text-field>
@@ -117,7 +113,6 @@
                     :rules="emailRules"
                     name="email"
                     required
-                    label="Enter Email"
                     placeholder
                   ></v-text-field>
                 </div>

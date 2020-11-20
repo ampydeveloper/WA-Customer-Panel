@@ -71,7 +71,7 @@ export default {
   },
   methods: {
     getResults() {
-      JobService.servicesForAll().then((response) => {
+      JobService.listServices().then((response) => {
         if (response.status) {
           this.services = response.data.data;
         } else {

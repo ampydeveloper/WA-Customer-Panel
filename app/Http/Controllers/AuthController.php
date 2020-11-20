@@ -452,7 +452,6 @@ class AuthController extends Controller {
      * @return JSON
      */
     public function updateProfile(UpdateProfileRequest $request) {
-//        dd($request->all());
         $user = Auth::user();
         if ($user->role_id == config('constant.roles.Customer') || $user->role_id == config('constant.roles.Customer_Manager') || $user->role_id == config('constant.roles.Haulers') || $user->role_id == config('constant.roles.Hauler_driver')) {
 
@@ -473,6 +472,10 @@ class AuthController extends Controller {
                     'zip_code' => $request->zip_code,
                     'payment_mode' => $request->payment_mode == 'null' ? null : $request->payment_mode
                 ];
+
+                if($request->has('image_url') && $request->get('image_url') == 'null'){
+                    $data['user_image'] = null;
+                }
 
                 if ($request->user_image) {
                     $imageName = $user->putImage($request->user_image);

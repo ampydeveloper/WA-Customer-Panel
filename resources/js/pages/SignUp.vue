@@ -85,7 +85,7 @@ export default {
                     const { access_token, user } = response.data.data;
                     window.localStorage.setItem("token", access_token);
                     window.localStorage.setItem("user", JSON.stringify(user));
-                    window.localStorage.setItem("verifyEmail", response.data.data.message);
+                    window.localStorage.setItem("verifyEmail", response.data.message);
                     window.location.href = "/jobs";
                   },
                   (error) => {

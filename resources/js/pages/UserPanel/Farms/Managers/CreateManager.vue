@@ -206,7 +206,9 @@ export default {
   },
   watch:{
     '$route' (to, from) {
-      window.location.reload();
+      this.created(to);
+      // console.log(to, to.params, to.name);
+      // window.location.reload();
     }
   },
   methods: {
@@ -223,6 +225,40 @@ export default {
     },
     onValidated(isValid, errors) {
       this.formValid = !isValid;
+    },
+    created(route){
+      if(['createManager', 'editManager'].includes(route.name)){ 
+        this.standalone = true;
+      }
+      if(route.name == 'editManager'){
+        this.isEditS = true;
+        FarmService.getManager(route.params.managerId).then(response => {
+          this.farmId = response.data.data[0].farm_id;
+          this.managerId = route.params.managerId;
+          this.model = response.data.data.map((manager) => {
+            return {
+              manager_prefix: manager.prefix,
+              manager_first_name: manager.first_name,
+              manager_last_name: manager.last_name,
+              email: manager.email,
+              manager_phone: manager.phone,
+              manager_address: manager.address,
+              manager_city: manager.city,
+              manager_province: manager.state,
+              manager_zipcode: manager.zip_code,
+            }
+          })[0];
+          this.model.manager_is_active = 1;
+        });
+      }else{
+        this.isEditS = false;
+        this.farmId = null;
+        this.managerId = null;
+        this.model = {...emptyManager};
+      }
+      $(document).ready(function() {
+        feather.replace();
+      });
     }
   },
   beforeCreate(){
@@ -237,33 +273,7 @@ export default {
     });
   },
   created(){
-    if(['createManager', 'editManager'].includes(this.$route.name)){ 
-      this.standalone = true;
-    }
-    if(this.$route.name == 'editManager'){
-      this.isEditS = true;
-      FarmService.getManager(this.$route.params.managerId).then(response => {
-        this.farmId = response.data.data[0].farm_id;
-        this.managerId = this.$route.params.managerId;
-        this.model = response.data.data.map((manager) => {
-          return {
-            manager_prefix: manager.prefix,
-            manager_first_name: manager.first_name,
-            manager_last_name: manager.last_name,
-            email: manager.email,
-            manager_phone: manager.phone,
-            manager_address: manager.address,
-            manager_city: manager.city,
-            manager_province: manager.state,
-            manager_zipcode: manager.zip_code,
-          }
-        })[0];
-        this.model.manager_is_active = 1;
-      });
-    }
-    $(document).ready(function() {
-      feather.replace();
-    });
+    this.created(this.$route);
   }
 };
 </script>

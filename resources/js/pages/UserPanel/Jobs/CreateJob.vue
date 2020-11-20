@@ -116,6 +116,7 @@
                                 readonly
                                 v-bind="attrs"
                                 v-on="on"
+                                :rules="[(v) => !!v || 'Time is required.']"
                               ></v-text-field>
                             </template>
                             <v-time-picker
@@ -166,25 +167,27 @@
                           <label>Service Time</label>
                         </div>
                         <div class="pt-0 pb-0 service-time-timing-out">
-
-                          <div class="pretty p-default p-round">
-                            <input type="radio" name="slot_type" v-model="jobRequest.time_slots_id" value="1" />
-                            <div class="state">
-                              <label>Morning</label>
-                            </div>
-                          </div>
-                          <div class="pretty p-default p-round">
-                            <input type="radio" name="slot_type" v-model="jobRequest.time_slots_id" value="2" />
-                            <div class="state">
-                              <label>Afternoon</label>
-                            </div>
-                          </div>
-                          <div class="pretty p-default p-round">
-                            <input type="radio" name="slot_type" v-model="jobRequest.time_slots_id" value="3" />
-                            <div class="state">
-                              <label>Evening</label>
-                            </div>
-                          </div>
+                          <v-radio-group
+                            v-model="jobRequest.time_slots_id"
+                            row
+                            :rules="[(v) => !!v || 'Service Time is required.']"
+                          >
+                            <v-radio
+                              label="Morning"
+                              :value=1
+                              key='time_slot1'
+                            ></v-radio>
+                            <v-radio
+                              label="Afternoon"
+                              :value=2
+                              key='time_slot2'
+                            ></v-radio>
+                            <v-radio
+                              label="Evening"
+                              :value=3
+                              key='time_slot3'
+                            ></v-radio>
+                          </v-radio-group>
                         </div>
                       </v-col>
                     </v-row>
@@ -334,6 +337,28 @@
                   <v-card-text>
                     <h3><span>$</span> {{ jobRequest.amount }}</h3>
                   </v-card-text>
+                </div>
+
+                <div class="send-payment" v-if="isHauler">
+                  <h5 class="heading2">Payment Mode</h5>
+                  <div class="add-new-card" v-if='isHauler'>
+                    <v-radio-group
+                      v-model="jobRequest.payment_mode"
+                      row
+                      :rules="[(v) => !!v || 'Payment mode is required.']"
+                    >
+                      <v-radio
+                        label="Cash"
+                        color="success"
+                        :value=1
+                      ></v-radio>
+                      <v-radio
+                        label="Cheque"
+                        color="success"
+                        :value=2
+                      ></v-radio>
+                    </v-radio-group>
+                  </div>
                 </div>
 
                 <div class="send-payment" v-if="isCustomer || isManager">
@@ -650,7 +675,7 @@ export default {
           .css({display:'inline-block'});
       });
 
-      this.slotTypes = slot_type;
+      if(slot_type != null){ this.slotTypes = slot_type; }
       this.weightShow = service_type === 1;
       this.jobRequest.amount = price;
       this.servicePrice = price;
@@ -692,17 +717,19 @@ export default {
           });
         }
         let self = this;
-        FarmService.listManagers(farmId).then(function(managers){
-          managers = managers.data.data;
-          if(managers != undefined && managers.length > 0){
-            self.managerList = [...managers].map(manager => {
-              return {
-                text: manager.full_name,
-                value: manager.id
-              };
-            });
-          }
-        });
+        if(this.isCustomer){
+          FarmService.listManagers(farmId).then(function(managers){
+            managers = managers.data.data;
+            if(managers != undefined && managers.length > 0){
+              self.managerList = [...managers].map(manager => {
+                return {
+                  text: manager.full_name,
+                  value: manager.id
+                };
+              });
+            }
+          });
+        }
       }
     },
     "jobRequest.card.card_number": function (cardNum) {
@@ -735,25 +762,27 @@ export default {
     });
 
     /** Collection of farms */
-    try {
-      const {
-        data: { farms },
-      } = await FarmService.list();
-      if(farms){
-        this.farmList = [...farms].map((farm, i) => {
-          if(i==0){
-            this.jobRequest.farm_id=farm.id;
-          }
-          return {
-            text: farm.farm_address,
-            value: farm.id,
-            latitude: farm.latitude,
-            longitude: farm.longitude,
-          };
-        });
-      } 
-    } catch (error) {
-      // No Farms
+    if(user.role_id == 4 || user.role_id == 5){
+      try {
+        const {
+          data: { farms },
+        } = await FarmService.list();
+        if(farms){
+          this.farmList = [...farms].map((farm, i) => {
+            if(i==0){
+              this.jobRequest.farm_id=farm.id;
+            }
+            return {
+              text: farm.farm_address,
+              value: farm.id,
+              latitude: farm.latitude,
+              longitude: farm.longitude,
+            };
+          });
+        } 
+      } catch (error) {
+        // No Farms
+      }
     }
 
     /** Collection of drivers */
@@ -768,14 +797,16 @@ export default {
       });
     }
 
-    CardService.list().then((response) => {
-      this.cardList = response.data.data;
-      if(this.cardList.length > 0){
-        [...this.cardList].forEach((card, ind) => {
-          if(ind == 0 || card.card_primary == 1){ this.jobRequest.card_id = card.id; }
-        });
-      }
-    });
+    if(user.role_id == 4 || user.role_id == 5){
+      CardService.list().then((response) => {
+        this.cardList = response.data.data;
+        if(this.cardList.length > 0){
+          [...this.cardList].forEach((card, ind) => {
+            if(ind == 0 || card.card_primary == 1){ this.jobRequest.card_id = card.id; }
+          });
+        }
+      });
+    }
 
     $(document).ready(function() {
         feather.replace();

@@ -29,6 +29,9 @@ class ServiceController extends Controller {
                             ], 421);
         } else {
             $getAllServices = Service::where('service_for', $user->role_id)->get();
+            foreach ($getAllServices as $key => $services) {
+                $getAllServices[$key]['service_image'] = env('IMAGE_URL') . '/' . $services->service_image;
+            }
             return response()->json([
                         'status' => true,
                         'message' => 'Service Listing.',

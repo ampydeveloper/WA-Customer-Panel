@@ -181,47 +181,48 @@ export default {
         position: "top-right",
         dismissible: false,
       });
+      window.localStorage.removeItem("verifyEmail");
     }
   $(document).ready(function() {
                feather.replace();
   });
-setTimeout(function() {
-            $(document).ready(function() {
-              
-                if (!$.fn.dataTable.isDataTable(".basic-table")) {
-                $(".basic-table").DataTable({
-                    "bSort": false,
-                    oLanguage: {
-                        sSearch: "",
-                        "sEmptyTable": "No data available."
-                    },
-                    drawCallback: function(settings) {
-                        $(".dataTables_paginate .paginate_button.previous").html(
-                            $("#table-chevron-left").html()
-                        );
-                        $(".dataTables_paginate .paginate_button.next").html(
-                            $("#table-chevron-right").html()
-                        );
-                    },
-                });
-                $(".dataTables_filter").append($("#search-input-icon").html());
-                $(".dataTables_filter input").attr(
-                    "placeholder",
-                    "Search Pickup by Pickup ID / Service Name / Farm Location"
-                );
-                $(".dataTables_paginate .paginate_button.previous").html(
-                    $("#table-chevron-left").html()
-                );
-                $(".dataTables_paginate .paginate_button.next").html(
-                    $("#table-chevron-right").html()
-                );
-                
-            }
-            $(".basic-table").css({
-                    opacity: 1
-                });
+  setTimeout(function() {
+      $(document).ready(function() {
+        
+          if (!$.fn.dataTable.isDataTable(".basic-table")) {
+            $(".basic-table").DataTable({
+                "bSort": false,
+                oLanguage: {
+                    sSearch: "",
+                    "sEmptyTable": "No data available."
+                },
+                drawCallback: function(settings) {
+                    $(".dataTables_paginate .paginate_button.previous").html(
+                        $("#table-chevron-left").html()
+                    );
+                    $(".dataTables_paginate .paginate_button.next").html(
+                        $("#table-chevron-right").html()
+                    );
+                },
             });
-        }, 1000);
+            $(".dataTables_filter").append($("#search-input-icon").html());
+            $(".dataTables_filter input").attr(
+                "placeholder",
+                "Search Pickup by Pickup ID / Service Name / Farm Location"
+            );
+            $(".dataTables_paginate .paginate_button.previous").html(
+                $("#table-chevron-left").html()
+            );
+            $(".dataTables_paginate .paginate_button.next").html(
+                $("#table-chevron-right").html()
+            );
+            
+        }
+        $(".basic-table").css({
+            opacity: 1
+        });
+      });
+  }, 1000);
 
   },
 

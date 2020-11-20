@@ -35,7 +35,7 @@ class CustomerFarm extends Model
 
     public function jobs()
     {
-        return $this->hasMany('App\Models\Job', 'farm_id');
+        return $this->hasMany('App\Models\Job', 'farm_id')->with('customer', 'manager');
     }
 
     /**

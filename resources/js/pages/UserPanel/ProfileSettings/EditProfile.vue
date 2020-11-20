@@ -33,6 +33,10 @@
                           <i data-feather="edit-3"></i>
                         </div>
                       </div>
+                      <div class="image-delete" v-if="!profileUpload" @click="removeImg">
+                        <i data-feather="trash-2"></i>
+                      </div>
+                      
 
                       <div class="col-sm-6 p-0 profie-upload-outer" v-if="profileUpload">
                         <file-pond
@@ -679,6 +683,12 @@ export default {
     },
 
     showProfileUpload: function () {
+      this.profileUpload = true;
+    },
+
+    removeImg: function(){
+      this.userImage = null;
+      this.userProfile.image_url = null;
       this.profileUpload = true;
     },
 

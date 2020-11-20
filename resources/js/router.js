@@ -166,7 +166,7 @@ const router = new VueRouter({
                     path: "create",
                     name: "createFarm",
                     component: CreateFarm,
-                    meta: { requiresAuth: [Role.Customer, Role.Hauler] }
+                    meta: { requiresAuth: [Role.Customer] }
                 },
                 // {
                 //     path: ":farmId/managers",
@@ -184,7 +184,7 @@ const router = new VueRouter({
                     path: ":farmId/edit",
                     name: "editFarm",
                     component: EditFarm,
-                    meta: { requiresAuth: [Role.Customer, Role.Hauler] }
+                    meta: { requiresAuth: [Role.Customer, Role.CustomerManager] }
                 },
                 {
                     path: ":farmId/jobs",
@@ -298,18 +298,18 @@ const router = new VueRouter({
             path: "/cards",
             component: Cards,
             beforeEnter: checkAuthentication,
-            meta: { requiresAuth: [Role.Customer, Role.Hauler] },
+            meta: { requiresAuth: [Role.Customer, Role.CustomerManager] },
             children: [{
                     path: "",
                     name: "cardList",
                     component: CardList,
-                    meta: { requiresAuth: [Role.Customer, Role.Hauler] }
+                    meta: { requiresAuth: [Role.Customer, Role.CustomerManager] }
                 },
                 {
                     path: "create",
                     name: "createCard",
                     component: CreateCard,
-                    meta: { requiresAuth: [Role.Customer, Role.Hauler] }
+                    meta: { requiresAuth: [Role.Customer, Role.CustomerManager] }
                 }
             ]
         }
