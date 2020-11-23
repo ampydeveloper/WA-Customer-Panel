@@ -1741,7 +1741,7 @@ p.already-account .for-pass-link {
         padding-bottom: 100%;
     }
     .im-text {
-        padding-bottom: 0;
+        padding: 0;
     }
     .im-text h2 small {
         font-size: 13px;
@@ -1859,6 +1859,7 @@ p.already-account .for-pass-link {
         width: 100%;
         max-width: 430px;
         padding: 0 15px;
+        transform: translate(0, 0);
     }
     .banner-text-inner p {
         color: #fff;
@@ -1966,7 +1967,7 @@ p.already-account .for-pass-link {
     }
     .insta-im {
         position: relative;
-        padding-bottom: 100%;
+        /*padding-bottom: 100%;*/
         overflow: hidden;
     }
     .test-text-inner {

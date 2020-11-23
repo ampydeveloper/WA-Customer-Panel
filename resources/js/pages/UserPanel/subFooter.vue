@@ -6,7 +6,7 @@
           <div class="col-md-6">
             <h2>Make your life easier. Download our apps.</h2>
           </div>
-          <div class="col-md-6">
+          <div class="col-md-6 footer-download-btn-out">
             <div class="footer-download-btn">
               <a href="#">
                 <img src="img/app-stor-icon.png" alt />
@@ -21,7 +21,7 @@
     </div>
     <div class="container">
       <div class="row">
-        <div class="news-footer-outer col-sm-7">
+        <div class="news-footer-outer col-sm-12 col-md-7">
           <h2>
             Our
             <br />
@@ -65,7 +65,7 @@
           </div>
         </div>
 
-        <div class="social-footer-outer col-sm-5">
+        <div class="social-footer-outer col-sm-12 col-md-5">
           <h2>
             Our
             <br />

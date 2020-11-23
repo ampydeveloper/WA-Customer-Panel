@@ -611,6 +611,10 @@ select.form-control {
         @media only screen and (max-width: 1000px) {
             padding-left: 3vw;
         }
+
+        @media only screen and (max-width: 768px) {
+            padding-left: 7vw;
+        }
     }
 
     .bootm-social-links {
@@ -625,6 +629,12 @@ select.form-control {
                     font-size: 22px;
                 }
             }
+        }
+    }
+
+    @media only screen and (max-width: 768px) {
+        .site-header .btn-store-app .footer-download-btn .btn-link {
+            margin-left: 0;
         }
     }
 
@@ -697,6 +707,7 @@ select.form-control {
         }
     }
 }
+
 .service-block-img {
     .img {
         width: 100%;
@@ -705,6 +716,7 @@ select.form-control {
         background-position: center center;
     }
 }
+
 // footer
 .logged-in-page {
     footer.site-footer {
@@ -866,7 +878,7 @@ select.form-control {
         padding: 35px 40px;
         margin-bottom: 25px;
         position: sticky;
-    top: 20px;
+        top: 20px;
         background: #fafafb;
         border-radius: 6px;
 
@@ -1004,8 +1016,9 @@ select.form-control {
         .dataTables_info {
             display: none;
         }
-       .basic-table tbody tr{
-        border: 0;
+
+        .basic-table tbody tr {
+            border: 0;
         }
     }
 }
@@ -1283,6 +1296,7 @@ select.form-control {
             background: transparent;
             height: 32px;
             color: #000;
+
             &:focus {
                 box-shadow: none;
             }
@@ -1512,56 +1526,98 @@ select.form-control {
     color: #fff;
     margin-left: 10px;
 }
+
 .map-marker {
     background-image: url('img/map-marker.png');
-    background-size: 36px,50px;
+    background-size: 36px, 50px;
     width: 36px;
     height: 50px;
     cursor: pointer;
     top: -27px !important;
-  }
-  .insta-post{
-      .insta-im-img{
+}
+
+.insta-post {
+    .insta-im-img {
         width: 100%;
         height: 238px;
         background-size: cover;
         background-position: center center;
-      }
-  }
-  .desc-details{
+    }
+}
+
+.desc-details {
     text-align: right;
-    h2{
+
+    h2 {
         font-size: 2.4vw !important;
-         span:after{
+
+        span:after {
             top: 20px !important;
             bottom: 8px !important;
-         }
+        }
     }
-  }
-  .pickup-desc-details{
+}
+
+.pickup-desc-details {
     padding-top: 20px;
-  }
-  .pickup-btn-outline{
+}
+
+.pickup-btn-outline {
     width: 80px;
     line-height: 30px !important;
     margin: 0;
-  }
-  .news-single-image{
+}
+
+.news-single-image {
     width: 100%;
     height: 420px;
     background-size: cover;
     background-position: center center;
     margin-bottom: 35px;
-  }
-  .news-single-marg{
+}
+
+.news-single-marg {
     margin: 0 auto;
-    h2{
+
+    h2 {
         margin: 0;
     }
-  }
-  .page-section-top.page-top-title {
+}
+
+.page-section-top.page-top-title {
     padding: 50px 0 50px 0;
-  }
-  .btn-pickup-desc{
+}
+
+.btn-pickup-desc {
     margin-top: 10px;
-  }
+}
+
+@media only screen and (max-width: 768px) {
+    .footr-links-upper {
+        padding-left: 25px !important;
+    }
+
+    .service-block-custom-inner {
+        margin-top: 0 !important;
+    }
+    .footer-download-btn-out{
+        height: 58px;
+    }
+    .btn-store-app{
+        text-align: center;
+    }
+    .desc-details h2 {
+        font-size: 20px !important;
+    }
+    .footer-extra-details h2 {
+        font-size: 40px;
+        margin: 0;
+    }
+    .footer-extra-details .news-latest-cols .news-right h3{
+        margin-top: 0;
+    line-height: 23px;
+    }
+    .footer-extra-details .news-latest-cols .news-right p{
+        line-height: 16px;
+    }
+}

@@ -159,17 +159,17 @@ export default {
       schema: {
         styleClasses: "row",
         fields: [
-          // {
-          //   label: 'Address',
-          //   type: "vueGoogleAutocomplete",
-          //   model: "farm_address",
-          //   required: true,
-          //   validator: ["required", "string"],
-          //   styleClasses:'col-md-4'  ,
-          //   onGetAddressData : ($event) => {
-          //     console.log($event);
-          //   }
-          // },
+          {
+            label: 'Address',
+            type: "vueGoogleAutocomplete",
+            model: "farm_address",
+            required: true,
+            validator: ["required", "string"],
+            styleClasses:'col-md-4'  ,
+            onGetAddressData : ($event) => {
+              console.log($event);
+            }
+          },
           ...farmFormSchema.fields,
           {
             type: "filepond",
