@@ -1,7 +1,7 @@
 <template>
   <vue-google-autocomplete
-    id="map"
     classname="form-control"
+    id="place-search"
     placeholder="Start typing"
     v-on:placechanged="getAddressData"
 >
