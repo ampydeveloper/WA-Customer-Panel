@@ -134,6 +134,8 @@
                         :value="userdata.id"
                       />
                       <input type="hidden" id="job-id" :value="job.id" />
+<input type="hidden" id="job-lat" :value="job.farm.latitude" />
+                <input type="hidden" id="job-long" :value="job.farm.longitude" />
                       <input
                         type="hidden"
                         id="current-user-image"
@@ -172,7 +174,6 @@
 </template>
 
 <script>
-var jobLoc;
 import AppSmallHeader from "../../../shared/components/AppSmallHeader";
 import AppSmallFooter from "../../../shared/components/AppSmallFooter";
 import JobService from "../../../services/JobService";
@@ -214,10 +215,6 @@ export default {
     try {
       const response = await JobService.get(this.$route.params.jobId);
       this.job = response.data.data;
-      jobLoc =
-        response.data.data.farm.latitude +
-        "," +
-        response.data.data.farm.longitude;
       this.jobImages = JSON.parse(JSON.stringify(response.data.data.images));
     } catch (error) {
       this.$toast.open({
@@ -278,166 +275,10 @@ export default {
   },
 
   mounted() {
-    // console.log(jobLoc);
-    // setTimeout(function(){
-    // // console.log(this.job);
-    // // mapboxgl.accessToken =
-    // //   "pk.eyJ1IjoibG9jb25lIiwiYSI6ImNrYmZkMzNzbDB1ZzUyenM3empmbXE3ODQifQ.SiBnr9-6jpC1Wa8OTAmgVA";
-    // // var map = new mapboxgl.Map({
-    // //   container: "map",
-    // //   style: "mapbox://styles/mapbox/light-v9",
-    // //   center: [26.695145, -80.244859], // starting position
-    // //   zoom: 12,
-    // // });
-
-    // // initialize the map canvas to interact with later
-    // var canvas = map.getCanvasContainer();
-
-    // // This is truck driver co-ordinates
-    // var start = [26.695145, -80.244859];
-
-    // // create a function to make a directions request
-    // function getRoute(start, end) {
-    //   var url =
-    //     "https://api.mapbox.com/directions/v5/mapbox/driving/" +
-    //     start[0] +
-    //     "," +
-    //     start[1] +
-    //     ";" +
-    //     end[0] +
-    //     "," +
-    //     end[1] +
-    //     "?steps=true&geometries=geojson&access_token=" +
-    //     mapboxgl.accessToken;
-
-    //   var req = new XMLHttpRequest();
-    //   req.open("GET", url, true);
-    //   req.onload = function () {
-    //     var json = JSON.parse(req.response);
-    //     var data = json.routes[0];
-    //     var route = data.geometry.coordinates;
-    //     var geojson = {
-    //       type: "Feature",
-    //       properties: {},
-    //       geometry: {
-    //         type: "LineString",
-    //         coordinates: route,
-    //       },
-    //     };
-    //     // if the route already exists on the map, reset it using setData
-    //     if (map.getSource("route")) {
-    //       map.getSource("route").setData(geojson);
-    //     } else {
-    //       // otherwise, make a new request
-    //       map.addLayer({
-    //         id: "route",
-    //         type: "line",
-    //         source: {
-    //           type: "geojson",
-    //           data: {
-    //             type: "Feature",
-    //             properties: {},
-    //             geometry: {
-    //               type: "LineString",
-    //               coordinates: geojson,
-    //             },
-    //           },
-    //         },
-    //         layout: {
-    //           "line-join": "round",
-    //           "line-cap": "round",
-    //         },
-    //         paint: {
-    //           "line-color": "#3c3b3b",
-    //           "line-width": 4,
-    //           "line-opacity": 0.75,
-    //         },
-    //       });
-    //     }
-    //   };
-    //   req.send();
-    // }
-
-    // map.on("load", function () {
-    //   // make an initial directions request that
-    //   // starts and ends at the same location
-    //   getRoute(start, [this.job.farm.latitude, this.job.farm.longitude]);
-    //   // getRoute(start, [-122.61365699963287, 45.51773726437733]);
-
-    //   map.addSource("truck", {
-    //     type: "geojson",
-    //     data: {
-    //       type: "FeatureCollection",
-    //       features: [
-    //         {
-    //           type: "Feature",
-    //           properties: {},
-    //           geometry: {
-    //             type: "Point",
-    //             coordinates: start,
-    //           },
-    //         },
-    //       ],
-    //     },
-    //   });
-
-    //   map.loadImage(
-    //     `http://wa.customer.leagueofclicks.com/img/car-marker2.png`,
-    //     function (error, image) {
-    //       if (error) throw error;
-    //       map.addImage("car-marker", image);
-    //     }
-    //   );
-
-    //   // Add starting point to the map
-    //   map.addLayer({
-    //     id: "truck",
-    //     type: "symbol",
-    //     source: "truck",
-    //     layout: {
-    //       "icon-image": "car-marker",
-    //     },
-    //   });
-
-    //   var el = document.createElement("div");
-    //   el.className = "map-marker";
-    //   new mapboxgl.Marker(el)
-    //     .setLngLat([this.job.farm.latitude, this.job.farm.longitude])
-    //     .addTo(map);
-
-    //   getRoute(start, [this.job.farm.latitude, this.job.farm.longitude]);
-    // });
-    // window.lo = 45.523751;
-    // window.setInterval(function () {
-    //   console.log(job);
-    //   lo = lo - 0.0001;
-    //   start = [-122.662453, lo];
-
-    //   map.getSource("truck").setData({
-    //     type: "Feature",
-    //     properties: {},
-    //     geometry: {
-    //       type: "Point",
-    //       coordinates: start,
-    //     },
-    //   });
-    //   map.flyTo({
-    //     center: start,
-    //     speed: 0.5,
-    //   });
-    //   getRoute(start, [this.job.farm.latitude, this.job.farm.longitude]);
-    // }, 2000);
-    //  },2000);
-    //map END
-
-    // this.getChatMembers();
-    // setTimeout(() => {
-    //   this.getChatMessages();
-    // }, 500);
     var wellOffice = "26.695145,-80.244859";
     var icons = {
       start: new google.maps.MarkerImage(
-        "http://wa.customer.leagueofclicks.com/img/map-icon2.png",
+        "http://wa.customer.leagueofclicks.com/img/car-marker2.png",
         new google.maps.Size(72, 100),
         // The origin point (x,y)
         new google.maps.Point(0, 0),
@@ -445,7 +286,7 @@ export default {
         new google.maps.Point(22, 32)
       ),
       end: new google.maps.MarkerImage(
-        "http://wa.customer.leagueofclicks.com/img/car-marker2.png",
+        "http://wa.customer.leagueofclicks.com/img/map-icon2.png",
         new google.maps.Size(55, 55),
         // The origin point (x,y)
         new google.maps.Point(0, 0),
@@ -654,13 +495,15 @@ export default {
     }
 
     function calculateAndDisplayRoute(directionsService, directionsRenderer) {
+const jobLat = document.getElementById("job-lat")._value;
+        const joblong = document.getElementById("job-long")._value;
       directionsService.route(
         {
           origin: {
             query: wellOffice, //"st louis, mo"
           },
           destination: {
-            query: "st louis, mo",
+            query: jobLat+','+joblong,
           },
           travelMode: google.maps.TravelMode.DRIVING,
         },
@@ -685,7 +528,9 @@ export default {
       });
     }
 
-    initMap();
+    setTimeout(function(){
+ initMap();
+},6000); 
 
     let socketScript = document.createElement("script");
     socketScript.setAttribute(
@@ -726,6 +571,7 @@ export default {
 
       socket.on("chat-message", (data) => {
         const userImage = $("#current-user-image").val();
+if (data.job_id == jobId._value) {
         if (data.name == name._value) {
           appendMessage(
             '<div class="chat-msg">' +
@@ -744,6 +590,7 @@ export default {
           );
         }
         messageContainerScroll.scroll([0, "100%"], 50, { x: "", y: "linear" });
+}
       });
       $(document).on("submit", "#send-container", function (e) {
         const message = messageInput.value;
