@@ -16,7 +16,7 @@ class CustomerFarm extends Model
      * @var array
      */
     protected $fillable = [
-        'customer_id', 'farm_address', 'farm_city', 'farm_image', 'farm_province', 'farm_unit', 'farm_zipcode', 'farm_active', 'latitude', 'longitude', 'distance', 'created_by'
+        'customer_id', 'farm_address', 'farm_city', 'farm_image', 'farm_province', 'farm_unit', 'farm_zipcode', 'farm_active', 'latitude', 'longitude', 'distance_warehouse', 'distance_dumping_area', 'created_by'
     ];
 
     protected $hidden = ['deleted_at', 'updated_at'];

@@ -440,7 +440,7 @@ class AuthController extends Controller {
      */
     public function profile(Request $request) {
         return response()->json([
-                    'success' => true,
+                    'status' => true,
                     'message' => 'User details.',
                     'data' => $request->user()
         ]);

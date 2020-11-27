@@ -130,5 +130,9 @@ return [
         'lat' => '31.23',
         'lon' => '34.34'
     ],
+    'dumping_area' => [
+        'lat' => '31.30',
+        'lon' => '34.36'
+    ],
     'repeating_days' => ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'],
 ];

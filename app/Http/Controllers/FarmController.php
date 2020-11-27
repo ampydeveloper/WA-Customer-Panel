@@ -53,7 +53,8 @@ class FarmController extends Controller
                 'latitude' => $request->latitude,
                 'longitude' => $request->longitude,
                 'created_by' => $customer->id,
-                'distance' => $this->getDistance($request->latitude, $request->longitude, null, null, 'M')
+                'distance_warehouse' => $this->getDistance($request->latitude, $request->longitude, null, null, 'M', 'warehouse'),
+                'distance_dumping_area' => $this->getDistance($request->latitude, $request->longitude, null, null, 'M', 'dumping')
             ]);
             if ($request->farm_image && $request->farm_image != null) {  
                 $imageName = $customerFarm->putImage($request->farm_image);
@@ -115,10 +116,16 @@ class FarmController extends Controller
     }
     
 
-    public function getDistance($lat1, $lon1, $lat2, $lon2, $unit)
+    public function getDistance($lat1, $lon1, $lat2, $lon2, $unit, $flag)
     {
-        $lat2 = ($lat2 == null) ? config('constant.warehouse.lat') : $lat2;
-        $lon2 = ($lon2 == null) ? config('constant.warehouse.lon') : $lon2;
+        if($flag == 'warehouse') {
+            $lat2 = ($lat2 == null) ? config('constant.warehouse.lat') : $lat2;
+            $lon2 = ($lon2 == null) ? config('constant.warehouse.lon') : $lon2;
+        } else {
+            $lat2 = ($lat2 == null) ? config('constant.dumping_area.lat') : $lat2;
+            $lon2 = ($lon2 == null) ? config('constant.dumping_area.lon') : $lon2;
+        }
+        
         $lat1 = (float)$lat1;
         $lat2 = (float)$lat2;
         $lon1 = (float)$lon1;
@@ -177,10 +184,10 @@ class FarmController extends Controller
                     'farm_active' => $request->farm_active,
                     'latitude' => $request->latitude,
                     'longitude' => $request->longitude,
-                    'distance' => $this->getDistance($request->latitude, $request->longitude, null, null, 'M')
+                    'distance_warehouse' => $this->getDistance($request->latitude, $request->longitude, null, null, 'M', 'warehouse'),
+                    'distance_dumping_area' => $this->getDistance($request->latitude, $request->longitude, null, null, 'M', 'dumping')
                 ]);
-                
-                if ($request->farm_image && $request->farm_image != null && $request->farm_image != 'null') {
+                if (is_file($request->farm_image)) {
                     $imageName = $customerFarm->putImage($request->farm_image);
                     $customerFarm->update(['farm_image' => json_encode([$imageName])]);
                     // $farmImages = [];
@@ -190,7 +197,7 @@ class FarmController extends Controller
                     //     }
                     // }
                 }
-
+                
                 foreach ($request->manager_details as $manager) {
 
                     $managerCheck = User::whereId($manager['id'])->first();
