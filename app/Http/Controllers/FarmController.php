@@ -57,7 +57,7 @@ class FarmController extends Controller
                 'distance_dumping_area' => $this->getDistance($request->latitude, $request->longitude, null, null, 'M', 'dumping')
             ]);
             if ($request->farm_image && $request->farm_image != null) {  
-                $imageName = $customerFarm->putImage($request->farm_image);
+                $imageName = $farmDetails->putImage($request->farm_image);
                 $farmDetails['farm_image'] = json_encode([$imageName]);
                 // $farmImages = [];
                 // foreach ($request->farm_image as $image) {
