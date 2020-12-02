@@ -29,14 +29,15 @@
                     <div class="col-sm-12 pt-0 pb-0">
                       <div class="profile-image" v-if="!profileUpload">
                         <img :src='userProfile.image_url' alt="" />
-                        <div class="image-edit" @click="showProfileUpload">
+                        <div class="image-edit">
+                          <div class="image-edit-in" @click="showProfileUpload">
                           <i data-feather="edit-3"></i>
-                        </div>
-                      </div>
-                      <div class="image-delete" v-if="!profileUpload" @click="removeImg">
+                            </div>
+                          <div class="image-delete" v-if="!profileUpload" @click="removeImg">
                         <i data-feather="trash-2"></i>
                       </div>
-                      
+                        </div>
+                      </div>
 
                       <div class="col-sm-6 p-0 profie-upload-outer" v-if="profileUpload">
                         <file-pond
@@ -177,6 +178,41 @@
                         ></v-text-field>
                       </div>
                     </v-col>
+
+<div class="text-right showPass-out" v-if="showPass">
+<a href="#" @click.prevent="showPass=!showPass" >Click here to update your password</a>
+</div>
+
+<v-col cols="6" md="6" class="pt-0 pb-0" v-if="!showPass">
+                      <div class="label-align pt-0">
+                        <label>Old Password</label>
+                      </div>
+                      <div class="pt-0 pb-0">
+                        <v-text-field
+                        type="password"
+                          v-model="userProfile.old_password"
+                          required
+                          :rules="[(v) => !!v || 'Password is required.']"
+                          placeholder="Old Password"
+                        ></v-text-field>
+                      </div>
+                    </v-col>
+                    <v-col cols="6" md="6" class="pt-0 pb-0" v-if="!showPass">
+                      <div class="label-align pt-0">
+                        <label>New Password</label>
+                      </div>
+                      <div class="pt-0 pb-0">
+                        <v-text-field
+                          v-model="userProfile.new_password"
+                          required
+                          type="password"
+                          :rules="[(v) => !!v || 'Password is required.']"
+                          placeholder="New Password"
+                        ></v-text-field>
+                      </div>
+                    </v-col>
+                     
+                     
                   </div>
                 </v-form>
 
@@ -192,6 +228,7 @@
                     </v-btn
                   >
                 </div>
+                
               </div>
             </div>
             <!-- /Profile -->
@@ -514,6 +551,7 @@ export default {
         card_exp_year: "",
         cvv: "",
       },
+      showPass: true,
       expiryMonths: _.range(1, 13),
       expiryYears: _.range(
         moment().format("YYYY"),
@@ -543,7 +581,7 @@ export default {
         revert: (fieldName, file, metadata, load) => {
           this.$refs.pond.removeFile();
           this.profileUpload = false;
-        }
+        },
       },
     };
   },
@@ -590,8 +628,8 @@ export default {
               ...response.data.data,
             };
             window.localStorage.removeItem("user");
-            $('.full_name').html(response.data.data.full_name);
-            $('.user_header_img').attr('src', response.data.data.image_url);
+            $(".full_name").html(response.data.data.full_name);
+            $(".user_header_img").attr("src", response.data.data.image_url);
             window.localStorage.setItem(
               "user",
               JSON.stringify(response.data.data)
@@ -615,13 +653,13 @@ export default {
         try {
           const response = await CardService.create(this.cardDetails);
           if (response !== undefined && response.data !== undefined) {
-            if(response.data.status) {
+            if (response.data.status) {
               this.$toast.open({
                 message: response.data.message,
                 type: "success",
                 position: "top-right",
                 dismissible: false,
-              }); 
+              });
             } else {
               this.$toast.open({
                 message: response.data.message,
@@ -672,8 +710,8 @@ export default {
 
     showAddCard: function () {
       var $this = this;
-      Object.keys(this.cardDetails).forEach(function(key,index) {
-        $this.cardDetails[key] = '';
+      Object.keys(this.cardDetails).forEach(function (key, index) {
+        $this.cardDetails[key] = "";
       });
       this.addNewCard = true;
     },
@@ -686,7 +724,7 @@ export default {
       this.profileUpload = true;
     },
 
-    removeImg: function(){
+    removeImg: function () {
       this.userImage = null;
       this.userProfile.image_url = null;
       this.profileUpload = true;
@@ -744,9 +782,9 @@ export default {
       });
     }
 
-    $(document).ready(function() {
-               feather.replace();
-  });
+    $(document).ready(function () {
+      feather.replace();
+    });
   },
 };
 </script>

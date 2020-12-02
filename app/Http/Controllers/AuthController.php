@@ -473,7 +473,7 @@ class AuthController extends Controller {
                     'payment_mode' => $request->payment_mode == 'null' ? null : $request->payment_mode
                 ];
 
-                if($request->has('image_url') && $request->get('image_url') == 'null'){
+                if ($request->has('image_url') && $request->get('image_url') == 'null') {
                     $data['user_image'] = null;
                 }
 
@@ -486,6 +486,17 @@ class AuthController extends Controller {
                 }
                 if ($request->password != '' && $request->password != null) {
                     $data['password'] = bcrypt($request->password);
+                }
+
+                if ($request->old_password == $request->new_password) {
+                    $data['password'] = bcrypt($request->new_password);
+                    $data['password_changed_at'] = Carbon::now();
+                } else {
+                    return response()->json([
+                                'status' => false,
+                                'message' => "Password don't match. Please try again.",
+                                'data' => []
+                                    ], 404);
                 }
 
                 $user->update($data);

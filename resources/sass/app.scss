@@ -966,18 +966,33 @@ select.form-control {
                 border-radius: 6px;
 
                 &:hover {
-                    svg {
+                    .image-edit-in svg, .image-delete svg {
                         display: block;
                     }
                 }
 
-                svg {
+                .image-edit-in svg{
                     width: 25px;
                     height: 25px;
                     position: absolute;
                     top: 50%;
                     left: 50%;
-                    margin-left: -23.5px;
+                    margin-left: -27.5px;
+                    margin-top: -9.5px;
+                    color: #fff;
+                    border: 2px solid #fff;
+                    padding: 2px 2px;
+                    border-radius: 4px;
+                    cursor: pointer;
+                    display: none;
+                }
+                .image-delete svg{
+                    width: 25px;
+                    height: 25px;
+                    position: absolute;
+                    top: 50%;
+                    left: 50%;
+                    margin-left: 2.5px;
                     margin-top: -9.5px;
                     color: #fff;
                     border: 2px solid #fff;
@@ -1619,5 +1634,12 @@ select.form-control {
     }
     .footer-extra-details .news-latest-cols .news-right p{
         line-height: 16px;
+    }
+}
+.showPass-out{
+    width: 100%;
+    margin-bottom: 15px;
+    a{
+        color: #11b276 !important;
     }
 }

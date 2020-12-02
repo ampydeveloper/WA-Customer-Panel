@@ -80,6 +80,11 @@ io.on('connection', socket => {
             socket.broadcast.emit('chat-message', { message: message, name: users[socket.nickname], job_id: message.job_id });
         }).catch(err => console.error(err));
     });
+    
+    socket.on('send-driver-coordinates', details => {
+        console.log({ details });
+        socket.broadcast.emit('receive-driver-coordinates', { lat: details.lat, lng: details.lng, job_id: details.job_id });
+    });
 
     socket.on('disconnect', () => {
         console.log('disconnet', privateUsers[socket.nickname]);
