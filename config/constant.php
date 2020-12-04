@@ -135,4 +135,17 @@ return [
         'lon' => '34.36'
     ],
     'repeating_days' => ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'],
-];
+    
+    'card_brands' => [
+        'Amex' => 3,
+        'Visa' => 4,
+        'MasterCard' => 5,
+        'DiscoverCard' => 6
+    ],
+    'card_brands_reversed' => [
+        3 => 'Amex',
+        4 => 'Visa',
+        5 => 'MasterCard',
+        6 => 'DiscoverCard',
+    ]
+]; 

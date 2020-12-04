@@ -113,7 +113,7 @@ class PaymentController extends Controller
         $creditCard->setCardCode($cardData->cvv);
         $paymentCreditCard = new AnetAPI\PaymentType();
         $paymentCreditCard->setCreditCard($creditCard);
-
+        
         // Create the Bill To info for new payment type
         $billTo = new AnetAPI\CustomerAddressType();
         $billTo->setFirstName($cardData->name);
@@ -175,6 +175,7 @@ class PaymentController extends Controller
             $customer->save();
 
             $paymentProfiles = $response->getCustomerPaymentProfileIdList();
+            $split = str_split($cardData->card_number);
             $card = CustomerCardDetail::create([
                 'name' => $cardData->name,
                 'customer_id' => $customer->id,
@@ -184,6 +185,7 @@ class PaymentController extends Controller
                 'card_exp_year' => $cardData->card_exp_year,
                 'card_status' => 1,
                 'card_primary' => 1,
+                'card_brand' => config('constant.card_brands_reversed.'.$split[0]),
             ]);
 
             return [
@@ -259,7 +261,7 @@ class PaymentController extends Controller
             } else {
                 $primaryCard = 1;
             }
-            
+            $split = str_split($cardData->card_number);
             $card = CustomerCardDetail::create([
                 'name' => $cardData->name,
                 'customer_id' => $customer->id,
@@ -269,6 +271,7 @@ class PaymentController extends Controller
                 'card_exp_year' => $cardData->card_exp_year,
                 'card_status' => 1,
                 'card_primary' => $primaryCard,
+                'card_brand' => config('constant.card_brands_reversed.'.$split[0]),
             ]);
 
             return [
