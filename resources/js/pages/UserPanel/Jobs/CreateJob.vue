@@ -653,7 +653,7 @@ export default {
   watch: {
     "jobRequest.service_id": function (serviceId) {
 
-      const { timeSlots, service_type, slot_type, price } = _.find(
+      const { timeSlots, service_type, slot_type, price,  overhead_cost } = _.find(
         this.allServices,
         {
           id: serviceId,
@@ -689,7 +689,7 @@ export default {
 
       if(slot_type != null){ this.slotTypes = slot_type; }
       this.weightShow = service_type === 1;
-      this.jobRequest.amount = price;
+      this.jobRequest.amount = parseInt(price) + parseInt(overhead_cost);
       this.servicePrice = price;
     },
     selectedTimePeriod: function (timePeriod) {
