@@ -28,6 +28,13 @@ Route::group(['prefix' => 'auth'], function () {
     Route::get('confirm-email/{decode_code}', 'AuthController@confirmEmail')->name('confirm.email');
     Route::post('social-signup', 'AuthController@SocialSignup')->name('social.login');
     Route::post('login', 'AuthController@login')->name('login');
+    
+    
+    Route::post('send-otp', 'AuthController@sendOtp');
+    Route::post('check-otp', 'AuthController@checkOtp');
+    Route::post('forget-password-mobile', 'AuthController@forgotPasswordMobile');
+    
+    
     Route::post('forgot-password', 'AuthController@forgotPassword')->name('forgot.password');
     Route::post('change-password', 'AuthController@changePassword')->name('change.password');
     Route::get('logout', 'AuthController@logout')->middleware('auth:api')->name('logout');

@@ -9,6 +9,7 @@ use Carbon\Carbon;
 //use GuzzleHttp\Client;
 //use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use App\Models\ChangePasswordMobile;
 //use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
@@ -291,6 +292,137 @@ class AuthController extends Controller {
                         'data' => []
                             ], 500);
         }
+    }
+    
+    
+    public function sendOtp(Request $request) {
+        $validator = Validator::make($request->all(), [
+                    'email' => 'required',
+        ]);
+        if ($validator->fails()) {
+            return response()->json([
+                        'status' => false,
+                        'message' => $validator->errors(),
+                        'data' => []
+                            ], 422);
+        }
+        if(User::where('email', $request->email)->exists()) {
+            $otp = rand(100000,999999);
+            $otpDetails = new ChangePasswordMobile(); 
+            $otpDetails->email = $request->email;
+            $otpDetails->otp = $otp;
+            if($otpDetails->save()) {
+                $data = [
+                    'otp' => $otp
+                ];
+                Mail::send('email_templates.forgot_password_otp', $data, function ($message) use ($request, $otp) {
+                        $message->to($request->email, $otp)->subject('Otp pin');
+                        $message->from(env('MAIL_USERNAME'), env('MAIL_USERNAME'));
+                    });
+                    return response()->json([
+                        'status' => true,
+                        'message' => 'Otp is sent on register email.',
+                        'data' => [
+                            'email' => $request->email
+                        ]
+            ], 200);
+                    
+            } else {
+                return response()->json([
+                        'status' => false,
+                        'message' => 'Error while sending otp. Please try again later.',
+                        'data' => []
+                            ], 500);
+            }
+        }
+        return response()->json([
+                            'status' => false,
+                            'message' => 'No user with this email id',
+                            'data' => []
+                                ], 401);
+    }
+    
+    public function checkOtp(Request $request) {
+        $validator = Validator::make($request->all(), [
+                    'email' => 'required',
+                    'otp' => 'required'
+        ]);
+        if ($validator->fails()) {
+            return response()->json([
+                        'status' => false,
+                        'message' => $validator->errors(),
+                        'data' => []
+                            ], 422);
+        }
+
+        $checkOtp = ChangePasswordMobile::where('otp', $request->otp)->where('email', $request->email)->where('expired', 0)->latest()->first();
+        if ($checkOtp) {
+            if ($checkOtp->expired == 1) {
+                return response()->json([
+                            'status' => false,
+                            'message' => 'Otp has expired.',
+                            'data' => []
+                                ], 401);
+            } else {
+                if ($checkOtp->otp == $request->otp) {
+                    if (ChangePasswordMobile::whereId($checkOtp->id)->update(['expired' => 1])) {
+                        return response()->json([
+                                    'status' => true,
+                                    'message' => 'otp matched.',
+                                    'data' => [
+                                        'email' => $request->email
+                                    ]
+                                        ], 200);
+                    } else {
+                        return response()->json([
+                                    'status' => true,
+                                    'message' => 'Please try again later.',
+                                    'data' => []
+                                        ], 500);
+                    }
+                } else {
+                    return response()->json([
+                                'status' => false,
+                                'message' => 'Wrong otp.',
+                                'data' => []
+                                    ], 401);
+                }
+            }
+        } else {
+            return response()->json([
+                        'status' => false,
+                        'message' => 'Unable to fetch the information',
+                        'data' => []
+                            ], 401);
+        }
+    }
+    
+    public function forgotPasswordMobile(Request $request) {
+        $validator = Validator::make($request->all(), [
+                    'email' => 'required',
+                    'password' => 'required|confirmed'
+        ]);
+        
+        if ($validator->fails()) {
+            return response()->json([
+                        'status' => false,
+                        'message' => $validator->errors(),
+                        'data' => []
+                            ], 422);
+        }
+
+        if (User::where('email', $request->email)->update(['password' => bcrypt($request->password)])) {
+            return response()->json([
+                        'status' => true,
+                        'message' => 'Password reset sucessfully.',
+                        'data' => []
+                            ], 200);
+        }
+        return response()->json([
+                    'status' => true,
+                    'message' => 'Please try again later.',
+                    'data' => []
+                        ], 500);
     }
 
     /**
