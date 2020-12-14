@@ -617,20 +617,20 @@ class AuthController extends Controller {
                 if (isset($confirmed)) {
                     $data['is_confirmed'] = $confirmed;
                 }
-                // if ($request->password != '' && $request->password != null) {
-                //     $data['password'] = bcrypt($request->password);
-                // }
 
-                if(Hash::check($request->old_password, $user->password)){
-                    $data['password'] = bcrypt($request->new_password);
-                    $data['password_changed_at'] = Carbon::now();
-                }else {
-                    return response()->json([
-                                'status' => false,
-                                'message' => "Password don't match. Please try again.",
-                                'data' => []
-                                    ], 404);
+                if($request->has('password') && $request->has('old_password')) {
+                    if (Hash::check($request->old_password, $user->password)) {
+                        $data['password'] = bcrypt($request->new_password);
+                        $data['password_changed_at'] = Carbon::now();
+                    } else {
+                        return response()->json([
+                                    'status' => false,
+                                    'message' => "Password don't match. Please try again.",
+                                    'data' => []
+                                        ], 404);
+                    }
                 }
+
 
                 $user->update($data);
                 if (isset($confirmed)) {
