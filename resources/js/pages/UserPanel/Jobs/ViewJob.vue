@@ -559,7 +559,7 @@ const jobLat = document.getElementById("job-lat")._value;
         {}
       );
 
-      const socket = io.connect("http://13.235.151.113:3100", { secure: true });
+      const socket = io.connect("https://wa.customer.leagueofclicks.com:3100", { secure: true });
       const messageContainer = document.getElementById("message-container");
       const messageForm = document.getElementById("send-container");
       const messageInput = document.getElementById("message-input");
@@ -585,7 +585,7 @@ if (data.job_id == jobId._value) {
             '<div class="chat-msg">' +
               `${data.message.message}` +
               '</div><div class="chat-img"><img src="' +
-              `${environment.baseUrl + "/images/avatar.png"}` +
+              `${"/images/avatar.png"}` +
               '"></div>'
           );
         }

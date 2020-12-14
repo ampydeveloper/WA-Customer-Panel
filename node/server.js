@@ -20,6 +20,7 @@ app.use(bodyParser.urlencoded({
 app.use(bodyParser.json());
 
 app.post('/job-chat', (req, res) => {
+    console.log(req.body.jobId);
     Chat.find({job_id:req.body.jobId}).sort('-date').limit(10).then(messages => {
         res.json(messages);
     }).catch(err => console.error(err));
@@ -128,5 +129,5 @@ io.on('connection', socket => {
 
 // listen
 http.listen(process.env.SOCKET_SERVER_PORT || 3000, () => {
-    console.log('Listening at: http://' + process.env.SOCKET_SERVER_IP + ':' + process.env.SOCKET_SERVER_PORT);
+    console.log('Listening at: https://' + process.env.SOCKET_SERVER_IP + ':' + process.env.SOCKET_SERVER_PORT);
 });
