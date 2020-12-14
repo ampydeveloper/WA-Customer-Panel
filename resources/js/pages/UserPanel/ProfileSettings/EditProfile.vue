@@ -281,6 +281,7 @@
                     row
                   >
                     <v-radio
+                      v-if='!isHauler'
                       label="Online"
                       :value=0
                     ></v-radio>
@@ -763,7 +764,7 @@ export default {
         ...response.data.data,
       };
       this.userProfile.payment_mode = response.data.data.payment_mode;
-      console.log(response.data.data, this.userProfile);
+      // console.log(response.data.data, this.userProfile);
       this.userImage = response.data.data.image_url;
 
       CardService.list().then((response) => {

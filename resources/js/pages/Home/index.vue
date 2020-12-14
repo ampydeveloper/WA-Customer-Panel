@@ -48,7 +48,7 @@ export default {
 
   beforeCreate() {
     if(window.localStorage.getItem("token")) {
-      window.location.href = "/jobs";
+      window.location.href = "/pickups";
     }
   },
 };

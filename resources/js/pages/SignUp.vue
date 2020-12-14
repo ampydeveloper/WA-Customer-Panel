@@ -86,7 +86,7 @@ export default {
                     window.localStorage.setItem("token", access_token);
                     window.localStorage.setItem("user", JSON.stringify(user));
                     window.localStorage.setItem("verifyEmail", response.data.message);
-                    window.location.href = "/jobs";
+                    window.location.href = "/pickups";
                   },
                   (error) => {
                     for (const errorKey in error.response.data.errors) {

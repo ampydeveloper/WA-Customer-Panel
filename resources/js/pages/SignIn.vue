@@ -77,7 +77,7 @@ export default {
                     const { access_token, user } = response.data.data;
                     window.localStorage.setItem("token", access_token);
                     window.localStorage.setItem("user", JSON.stringify(user));
-                    window.location.href = "/jobs";
+                    window.location.href = "/pickups";
                   },
                   error => {
                     this.$toast.open({

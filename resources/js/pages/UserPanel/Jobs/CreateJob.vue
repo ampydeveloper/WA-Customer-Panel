@@ -534,6 +534,15 @@
                       </div>
                     </div>
                   </div>
+
+                  <div class="add-n-c-outer clearfix" v-if='addNewCard'>
+                    <v-btn
+                      class="btn-outline-red float-right"
+                      style="margin-top:17px;"
+                      @click="addNewCard = false"
+                      ><i data-feather="x"></i> Cancel</v-btn
+                    >
+                  </div>
                 </div>
 
                 <v-col class="pt-0 pb-0 create-job-but" cols="12" md="12">

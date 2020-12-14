@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Hash;
 
 //use GuzzleHttp\Exception\GuzzleException;
 use App\Http\Requests\Auth\ {
@@ -602,7 +603,7 @@ class AuthController extends Controller {
                     'city' => $request->city,
                     'state' => $request->state,
                     'zip_code' => $request->zip_code,
-                    'payment_mode' => $request->payment_mode == 'null' ? null : $request->payment_mode
+                    'payment_mode' => $request->payment_mode
                 ];
 
                 if ($request->has('image_url') && $request->get('image_url') == 'null') {
@@ -616,14 +617,14 @@ class AuthController extends Controller {
                 if (isset($confirmed)) {
                     $data['is_confirmed'] = $confirmed;
                 }
-                if ($request->password != '' && $request->password != null) {
-                    $data['password'] = bcrypt($request->password);
-                }
+                // if ($request->password != '' && $request->password != null) {
+                //     $data['password'] = bcrypt($request->password);
+                // }
 
-                if ($request->old_password == $request->new_password) {
+                if(Hash::check($request->old_password, $user->password)){
                     $data['password'] = bcrypt($request->new_password);
                     $data['password_changed_at'] = Carbon::now();
-                } else {
+                }else {
                     return response()->json([
                                 'status' => false,
                                 'message' => "Password don't match. Please try again.",

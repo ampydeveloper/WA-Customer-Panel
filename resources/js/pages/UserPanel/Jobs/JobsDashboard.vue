@@ -14,7 +14,7 @@
                   <span class="bg-custom-thickness">Check</span> your pickups
                   summary.
                 </h2>
-                <router-link class="btn btn-table-outline btn-pickup-desc" to="/jobs/create">Schedule a Pickup</router-link>
+                <router-link class="btn btn-table-outline btn-pickup-desc" to="/pickups/create">Schedule a Pickup</router-link>
               </div>
             </div>
           </div>

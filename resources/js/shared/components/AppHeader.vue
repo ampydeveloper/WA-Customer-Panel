@@ -122,7 +122,7 @@
                   <li>Auto Pick Up</li>
                   <li>Largest Volume</li>
                 </ul>
-                <router-link class="schedule-now" to="/jobs/create">
+                <router-link class="schedule-now" to="/pickups/create">
                   <i class="fa fa-angle-right" aria-hidden="true"></i>
                   Schedule Now
                 </router-link>

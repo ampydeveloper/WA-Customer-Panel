@@ -187,19 +187,19 @@ const router = new VueRouter({
                     meta: { requiresAuth: [Role.Customer, Role.CustomerManager] }
                 },
                 {
-                    path: ":farmId/jobs",
+                    path: ":farmId/pickups",
                     name: "jobsList",
                     component: JobList
                 },
                 {
-                    path: ":farmId/jobs/upcoming",
+                    path: ":farmId/pickups/upcoming",
                     name: "upcomingJobsList",
                     component: JobList
                 }
             ]
         },
         {
-            path: "/jobs",
+            path: "/pickups",
             component: Jobs,
             beforeEnter: checkAuthentication,
             children: [{
