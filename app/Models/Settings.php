@@ -7,4 +7,5 @@ use Illuminate\Database\Eloquent\Model;
 class Settings extends Model
 {
     //
+    protected $fillable = ['quick_books_refresh_token', 'quick_books_access_token'];
 }

@@ -147,5 +147,13 @@ return [
         4 => 'Visa',
         5 => 'MasterCard',
         6 => 'DiscoverCard',
+    ],
+    'quickbooks' => [
+        'client_id' => env('QUICKBCLIENTID', 'ABXFvdnF62facDvQgjmidJS2gxmNJDlSyZ2NNo9s1dlFBHDOCY'),
+        'client_secret' => env('QUICKBCLIENTSECRET', 'zchqARWLDfsY1SErpA1Bb80k4uHf2xrfIosivs3T'),
+        'baseUrl' => env('QUICKBENV', 'Development'),
+        'realm_id' => env('QUICKBREALMID', '4620816365155385730'),
+        'access_token' => env('QUICKBACCESSTOKEN', 'AB11608276796fmH2pK4LtxAJxwoqmwXuguqJtBAoYuWAJooPv'),
+        'refresh_token' => env('QUICKBREFRESHTOKEN', 'AB11608276796fmH2pK4LtxAJxwoqmwXuguqJtBAoYuWAJooPv')
     ]
 ]; 
