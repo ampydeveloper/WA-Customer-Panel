@@ -569,7 +569,8 @@ const jobLat = document.getElementById("job-lat")._value;
       socket.emit("new-user", name._value);
       messageContainerScroll.scroll([0, "100%"], 50, { x: "", y: "linear" });
 
-      socket.on("chat-message", (data) => {
+      const emitChannel = "chat-message";//"chatmessage"+jobId
+      socket.on(emitChannel, (data) => {
         const userImage = $("#current-user-image").val();
 if (data.job_id == jobId._value) {
         if (data.name == name._value) {
@@ -626,7 +627,7 @@ if (data.job_id == jobId._value) {
           .prepend(messageElement);
         $("#message-container .empty-message").remove();
       }
-    }, 1000);
+    }, 2000);
   },
   methods: {
     // getChatMembers() {
