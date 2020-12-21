@@ -106,7 +106,6 @@
                         Cancel
                       </a>
                       <router-link
-                        v-if="job.job_status == 1"
                         :to="{ name: 'ViewJob', params: { jobId: job.id } }"
                         class="btn btn-table-outline pickup-btn-outline"
                       >
