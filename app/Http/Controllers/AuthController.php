@@ -606,6 +606,8 @@ class AuthController extends Controller {
                     'payment_mode' => $request->payment_mode
                 ];
 
+                if($data['payment_mode'] == null || $data['payment_mode'] == 'null'){ unset($data['payment_mode']); }
+
                 if ($request->has('image_url') && $request->get('image_url') == 'null') {
                     $data['user_image'] = null;
                 }
