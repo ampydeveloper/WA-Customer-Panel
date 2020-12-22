@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Exception;
 use QuickBooksOnline\API\DataService\DataService;
 use QuickBooksOnline\API\Core\OAuth\OAuth2\OAuth2LoginHelper;
@@ -114,8 +115,6 @@ class QuickbooksController extends Controller
             $resultObj = $dataService->Add($newCustomer);
             $getCustomer = $dataService->Query(sprintf("SELECT * FROM CUSTOMER WHERE PrimaryEmailAddr='%s'", $customer_details->email));
         }
-        // dump($getCustomer);
-
         // Check Service or create if not exists
         $job_details = Job::where('id', $job_id)->first();
         $service = $job_details->service;
@@ -134,12 +133,9 @@ class QuickbooksController extends Controller
             $resultObj = $dataService->Add($newService);
             $getService = $dataService->Query(sprintf("SELECT * FROM ITEM WHERE Name='%s' AND Type='Service'", $service->service_name));
         }
-        // dump($getService);
-        // dd($job_details);
 
         $invoiceToCreate = Invoice::create([
             "DocNumber" => $job_details->id,
-            "Description" => $job_details->notes,
             "Line" => [
                 [
                     "Description" => "Services for farm: ".$job_details->farm->farm_address,
@@ -196,7 +192,7 @@ class QuickbooksController extends Controller
                     }
                 }
             }
-            if($type == 'invoice'){
+            if($type == 'invoice' || $type == 'invoiceDownload'){
                 $query .= sprintf(" WHERE DocNumber='%s'", $q); 
             }
             if($type == 'service'){
@@ -211,9 +207,21 @@ class QuickbooksController extends Controller
                 }
             }
         }
-        // dump($query);
+        // dd(public_path() . "/Invoices");
         $invoices = $dataService->Query($query);
-        // dd($invoices);
+        if($type == 'invoiceDownload'){
+            $invoiceFile = 'Invoices/Invoice-' . $q . '.pdf';
+            if(Storage::exists($invoiceFile)){
+                return Storage::download($invoiceFile);
+            }
+            if($invoices != null && count($invoices) > 0){
+                $invoice = $invoices[0];
+                // dd($invoice);
+                $contents = $dataService->DownloadPDF($invoice, null, true);
+                Storage::put($invoiceFile, $contents);
+                return Storage::download($invoiceFile);
+            }
+        }
         return $invoices;
     }
 }

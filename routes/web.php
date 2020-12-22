@@ -39,6 +39,8 @@ use Illuminate\Support\Facades\Route;
 //    dd($messages);
 //});
 
+Route::get('/invoice/{q}/{type}', 'QuickbooksController@getInvoices'); //QuickBooks Invoice
+
 Route::get('/{any}', function () {
     return view('welcome');
 })->where('any', '.*');
