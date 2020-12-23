@@ -42,6 +42,7 @@ class DriverController extends Controller
         if (Auth::user()->role_id == config('constant.roles.Haulers')) {
             try {
                 $newPassword = Str::random();
+                DB::beginTransaction();
                 $user = new User([
                     'prefix' => (isset($request->prefix) && $request->prefix != '' && $request->prefix != null) ? $request->prefix : null,
                     'first_name' => $request->driver_first_name,
@@ -59,14 +60,25 @@ class DriverController extends Controller
                     if ($request->driver_image) {
                         $imageName = $user->putImage($request->driver_image);
                         $user->user_image = $imageName;
-                        $user->save();
+                        if ($user->save()) {
+                            $this->_confirmPassword($user, $newPassword);
+                            
+                            // Notification is required.
+                            $customerActivity = new CustomerActivity([
+                                'customer_id' => $request->user()->id,
+                                'created_by' => $request->user()->id,
+                                'activities' => 'Hauler created ' . $user->first_name . ' as driver.',
+                            ]);
+                            if ($customerActivity->save()) {
+                                DB::commit();
+                                return response()->json([
+                                            'status' => true,
+                                            'message' => 'Driver created successfully.',
+                                            'data' => $user
+                                                ], 200);
+                            }
+                        }
                     }
-                    $this->_confirmPassword($user, $newPassword);
-                    return response()->json([
-                                'status' => true,
-                                'message' => 'Driver created successfully.',
-                                'data' => $user
-                                    ], 200);
                 }
             } catch (\Exception $e) {
                 DB::rollBack();
@@ -114,6 +126,7 @@ class DriverController extends Controller
                 }
             }
             try {
+                DB::beginTransaction();
                 $driver->prefix = (isset($request->prefix) && $request->prefix != '' && $request->prefix != null) ? $request->prefix : null;
                 $driver->first_name = $request->first_name;
                 $driver->last_name = $request->last_name;
@@ -131,13 +144,25 @@ class DriverController extends Controller
                     if (isset($confirmed)) {
                         $this->_updateEmail($driver, $request->email);
                     }
-                    return response()->json([
+                    
+                    $customerActivity = new CustomerActivity([
+                        'customer_id' => Auth::user()->id,
+                        'created_by' => Auth::user()->id,
+                        'activities' => 'Hauler update '.$driver->first_name."'s details.",
+                    ]);
+                    if ($customerActivity->save()) {
+                        
+                        // Notification is required.
+                        DB::commit();
+                        return response()->json([
                                 'status' => true,
                                 'message' => 'Driver details updated successfully.',
                                 'data' => $driver
                                     ], 200);
+                    }
                 }
             } catch (\Exception $e) {
+                DB::rollBack();
                 return response()->json([
                             'status' => false,
                             'message' => $e->getMessage(),
@@ -168,12 +193,25 @@ class DriverController extends Controller
     public function deleteDriver(User $driver) {
         if (Auth::user()->role_id == config('constant.roles.Haulers')) {
             try {
-                $driver->delete();
-                return response()->json([
+                DB::beginTransaction();
+                if($driver->delete()) {
+                    $customerActivity = new CustomerActivity([
+                        'customer_id' => Auth::user()->id,
+                        'created_by' => Auth::user()->id,
+                        'activities' => 'Hauler deleted '. $driver->first_name.' driver.',
+                    ]);
+                    if ($customerActivity->save()) {
+                        DB::commit();
+                        
+                        // Notification is required.
+                        
+                        return response()->json([
                             'status' => true,
                             'message' => 'Hauler driver deleted successfully.',
                             'data' => []
                                 ], 200);
+                    }
+                }
             } catch (\Exception $e) {
                 return response()->json([
                             'status' => false,

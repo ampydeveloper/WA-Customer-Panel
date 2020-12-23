@@ -3,19 +3,20 @@
 namespace App\Http\Controllers;
 
 use Mail;
-use App\Models\User;
 use Socialite;
 use Carbon\Carbon;
+use App\Models\User;
 //use GuzzleHttp\Client;
 //use Illuminate\Support\Str;
 use Illuminate\Http\Request;
-use App\Models\ChangePasswordMobile;
+use Illuminate\Support\Facades\DB;
 //use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\Log;
+use App\Models\ChangePasswordMobile;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
 
 //use GuzzleHttp\Exception\GuzzleException;
 use App\Http\Requests\Auth\ {
@@ -31,6 +32,7 @@ class AuthController extends Controller {
     public function signup(SignUpRequest $request) {
         if ($request->role_id == config('constant.roles.Customer') || $request->role_id == config('constant.roles.Haulers')) {
             try {
+                DB::beginTransaction();
                 $user = new User([
 //                    'prefix' => $request->prefix,
                     'first_name' => $request->first_name,
@@ -48,22 +50,24 @@ class AuthController extends Controller {
                 ]);
                 if ($user->save()) {
                     $this->_welcomeEmail($user);
+                    $tokenResult = $user->createToken('Personal Access Token');
+                    $token = $tokenResult->token;
+                    if($token->save()) {
+                            DB::commit();
+                            return response()->json([
+                                'status' => true,
+                                'message' => 'Your account is successfully created. We have sent you an e-mail to confirm your account.',
+                                'data' => [
+                                    'access_token' => $tokenResult->accessToken,
+                                    'token_type' => 'Bearer',
+                                    'expires_at' => Carbon::parse($tokenResult->token->expires_at)->toDateTimeString(),
+                                    'user' => $user
+                                ]
+                                    ], 200);
+                    }
                 }
-                $created_user = User::where('email', $request->email)->first();
-                $tokenResult = $created_user->createToken('Personal Access Token');
-                $token = $tokenResult->token;
-                $token->save();
-                return response()->json([
-                            'status' => true,
-                            'message' => 'Your account is successfully created. We have sent you an e-mail to confirm your account.',
-                            'data' => [
-                                'access_token' => $tokenResult->accessToken,
-                                'token_type' => 'Bearer',
-                                'expires_at' => Carbon::parse($tokenResult->token->expires_at)->toDateTimeString(),
-                                'user' => $created_user
-                            ]
-                                ], 200);
             } catch (\Exception $e) {
+                DB::rollBack();
                 return response()->json([
                             'status' => false,
                             'message' => json_encode($e->getMessage()),
@@ -403,7 +407,7 @@ class AuthController extends Controller {
                     'email' => 'required',
                     'password' => 'required|confirmed'
         ]);
-        
+
         if ($validator->fails()) {
             return response()->json([
                         'status' => false,
@@ -413,11 +417,11 @@ class AuthController extends Controller {
         }
 
         if (User::where('email', $request->email)->update(['password' => bcrypt($request->password)])) {
-            return response()->json([
-                        'status' => true,
-                        'message' => 'Password reset sucessfully.',
-                        'data' => []
-                            ], 200);
+                return response()->json([
+                            'status' => true,
+                            'message' => 'Password reset sucessfully.',
+                            'data' => []
+                                ], 200);
         }
         return response()->json([
                     'status' => true,
@@ -477,7 +481,53 @@ class AuthController extends Controller {
      *
      * @return JSON response.
      */
-    public function changePassword(ChangePasswordRequest $request) {
+    
+    public function changePassword(Request $request) {
+        
+        $validator = Validator::make($request->all(), [
+                    'password' => 'min:6|required|confirmed',
+                    'token' => 'required'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                        'status' => false,
+                        'message' => $validator->errors(),
+                        'data' => []
+                            ], 422);
+        }
+        
+        
+        $userEmail = base64_decode($request->token);
+        $user = User::where('email', $userEmail)->first();
+
+        if (!$user) {
+            return response()->json([
+                        'status' => false,
+                        'message' => 'Invalid token.',
+                        'data' => []
+                            ], 404);
+        }
+
+        $user->password = bcrypt($request->password);
+        $user->password_changed_at = Carbon::now();
+        if ($user->save()) {
+                $message = "Password changed successfully.";
+                $status = true;
+                $errCode = 200;
+        } else {
+            $status = false;
+            $message = "Something went wrong.";
+            $errCode = 400;
+        }
+        return response()->json([
+                    'status' => $status,
+                    'message' => $message,
+                    'data' => []
+                        ], $errCode);
+    }
+    
+    public function changePasswordMobile(ChangePasswordRequest $request) {
         $user = User::where('email', $request->user()->email)->first();
         if (!$user) {
             return response()->json([
@@ -490,9 +540,9 @@ class AuthController extends Controller {
         $user->password = bcrypt($request->password);
         $user->password_changed_at = Carbon::now();
         if ($user->save()) {
-            $message = "Password changed successfully.";
-            $status = true;
-            $errCode = 200;
+                $message = "Password changed successfully.";
+                $status = true;
+                $errCode = 200;
         } else {
             $status = false;
             $message = "Something went wrong.";
