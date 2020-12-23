@@ -36,6 +36,7 @@ import EditJob from "./pages/UserPanel/Jobs/EditJob.vue";
 import JobsDashboard from "./pages/UserPanel/Jobs/JobsDashboard.vue";
 import ViewJob from "./pages/UserPanel/Jobs/ViewJob.vue";
 import ServicesLogin from "./pages/ServicesLogin.vue";
+import DuplicateJob from "./pages/UserPanel/Jobs/DuplicateJob.vue";
 
 /* Driver Imports */
 import Drivers from "./pages/UserPanel/Drivers";
@@ -226,6 +227,11 @@ const router = new VueRouter({
                     path: "create",
                     name: "createJob",
                     component: CreateJob
+                },
+                {
+                    path: ":jobId/duplicate",
+                    name: "duplicateJob",
+                    component: DuplicateJob
                 },
                 {
                     path: ":jobId/edit",
