@@ -27,7 +27,6 @@ class ChangePasswordRequest extends FormRequest
     {
         return [
             'password' => 'min:6|required|confirmed',
-            'token' => 'required'
         ];
     }
 

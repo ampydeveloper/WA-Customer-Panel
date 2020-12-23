@@ -252,7 +252,7 @@ class AuthController extends Controller {
             if (!$user) {
                 return response()->json([
                             'status' => false,
-                            'message' => 'These credentials do not match our records.',
+                            'message' => 'No account with this email id.',
                             'data' => []
                                 ], 401);
             }
@@ -478,9 +478,7 @@ class AuthController extends Controller {
      * @return JSON response.
      */
     public function changePassword(ChangePasswordRequest $request) {
-        $userEmail = base64_decode($request->token);
-        $user = User::where('email', $userEmail)->first();
-
+        $user = User::where('email', $request->user()->email)->first();
         if (!$user) {
             return response()->json([
                         'status' => false,
