@@ -162,12 +162,17 @@ export default {
           {
             label: 'Address',
             type: "vueGoogleAutocomplete",
-            model: "farm_address",
             required: true,
+            model: 'farm_address',
             validator: ["required", "string"],
-            styleClasses:'col-md-4'  ,
-            onGetAddressData : ($event) => {
-              console.log($event);
+            styleClasses:'col-md-4',
+            getAddressData: (addressData, placeResultData, id) => {
+              if(addressData.route) this.model.farm_address = addressData.route
+              if(addressData.locality) this.model.farm_city = addressData.locality
+              if(addressData.administrative_area_level_1) this.model.farm_province = addressData.administrative_area_level_1
+              if(addressData.postal_code) this.model.farm_zipcode = addressData.postal_code
+              if(addressData.longitude) this.model.longitude = addressData.longitude
+              if(addressData.latitude) this.model.latitude = addressData.latitude
             }
           },
           ...farmFormSchema.fields,
@@ -245,6 +250,7 @@ $(document).ready(function() {
       if (isValidated !== true) {
         return false;
       }
+
       var createFarmRequest = new FormData();
 
       /**

@@ -171,12 +171,18 @@ export default {
             label: 'Address',
             type: "vueGoogleAutocomplete",
             required: false,
+            model: 'farm_address',
             placeHolder: 'farm_address',
-            // validator: ["required", "string"],
+            validator: ["required", "string"],
             styleClasses:'col-md-4',
-            onPlaceChanged : (addressData) => {
-              this.model.farm_address = addressData;
-              console.log($event);
+            getAddressData : (addressData) => {
+              if(addressData.route) this.model.farm_address = addressData.route
+              if(addressData.locality) this.model.farm_city = addressData.locality
+              if(addressData.administrative_area_level_1) this.model.farm_province = addressData.administrative_area_level_1
+              if(addressData.postal_code) this.model.farm_zipcode = addressData.postal_code
+              if(addressData.longitude) this.model.longitude = addressData.longitude
+              if(addressData.latitude) this.model.latitude = addressData.latitude
+              // this.model.farm_address = addressData;
             }
           },
           ...farmFormSchema.fields,

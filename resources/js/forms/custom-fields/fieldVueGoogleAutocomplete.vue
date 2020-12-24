@@ -2,8 +2,9 @@
   <vue-google-autocomplete
     classname="form-control"
     id="place-search"
+    v-model='value'
     placeholder="Start typing"
-    v-on:placechanged="getAddressData"
+    v-on:placechanged="schema.getAddressData"
 >
 </vue-google-autocomplete>
 </template>
@@ -32,9 +33,9 @@ export default {
     };
   },
   methods: {
-    getAddressData: function (addressData, placeResultData, id) {
-        console.log(addressData);
-    }
+    // getAddressData: function (addressData, placeResultData, id) {
+        // console.log(addressData);
+    // }
   }
 };
 </script>
