@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Auth;
 use Illuminate\Http\Request;
 //use Illuminate\Support\Facades\Log;
+use App\Models\CustomerActivity;
 use Illuminate\Support\Facades\DB;
 use net\authorize\api\contract\v1 as AnetAPI;
 use net\authorize\api\controller as AnetController;
@@ -176,6 +177,7 @@ class PaymentController extends Controller
 
             $paymentProfiles = $response->getCustomerPaymentProfileIdList();
             $split = str_split($cardData->card_number);
+            DB::beginTransaction();
             $card = CustomerCardDetail::create([
                 'name' => $cardData->name,
                 'customer_id' => $customer->id,
@@ -188,15 +190,23 @@ class PaymentController extends Controller
                 'card_brand' => config('constant.card_brands_reversed.'.$split[0]),
             ]);
 
-            return [
+            $customerActivity = new CustomerActivity([
+                'customer_id' => $customer->id,
+                'created_by' => Auth::user()->id,
+                'activities' => 'New card is added with card no '.$cardData->card_number,
+            ]);
+            if ($customerActivity->save()) {
+                DB::commit();
+                return [
                 'status' => true,
                 'message' => 'Card added successfully.',
                 'data' => $user,
                 'card' => $card
             ];
+            }
         }
         $errorMessages = $response->getMessages()->getMessage();
-
+        DB::rollBack();
         return [
             'status' => false,
             'message' => 'Please try again later.',
@@ -262,6 +272,7 @@ class PaymentController extends Controller
                 $primaryCard = 1;
             }
             $split = str_split($cardData->card_number);
+            DB::beginTransaction();
             $card = CustomerCardDetail::create([
                 'name' => $cardData->name,
                 'customer_id' => $customer->id,
@@ -273,16 +284,26 @@ class PaymentController extends Controller
                 'card_primary' => $primaryCard,
                 'card_brand' => config('constant.card_brands_reversed.'.$split[0]),
             ]);
-
-            return [
+            $customerActivity = new CustomerActivity([
+                'customer_id' => $customer->id,
+                'created_by' => Auth::user()->id,
+                'activities' => 'New card is added with card no '.$cardData->card_number,
+            ]);
+            if ($customerActivity->save()) {
+                DB::commit();
+                return [
                 'status' => true,
                 'message' => 'Card added successfully.',
                 'data' => $user,
                 'card' => $card
             ];
+            }
+
+            
 
         } else {
             $errorMessages = $response->getMessages()->getMessage();
+            DB::rollBack();
             return [
                 'status' => false,
                 'message' => 'Please try again later.',
@@ -344,13 +365,24 @@ class PaymentController extends Controller
             $controller = new AnetController\DeleteCustomerPaymentProfileController($request);
             $response = $controller->executeWithApiResponse(\net\authorize\api\constants\ANetEnvironment::SANDBOX);
             if (($response != null) && ($response->getMessages()->getResultCode() == "Ok")) {
-                $customerCardDetails->delete();
-
-                return response()->json([
+                
+                DB::beginTransaction();
+                if($customerCardDetails->delete()) {
+                    $customerActivity = new CustomerActivity([
+                        'customer_id' => $customerCardDetails->customer_id,
+                        'created_by' => Auth::user()->id,
+                        'activities' => $customerCardDetails->card_number.' is deleted.',
+                    ]);
+                    if ($customerActivity->save()) {
+                        DB::commit();
+                        return response()->json([
                             'status' => true,
                             'message' => 'Card deleted successfully.'
                                 ], 200);
+                    }
+                }
             } else {
+                DB::rollBack();
                 return response()->json([
                             'status' => false,
                             'message' => 'Not able to delete card please try again later.',
@@ -417,6 +449,7 @@ class PaymentController extends Controller
                 $controller = new AnetController\UpdateCustomerPaymentProfileController($request);
                 $response = $controller->executeWithApiResponse(\net\authorize\api\constants\ANetEnvironment::SANDBOX);
                 if (($response != null) && ($response->getMessages()->getResultCode() == "Ok")) {
+                    DB::beginTransaction();
                     CustomerCardDetail::where([
                         'customer_id' => $customer->id,
                         'card_primary' => 1
@@ -426,12 +459,21 @@ class PaymentController extends Controller
                     $customerCardDetails->update([
                         'card_primary' => 1
                     ]);
-                    return response()->json([
+                    $customerActivity = new CustomerActivity([
+                        'customer_id' => $customerCardDetails->customer_id,
+                        'created_by' => Auth::user()->id,
+                        'activities' => 'Status of card no. '.$customerCardDetails->card_id.' is changed.',
+                    ]);
+                    if ($customerActivity->save()) {
+                        DB::commit();
+                        return response()->json([
                                 'status' => true,
                                 'message' => 'Card set as default card.'
                                     ], 200);
+                    }
                 }
             }
+            DB::rollBack();
             return response()->json([
                         'status' => true,
                         'message' => 'Failed to set card as default card.',
@@ -448,7 +490,6 @@ class PaymentController extends Controller
     
     function chargeCustomerProfile(ChargeCustomerProfileRequest $request)
     {
-        dd($request->all());
         $amount = $request->amount;
         $customer = User::find($request->customer_id);
 
@@ -456,15 +497,15 @@ class PaymentController extends Controller
         $farm = $job->farm;
         if ($farm->customer_id != $customer->id) {
             return response()->json([
-                'status' => false,
-                'message' => $customer->full_name.' is not the owner of farm.'
-            ], 421);
+                        'status' => false,
+                        'message' => $customer->full_name . ' is not the owner of farm.'
+                            ], 421);
         }
         if (!$customer->authorize_net_id || $customer->authorize_net_id == '') {
             return response()->json([
-                'status' => false,
-                'message' => 'Customer is not registered on authrized.net.'
-            ], 421);
+                        'status' => false,
+                        'message' => 'Customer is not registered on authrized.net.'
+                            ], 421);
         }
 
         if ($job->card_id) {
@@ -473,13 +514,13 @@ class PaymentController extends Controller
             $defaultCard = $customer->defaultCard();
             if (!$defaultCard) {
                 return response()->json([
-                    'status' => false,
-                    'message' => 'Customer do not have any default card.'
-                ], 421);
+                            'status' => false,
+                            'message' => 'Customer do not have any default card.'
+                                ], 421);
             }
         }
-        
-        
+
+
         $profileToCharge = new AnetAPI\CustomerProfilePaymentType();
         $profileToCharge->setCustomerProfileId($customer->authorize_net_id);
         $paymentProfile = new AnetAPI\PaymentProfileType();
@@ -487,24 +528,24 @@ class PaymentController extends Controller
         $profileToCharge->setPaymentProfile($paymentProfile);
 
         $transactionRequestType = new AnetAPI\TransactionRequestType();
-        $transactionRequestType->setTransactionType( "authCaptureTransaction");
+        $transactionRequestType->setTransactionType("authCaptureTransaction");
         $transactionRequestType->setAmount($amount);
         $transactionRequestType->setProfile($profileToCharge);
 
         $createTransactionRequest = new AnetAPI\CreateTransactionRequest();
         $createTransactionRequest->setMerchantAuthentication($this->gateway);
         $createTransactionRequest->setRefId($customer->id);
-        $createTransactionRequest->setTransactionRequest( $transactionRequestType);
+        $createTransactionRequest->setTransactionRequest($transactionRequestType);
         $controller = new AnetController\CreateTransactionController($createTransactionRequest);
-        $response = $controller->executeWithApiResponse( \net\authorize\api\constants\ANetEnvironment::SANDBOX);
+        $response = $controller->executeWithApiResponse(\net\authorize\api\constants\ANetEnvironment::SANDBOX);
         $errorMessage = '';
         $errorCode = '';
         if ($response != null) {
-            if($response->getMessages()->getResultCode() == "Ok") {
+            if ($response->getMessages()->getResultCode() == "Ok") {
                 $tresponse = $response->getTransactionResponse();
 
                 if ($tresponse != null && $tresponse->getMessages() != null) {
-
+                    DB::beginTransaction();
                     Payment::create([
                         'job_id' => $request->job_id,
                         'user_id' => $request->user_id,
@@ -516,28 +557,38 @@ class PaymentController extends Controller
                         'amount' => $request->amount,
                         'payment_status' => config('constant.payment_status_reverse.succeeded')
                     ]);
-                    return response()->json([
-                        'status' => true,
-                        'message' => 'Payment done successfully.',
-                        'data' => [
-                            'payment_id' => $tresponse->getTransId(),
-                            'amount' => $request->amount
-                        ]
-                    ], 200);
+                    $customerActivity = new CustomerActivity([
+                        'customer_id' => $customer->id,
+                        'job_id' => $job->id,
+                        'created_by' => Auth::user()->id,
+                        'activities' => 'Payment done for job ' . $job->id,
+                    ]);
+                    if ($customerActivity->save()) {
+                        DB::commit();
+                        return response()->json([
+                                    'status' => true,
+                                    'message' => 'Payment done successfully.',
+                                    'data' => [
+                                        'payment_id' => $tresponse->getTransId(),
+                                        'amount' => $request->amount
+                                    ]
+                                        ], 200);
+                    }
                 } else {
                     if ($tresponse->getErrors() != null) {
                         $errorMessage = $tresponse->getErrors()[0]->getErrorText();
                         $errorCode = $tresponse->getErrors()[0]->getErrorCode();
                     }
 
+                    DB::rollBack();
                     return response()->json([
-                        'status' => true,
-                        'message' => 'Payment failed.',
-                        'error' => [
-                            'errorMessage' => $errorMessage,
-                            'errorCode' => $errorCode
-                        ]
-                        ], 421);
+                                'status' => true,
+                                'message' => 'Payment failed.',
+                                'error' => [
+                                    'errorMessage' => $errorMessage,
+                                    'errorCode' => $errorCode
+                                ]
+                                    ], 421);
                 }
             } else {
                 $tresponse = $response->getTransactionResponse();
@@ -549,23 +600,26 @@ class PaymentController extends Controller
                     $errorCode = $response->getMessages()->getMessage()[0]->getCode();
                 }
 
+                DB::rollBack();
                 return response()->json([
-                    'status' => true,
-                    'message' => 'Payment failed.',
-                    'error' => [
-                        'errorMessage' => $errorMessage,
-                        'errorCode' => $errorCode
-                    ]
-                ], 421);
+                            'status' => true,
+                            'message' => 'Payment failed.',
+                            'error' => [
+                                'errorMessage' => $errorMessage,
+                                'errorCode' => $errorCode
+                            ]
+                                ], 421);
             }
         }
 
+        DB::rollBack();
         return response()->json([
-            'status' => true,
-            'message' => 'Payment failed.',
-            'error' => [
-                'errorMessage' => 'No response returned.'
-            ]
-        ], 421);
+                    'status' => true,
+                    'message' => 'Payment failed.',
+                    'error' => [
+                        'errorMessage' => 'No response returned.'
+                    ]
+                        ], 421);
     }
+
 }

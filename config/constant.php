@@ -153,5 +153,10 @@ return [
         'client_secret' => env('QUICKBCLIENTSECRET', 'zchqARWLDfsY1SErpA1Bb80k4uHf2xrfIosivs3T'),
         'baseUrl' => env('QUICKBENV', 'Development'),
         'realm_id' => env('QUICKBREALMID', '4620816365155385730')
+    ],
+    'customer_activities' => [
+        'pickup_created' => 'Pickup is created.',
+        'pickup_updated' => 'Pickup is updated.',
+        'pickup_cancelled' => 'Pickup is cancelled.',
     ]
 ]; 

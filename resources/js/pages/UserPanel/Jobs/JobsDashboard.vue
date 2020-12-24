@@ -111,6 +111,12 @@
                       >
                         View Details</router-link
                       >
+                      <router-link
+                        :to="{ name: 'duplicateJob', params: { jobId: job.id } }"
+                        class="btn btn-table-outline"
+                      >
+                        Duplicate Pickup</router-link
+                      >
                     </td>
                   </tr>
                 </tbody>

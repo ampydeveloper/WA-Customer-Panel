@@ -36,7 +36,8 @@ Route::group(['prefix' => 'auth'], function () {
     
     
     Route::post('forgot-password', 'AuthController@forgotPassword')->name('forgot.password');
-    Route::post('change-password', 'AuthController@changePassword')->name('change.password');
+    Route::post('change-password-web', 'AuthController@changePassword')->name('change.password');
+    Route::post('change-password', 'AuthController@changePasswordMobile')->middleware('auth:api')->name('change.password.mobile');
     Route::get('logout', 'AuthController@logout')->middleware('auth:api')->name('logout');
     Route::group(['prefix' => 'profile', 'as' => 'profile'], function () {
         Route::get('', 'AuthController@profile')->middleware('auth:api')->name('get');

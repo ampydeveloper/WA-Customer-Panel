@@ -12,9 +12,10 @@ use App\Models\User;
 //use App\Models\Payment;
 //use App\ServicesTimeSlot;
 use Illuminate\Support\Str;
-use App\Models\CustomerFarm;
 use Illuminate\Http\Request;
+use App\Models\CustomerFarm;
 //use App\Models\ManagerDetail;
+use App\Models\CustomerActivity;
 //use Illuminate\Validation\Rule;
 //use App\Models\CustomerCardDetail;
 use Illuminate\Support\Facades\DB;
@@ -56,7 +57,7 @@ class FarmController extends Controller
                 'distance_warehouse' => $this->getDistance($request->latitude, $request->longitude, null, null, 'M', 'warehouse'),
                 'distance_dumping_area' => $this->getDistance($request->latitude, $request->longitude, null, null, 'M', 'dumping')
             ]);
-            if ($request->farm_image && $request->farm_image != null) {  
+            if ($request->farm_image && $request->farm_image != null) {
                 $imageName = $farmDetails->putImage($request->farm_image);
                 $farmDetails['farm_image'] = json_encode([$imageName]);
                 // $farmImages = [];
@@ -69,40 +70,56 @@ class FarmController extends Controller
             }
 
             if ($farmDetails->save()) {
-                foreach ($request->manager_details as $manager) {
-                    $newPassword = Str::random();
-                    $saveManger = new User([
-                        'prefix' => (isset($manager['manager_prefix']) && $manager['manager_prefix'] != '' && $manager['manager_prefix'] != null) ? $manager['manager_prefix'] : null,
-                        'first_name' => $manager['manager_first_name'],
-                        'last_name' => $manager['manager_last_name'],
-                        'email' => $manager['email'],
-                        'phone' => $manager['manager_phone'],
-                        'address' => $manager['manager_address'],
-                        'city' => $manager['manager_city'],
-                        'state' => $manager['manager_province'],
-                        'zip_code' => $manager['manager_zipcode'],
-                        'role_id' => config('constant.roles.Customer_Manager'),
-                        'created_from_id' => $customer->id,
-                        'is_confirmed' => 1,
-                        'is_active' => 1,
-                        'created_by' => $customer->id,
-                        'farm_id' => $farmDetails->id,
-                        'password' => bcrypt($newPassword)
-                    ]);
-                    if (isset($manager['manager_image'])) {
-                        $imageName = $saveManger->putImage($manager['manager_image']);
-                        $saveManger['user_image'] = json_encode($imageName);
+                $customerActivity = new CustomerActivity([
+                    'customer_id' => $customer->id,
+                    'created_by' => $customer->id,
+                    'activities' => 'Customer added new farm located at ' . $farmDetails->farm_address . '.',
+                ]);
+                if ($customerActivity->save()) {
+                    foreach ($request->manager_details as $manager) {
+                        $newPassword = Str::random();
+                        $saveManger = new User([
+                            'prefix' => (isset($manager['manager_prefix']) && $manager['manager_prefix'] != '' && $manager['manager_prefix'] != null) ? $manager['manager_prefix'] : null,
+                            'first_name' => $manager['manager_first_name'],
+                            'last_name' => $manager['manager_last_name'],
+                            'email' => $manager['email'],
+                            'phone' => $manager['manager_phone'],
+                            'address' => $manager['manager_address'],
+                            'city' => $manager['manager_city'],
+                            'state' => $manager['manager_province'],
+                            'zip_code' => $manager['manager_zipcode'],
+                            'role_id' => config('constant.roles.Customer_Manager'),
+                            'created_from_id' => $customer->id,
+                            'is_confirmed' => 1,
+                            'is_active' => 1,
+                            'created_by' => $customer->id,
+                            'farm_id' => $farmDetails->id,
+                            'password' => bcrypt($newPassword)
+                        ]);
+                        if (isset($manager['manager_image'])) {
+                            $imageName = $saveManger->putImage($manager['manager_image']);
+                            $saveManger['user_image'] = json_encode($imageName);
+                        }
+                        if ($saveManger->save()) {
+                            $this->_confirmPassword($saveManger, $newPassword);
+
+                            $customerActivity = new CustomerActivity([
+                                'customer_id' => $customer->id,
+                                'created_by' => $customer->id,
+                                'activities' => 'Customer added ' . $saveManger->first_name . ' as manager to the farm located at ' . $farmDetails->farm_address . '.',
+                            ]);
+                            $customerActivity->save();
+                        }
                     }
-                    if ($saveManger->save()) {
-                        $this->_confirmPassword($saveManger, $newPassword);
-                    }
+                    // Email is required.
+                    // Notification is required.
+                    DB::commit();
+                    return response()->json([
+                                'status' => true,
+                                'message' => 'Customer farm created successfully.',
+                                'data' => $farmDetails
+                                    ], 200);
                 }
-                DB::commit();
-                return response()->json([
-                            'status' => true,
-                            'message' => 'Customer farm created successfully.',
-                            'data' => $farmDetails
-                        ], 200);
             }
         } catch (\Exception $e) {
             DB::rollBack();
@@ -175,6 +192,7 @@ class FarmController extends Controller
         $user = request()->user();
         if ($user->canAccessFarm($customerFarm)) {
             try {
+                DB::beginTransaction();
                 $customerFarm->update([
                     'farm_address' => $request->farm_address,
                     'farm_unit' => (isset($request->farm_unit) && $request->farm_unit != '' && $request->farm_unit != null) ? ($request->farm_unit) : null,
@@ -243,13 +261,24 @@ class FarmController extends Controller
                         }
                     }
                 }
-
-                return response()->json([
-                            'status' => true,
-                            'message' => 'Farm details updated successfully.',
-                            'farm' => $customerFarm
-                                ], 200);
+                $customerActivity = new CustomerActivity([
+                    'customer_id' => $user->id,
+                    'created_by' => $user->id,
+                    'activities' => 'Customer updated farm located at' . $customerFarm->farm_address . ' and its managers.',
+                ]);
+                if ($customerActivity->save()) {
+                    
+                    // Notification is required.
+                    
+                    DB::commit();
+                    return response()->json([
+                                'status' => true,
+                                'message' => 'Farm details updated successfully.',
+                                'farm' => $customerFarm
+                                    ], 200);
+                }
             } catch (\Exception $e) {
+                DB::rollBack();
                 return response()->json([
                             'status' => false,
                             'message' => $e->getMessage(),
@@ -276,8 +305,17 @@ class FarmController extends Controller
             DB::beginTransaction();
             $customerFarm->managers()->delete();
             $customerFarm->delete();
-            DB::commit();
             
+            $customerActivity = new CustomerActivity([
+                'customer_id' => $customerFarm->customer_id,
+                'created_by' => $customerFarm->customer_id,
+                'activities' => 'Customer deleted farm located at '.$customerFarm->farm_address,
+            ]);
+            if ($customerActivity->save()) {
+                // Email is required.
+                // Notification is required.    
+                DB::commit();
+            }
             return response()->json([
                 'status' => false,
                 'message' => 'Farm deleted successfully.',
@@ -342,12 +380,21 @@ class FarmController extends Controller
                 }
                 if ($saveManager->save()) {
                     $this->_confirmPassword($saveManager, $newPassword);
-                    DB::commit();
-                    return response()->json([
+                    
+                    // Notification is required.
+                    $customerActivity = new CustomerActivity([
+                        'customer_id' => Auth::user()->id,
+                        'created_by' => Auth::user()->id,
+                        'activities' => 'Customer created a new manager for a farm located at '. $customerFarm->farm_address,
+                    ]);
+                    if ($customerActivity->save()) {
+                        DB::commit();
+                        return response()->json([
                                 'status' => true,
                                 'message' => 'Manager created successfully.',
                                 'data' => []
                                     ], 200);
+                    }
                 }
             } catch (\Exception $e) {
                 DB::rollBack();
@@ -440,15 +487,31 @@ class FarmController extends Controller
                     $data['user_image'] = json_encode($imageName);
                 }
                 if (User::where('id', $manager->id)->update($data)) {
-                    DB::commit();
                     if (isset($confirmed)) {
                         $this->_updateEmail($manager, $request->email);
                     }
-                    return response()->json([
+                    
+                    if(Auth::user()->id !== $manager->id) {
+                        $customerId = Auth::user()->id;
+                    } else {
+                        $customerId = $manager->created_from_id;
+                    }
+                    
+                    // Notification is required.
+                    $customerActivity = new CustomerActivity([
+                        'customer_id' => $customerId,
+                        'created_by' => Auth::user()->id,
+                        'activities' => 'Customer updated '.$manager->first_name.' manager details',
+                    ]);
+                    if ($customerActivity->save()) {
+                        // Notification is required.
+                        DB::commit();
+                        return response()->json([
                                 'status' => true,
                                 'message' => 'Manager updated successfully.',
                                 'data' => []
                                     ], 200);
+                    }
                 }
             } catch (\Exception $e) {
                 DB::rollBack();
@@ -472,43 +535,67 @@ class FarmController extends Controller
         $farm = $user->managerOf;
         if (!$farm || !$farm->isOwner() || $customerFarm->id != $farm->id) {
             return response()->json([
-                    'status' => false,
-                    'message' => 'Unauthorized access.',
-                ], 421);
+                        'status' => false,
+                        'message' => 'Unauthorized access.',
+                            ], 421);
         }
 
         try {
             // There is no need to delete data from manager details table.
-            $user->delete();
-            return response()->json([
-                'status' => false,
-                'message' => 'Manager deleted successfully.',
-            ], 200);
+            DB::beginTransaction();
+            if ($user->delete()) {
+                $customerActivity = new CustomerActivity([
+                    'customer_id' => Auth::user()->id,
+                    'created_by' => Auth::user()->id,
+                    'activities' => 'Customer deleted ' . $user->first_name . ' manager',
+                ]);
+                if ($customerActivity->save()) {
+                    
+                    // Notification is required.
+                    DB::commit();
+                    return response()->json([
+                                'status' => false,
+                                'message' => 'Manager deleted successfully.',
+                                    ], 200);
+                }
+            }
         } catch (\Exception $e) {
+            DB::rollBack();
             return response()->json([
-                'status' => false,
-                'message' => 'Unable to delete manager try again later.',
-            ], 423);   
+                        'status' => false,
+                        'message' => 'Unable to delete manager try again later.',
+                            ], 423);
         }
     }
-    
+
     public function changeManager(CustomerFarm $customerFarm, User $user) {
-        if($customerFarm->isOwner()) {
+        if ($customerFarm->isOwner()) {
             try {
                 $farmManagerCount = CustomerFarm::whereId($user->farm_id)->first()->managers->count();
-                if($farmManagerCount <= 1){
+                if ($farmManagerCount <= 1) {
                     return response()->json([
-                        'status' => false,
-                        'message' => 'Exising farm has only 1 manager, hence manager`s farm cannot be changed.',
-                    ], 423);
+                                'status' => false,
+                                'message' => 'Exising farm has only 1 manager, hence manager`s farm cannot be changed.',
+                                    ], 423);
                 }
-                $user->update(['farm_id' => $customerFarm->id]);
-                return response()->json([
-                            'status' => false,
-                            'message' => 'Manager farm changed successfully.',
-                                ], 200);
+                DB::beginTransaction();
+                if ($user->update(['farm_id' => $customerFarm->id])) {
+                    $customerActivity = new CustomerActivity([
+                        'customer_id' => Auth::user()->id,
+                        'created_by' => Auth::user()->id,
+                        'activities' => 'Customer changed the farm of ' . $user->first_name . ' manager',
+                    ]);
+                    if ($customerActivity->save()) {
+                        // Notification is required.
+                        DB::commit();
+                        return response()->json([
+                                    'status' => false,
+                                    'message' => 'Manager farm changed successfully.',
+                                        ], 200);
+                    }
+                }
             } catch (\Exception $e) {
-                dd($e);
+                DB::rollBack();
                 return response()->json([
                             'status' => false,
                             'message' => 'Unable to change manager farm. Try again later.',
@@ -518,8 +605,9 @@ class FarmController extends Controller
         return response()->json([
                     'status' => false,
                     'message' => 'Unauthorized access.',
-                ], 421);
+                        ], 421);
     }
+
     /**
      * email for new registration and password
      */

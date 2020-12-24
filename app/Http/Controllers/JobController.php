@@ -13,6 +13,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use App\Models\CustomerFarm;
 use Illuminate\Support\Carbon;
+use App\Models\CustomerActivity;
 use App\Models\CustomerCardDetail;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -21,47 +22,43 @@ use App\Http\Requests\Job\{
     CreateJobRequest
 };
 
-class JobController extends Controller
-{
-    
-    public function myJobs()
-    {
+class JobController extends Controller {
+
+    public function myJobs() {
         return response()->json([
-            'status' => true,
-            'message' => 'Job List',
-            'data' => Auth::user()->myJobs()
-        ], 200);
-    }
-    
-    public function myUpcomingJobs()
-    {
-        return response()->json([
-            'status' => true,
-            'message' => 'Job List',
-            'data' => Auth::user()->myUpcomingJobs()
-        ], 200);
+                    'status' => true,
+                    'message' => 'Job List',
+                    'data' => Auth::user()->myJobs()
+                        ], 200);
     }
 
-    public function create(CreateJobRequest $createJobRequest)
-    {
+    public function myUpcomingJobs() {
+        return response()->json([
+                    'status' => true,
+                    'message' => 'Job List',
+                    'data' => Auth::user()->myUpcomingJobs()
+                        ], 200);
+    }
+
+    public function create(CreateJobRequest $createJobRequest) {
         $user = Auth::user();
-        if($user->role_id == config('constant.roles.Customer')) {
-            if($user->authorize_net_id == null && $createJobRequest->attach_card == 0) {
+        if ($user->role_id == config('constant.roles.Customer')) {
+            if ($user->authorize_net_id == null && $createJobRequest->attach_card == 0) {
                 return response()->json([
-                    'status' => false,
-                    'message' => 'No card added',
-                    'data' => []
-                        ], 421);
+                            'status' => false,
+                            'message' => 'No card added',
+                            'data' => []
+                                ], 421);
             }
-        } else if($user->role_id == config('constant.roles.Customer_Manager')) {
+        } else if ($user->role_id == config('constant.roles.Customer_Manager')) {
             $Owner = User::whereId($user->created_by)->first();
             $createJobRequest->payment_mode = $Owner->payment_mode;
-            if($Owner->authorize_net_id == null && $createJobRequest->attach_card == 0) {
+            if ($Owner->authorize_net_id == null && $createJobRequest->attach_card == 0) {
                 return response()->json([
-                    'status' => false,
-                    'message' => 'No card added',
-                    'data' => []
-                        ], 421);
+                            'status' => false,
+                            'message' => 'No card added',
+                            'data' => []
+                                ], 421);
             }
         }
         DB::beginTransaction();
@@ -81,15 +78,15 @@ class JobController extends Controller
                 'notes' => (isset($createJobRequest->notes) && $createJobRequest->notes != '' && $createJobRequest->notes != null) ? $createJobRequest->notes : null,
                 'amount' => $createJobRequest->amount,
             ];
-            if($user->role_id == config('constant.roles.Customer')) {
+            if ($user->role_id == config('constant.roles.Customer')) {
                 $data['farm_id'] = $createJobRequest->farm_id;
                 $data['customer_id'] = $user->id;
                 $data['manager_id'] = $createJobRequest->manager_id;
-            } else if($user->role_id == config('constant.roles.Customer_Manager')) {
+            } else if ($user->role_id == config('constant.roles.Customer_Manager')) {
                 $data['farm_id'] = $user->farm_id;
                 $data['customer_id'] = $user->created_by;
                 $data['manager_id'] = $user->id;
-            } else if($user->role_id == config('constant.roles.Haulers')) {
+            } else if ($user->role_id == config('constant.roles.Haulers')) {
                 $data['farm_id'] = null;
                 $data['customer_id'] = $user->id;
                 $data['manager_id'] = $createJobRequest->manager_id;
@@ -115,10 +112,10 @@ class JobController extends Controller
                 if ($createJobRequest->attach_card == 1) {
                     $payment = new PaymentController();
                     $cardExist = CustomerCardDetail::where([
-                        'card_number' => $createJobRequest->card['card_number'],
-                        'card_exp_month' => $createJobRequest->card['card_exp_month'],
-                        'card_exp_year' => $createJobRequest->card['card_exp_year']
-                    ])->whereNull('deleted_at')->first();
+                                'card_number' => $createJobRequest->card['card_number'],
+                                'card_exp_month' => $createJobRequest->card['card_exp_month'],
+                                'card_exp_year' => $createJobRequest->card['card_exp_year']
+                            ])->whereNull('deleted_at')->first();
                     if (!$cardExist) {
                         $addCardProcess = $payment->processAddCard($createJobRequest->card);
                         if ($addCardProcess['status']) {
@@ -137,28 +134,38 @@ class JobController extends Controller
                     'manager_id' => isset($job->manager_id) ? $job->manager_id : null
                 ];
                 $this->_sendPaymentEmail($mailData);
-                DB::commit();
-                return response()->json([
-                    'status' => true,
-                    'message' => 'Job created successfully.',
-                    'job_id' => $job->id
-                ], 200);
+                $customerActivity = new CustomerActivity([
+                    'customer_id' => $job->customer_id,
+                    'job_id' => $job->id,
+                    'created_by' => $user->id,
+                    'activities' => config('constant.customer_activities.pickup_created'),
+                ]);
+                if ($customerActivity->save()) {
+
+                    // Notification is required.
+
+                    DB::commit();
+                    return response()->json([
+                                'status' => true,
+                                'message' => 'Job created successfully.',
+                                'job_id' => $job->id
+                                    ], 200);
+                }
             }
         } catch (\Exception $e) {
             DB::rollBack();
             return response()->json([
-                'status' => false,
-                'message' => $e->getMessage(),
-                'data' => []
-            ], 500);
+                        'status' => false,
+                        'message' => $e->getMessage(),
+                        'data' => []
+                            ], 500);
         }
     }
 
     /**
      * @method _sendPaymentEmail : Function to send job booking email.
      */
-    public function _sendPaymentEmail($mailData)
-    {
+    public function _sendPaymentEmail($mailData) {
         $customerDetails = User::whereId($mailData['customer_id'])->first();
         $customerName = $customerDetails->first_name . ' ' . $customerDetails->last_name;
         $data = array(
@@ -184,9 +191,8 @@ class JobController extends Controller
             });
         }
     }
-    
-    public function update(Job $job_id, Request $request)
-    {
+
+    public function update(Job $job_id, Request $request) {
         $validator = Validator::make(array_merge(['job_id' => $job_id], $request->all()), [
                     'manager_id' => 'sometimes|required',
                     'farm_id' => 'sometimes|required',
@@ -196,7 +202,6 @@ class JobController extends Controller
                     'is_repeating_job' => 'required',
                     'payment_mode' => 'required',
                     'repeating_days' => 'required_if:is_repeating_job,==,true',
-            
         ]);
         if ($validator->fails()) {
             return response()->json([
@@ -205,11 +210,12 @@ class JobController extends Controller
                         'data' => $validator->errors()
                             ], 422);
         }
-        
+
         if ($job_id->job_status == config('constant.job_status.open')) {
             try {
+                DB::beginTransaction();
                 $images = null;
-                if(isset($request->existingImages) && $request->existingImages && $request->existingImages != 'null' && strlen($request->existingImages) > 0){
+                if (isset($request->existingImages) && $request->existingImages && $request->existingImages != 'null' && strlen($request->existingImages) > 0) {
                     $images = explode(',', $request->existingImages);
                 }
                 if (isset($request->images) && $request->images && count($request->images) > 0) {
@@ -220,7 +226,7 @@ class JobController extends Controller
                             $jobImages[] = $imageName;
                         }
                     }
-                    if($images != null){
+                    if ($images != null) {
                         $jobImages = array_merge($images, $jobImages);
                     }
                     $images = json_encode($jobImages);
@@ -240,10 +246,10 @@ class JobController extends Controller
                     'amount' => $request->amount,
                     'images' => $images
                 ];
-                if(isset($request->manager_id)) {
+                if (isset($request->manager_id)) {
                     $jobUpdate['manager_id'] = $request->manager_id;
                 }
-                if(isset($request->farm_id)) {
+                if (isset($request->farm_id)) {
                     $jobUpdate['farm_id'] = $request->farm_id;
                 }
                 $job_id->update($jobUpdate);
@@ -253,40 +259,66 @@ class JobController extends Controller
                     'manager_id' => isset($request->manager_id) ? $request->manager_id : null
                 ];
                 $this->_sendPaymentEmail($mailData);
-                return response()->json([
-                            'status' => true,
-                            'message' => 'Job updated successfully.',
-                            'data' => []
-                        ], 200);
+                $customerActivity = new CustomerActivity([
+                    'customer_id' => $job->customer_id,
+                    'job_id' => $job->id,
+                    'created_by' => $user->id,
+                    'activities' => config('constant.customer_activities.pickup_updated'),
+                ]);
+                if ($customerActivity->save()) {
+
+                    // Notification is required.
+
+                    DB::commit();
+                    return response()->json([
+                                'status' => true,
+                                'message' => 'Job updated successfully.',
+                                'data' => []
+                                    ], 200);
+                }
             } catch (\Exception $e) {
+                DB::rollBack();
                 return response()->json([
                             'status' => false,
                             'message' => $e->getMessage(),
                             'data' => []
-                        ], 500);
+                                ], 500);
             }
         }
         return response()->json([
                     'status' => false,
                     'message' => 'You cannot edit the job.',
                     'data' => []
-                ], 500);
+                        ], 500);
     }
 
-    
-    public function cancelJob(Job $job)
-    {
+    public function cancelJob(Job $job) {
         $user = Auth::user();
         If ($user->id == $job->customer_id || $user->id == $job->manager_id || ($user->farm_id == $job->farm_id && $user->role_id == config('constant.roles.Customer_Manager'))) {
             if ($job->job_status == config('constant.job_status.open')) {
                 try {
+                    DB::beginTransaction();
                     $job->update(['job_status' => config('constant.job_status.cancelled')]);
-                    return response()->json([
-                                'status' => true,
-                                'message' => 'Job cancelled successfully.',
-                                'data' => $job
-                                    ], 200);
+                    $customerActivity = new CustomerActivity([
+                        'customer_id' => $job->customer_id,
+                        'job_id' => $job->id,
+                        'created_by' => $user->id,
+                        'activities' => config('constant.customer_activities.pickup_cancelled'),
+                    ]);
+                    if ($customerActivity->save()) {
+
+                        // Email is required.
+                        // Notification is required.
+
+                        DB::commit();
+                        return response()->json([
+                                    'status' => true,
+                                    'message' => 'Job cancelled successfully.',
+                                    'data' => $job
+                                        ], 200);
+                    }
                 } catch (\Exception $e) {
+                    DB::rollBack();
                     Log::error(json_encode($e->getMessage()));
                     return response()->json([
                                 'status' => false,
@@ -307,9 +339,8 @@ class JobController extends Controller
                     'data' => []
                         ], 421);
     }
-    
-    public function get(Job $job)
-    {
+
+    public function get(Job $job) {
         $user = Auth::user();
         If ($user->id == $job->customer_id || $user->id == $job->manager_id || ($user->farm_id == $job->farm_id && $user->role_id == config('constant.roles.Customer_Manager'))) {
             return response()->json([
@@ -325,62 +356,60 @@ class JobController extends Controller
                         ], 421);
     }
 
-    public function getJobsOfFram(CustomerFarm $customerFarm)
-    {
+    public function getJobsOfFram(CustomerFarm $customerFarm) {
         if (!Auth::user()->canAccessFarm($customerFarm)) {
             return response()->json([
-                'status' => false,
-                'message' => 'Unauthorized access.',
-                'data' => []
-            ], 421);
+                        'status' => false,
+                        'message' => 'Unauthorized access.',
+                        'data' => []
+                            ], 421);
         }
 
         return response()->json([
-            'status' => true,
-            'message' => 'Job List Of Farm',
-            'data' => $customerFarm->jobs
-        ], 200);
+                    'status' => true,
+                    'message' => 'Job List Of Farm',
+                    'data' => $customerFarm->jobs
+                        ], 200);
     }
-    
-    public function upcomingJobsOfFarm(CustomerFarm $customerFarm)
-    {
+
+    public function upcomingJobsOfFarm(CustomerFarm $customerFarm) {
         if (!Auth::user()->canAccessFarm($customerFarm)) {
             return response()->json([
-                'status' => false,
-                'message' => 'Unauthorized access.',
-                'data' => []
-            ], 421);
+                        'status' => false,
+                        'message' => 'Unauthorized access.',
+                        'data' => []
+                            ], 421);
         }
 
         return response()->json([
-            'status' => true,
-            'message' => 'Upcoming Jobs',
-            'now' => Carbon::now()->format('Y-m-d'),
-            'data' => Job::where('farm_id', $customerFarm->id)->where('job_providing_date', '>', Carbon::now())->with('truck_driver', 'truck')->get()
-        ], 200);
+                    'status' => true,
+                    'message' => 'Upcoming Jobs',
+                    'now' => Carbon::now()->format('Y-m-d'),
+                    'data' => Job::where('farm_id', $customerFarm->id)->where('job_providing_date', '>', Carbon::now())->with('truck_driver', 'truck')->get()
+                        ], 200);
     }
-    
+
     public function chatMembers(Request $request) {
         die('red');
         $chatMembers = Job::whereId($request->job_id)->with(['customer' => function($q) {
-            $q->select('id', 'first_name', 'user_image');
-        }]) ->with(['manager' => function($q) {
-        
-            $q->select('id', 'first_name', 'user_image');
-        }])->with(['truck_driver' => function($q) {
-        
-            $q->select('id', 'first_name', 'user_image');
-        }])->with(['skidsteer_driver' => function($q) {
-        
-            $q->select('id', 'first_name', 'user_image');
-        }])->first();
+                        $q->select('id', 'first_name', 'user_image');
+                    }])->with(['manager' => function($q) {
+
+                        $q->select('id', 'first_name', 'user_image');
+                    }])->with(['truck_driver' => function($q) {
+
+                        $q->select('id', 'first_name', 'user_image');
+                    }])->with(['skidsteer_driver' => function($q) {
+
+                        $q->select('id', 'first_name', 'user_image');
+                    }])->first();
         return response()->json([
                     'status' => true,
                     'message' => 'Chat members',
                     'data' => $chatMembers
                         ], 200);
     }
-    
+
     public function jobChat(Request $request) {
         $data = array(
             'jobId' => $request->job_id,
@@ -397,31 +426,11 @@ class JobController extends Controller
         $output = curl_exec($ch);
         curl_close($ch);
         $messages = array_reverse(json_decode($output));
-        
-            return response()->json([
+
+        return response()->json([
                     'status' => true,
                     'message' => 'Chat messages',
                     'data' => $messages
                         ], 200);
-            
     }
-    
-//    public function getServiceSlots(Request $request)
-//    {
-//        $service = Service::whereId($request->service_id)->first();
-//        if ($service != null) {
-//            $timeSlots = TimeSlots::whereIn('id', json_decode($service->slot_time))->get();
-//            return response()->json([
-//                'status' => true,
-//                'message' => 'Service Slot Details.',
-//                'data' => $timeSlots
-//            ], 200);
-//        } else {
-//            return response()->json([
-//                'status' => true,
-//                'message' => 'No time slot available.',
-//                'data' => []
-//            ], 500);
-//        }
-//    }
 }
