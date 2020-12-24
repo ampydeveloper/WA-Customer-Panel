@@ -60,6 +60,11 @@ return [
         'cheque' => 1,
         'cash' => 2
     ],
+    'payment_mode_inverse' => [
+        0 => 'online',
+        1 => 'cheque',
+        2 => 'cash',
+    ],
     'job_status' => [
         'open' => 0,
         'assigned' => 1,
