@@ -15,6 +15,7 @@ use App\Models\Settings;
 use App\Models\User;
 use App\Models\Job;
 use App\Models\Service;
+use App\Models\CustomerActivity;
 
 class QuickbooksController extends Controller
 {
@@ -41,23 +42,7 @@ class QuickbooksController extends Controller
         $OAuth2LoginHelper = $dataService->getOAuth2LoginHelper();
         $authorizationCodeUrl = $OAuth2LoginHelper->getAuthorizationCodeURL();
         header("Location: " . $authorizationCodeUrl);
-        dd($authorizationCodeUrl);
-        // return view('qb_auth', compact('authorizationCodeUrl'));
         // dd($authorizationCodeUrl);
-        // $accessTokenObj = $OAuth2LoginHelper->exchangeAuthorizationCodeForToken(config('constant.quickbooks.auth_code'), config('constant.quickbooks.realm_id'));
-        // dump($accessTokenObj);
-        // $this->dataService->updateOAuth2Token($accessTokenObj);
-        // $CompanyInfo = $dataService->getCompanyInfo();
-        // dd($CompanyInfo);
-        // $refreshTokenValue = $accessTokenObj->getRefreshToken();
-        // $dataService['refreshTokenKey'] = $refreshTokenValue;
-        // $OAuth2LoginHelper = $dataService->getOAuth2LoginHelper();
-        // $refreshedAccessTokenObj = $OAuth2LoginHelper->refreshToken();
-        // $dataService->updateOAuth2Token($refreshedAccessTokenObj);
-        // $this->dataService = $dataService;
-        // $accessToken = $dataService->
-        // // dd($authorizationCodeUrl);
-        // $_ENV['QUICKBACCESSTOKEN'] = 'value';
     }
 
     public function getAuthCode(Request $request){
@@ -79,7 +64,7 @@ class QuickbooksController extends Controller
         Settings::first()->update(['quick_books_refresh_token' => $accessTokenObj->getRefreshToken(), 'quick_books_access_token' => $accessTokenObj->getAccessToken()]);
     }
 
-    public function createInvoice($customer_id=null, $job_id=null){
+    public function createInvoice($customer_id=null, $job_id=null, $user_id = null){
         if($customer_id == null || $job_id == null){
             return "Invalid customer/job id";
         }
@@ -156,6 +141,13 @@ class QuickbooksController extends Controller
         ]);
 
         $resultObj = $dataService->Add($invoiceToCreate);
+        $customerActivity = new CustomerActivity([
+            'customer_id' => $customer_id,
+            'job_id' => $job_id,
+            'created_by' => $user_id == null ? $customer_id : $user_id,
+            'activities' => 'Invoice for job-'.$job_id.' generated on Quickbooks',
+        ]);
+        $customerActivity->save();
         echo "success";
         // $error = $dataService->getLastError();
         // dump($resultObj);

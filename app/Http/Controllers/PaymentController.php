@@ -19,6 +19,8 @@ use App\Http\Requests\Payment\ {
     ChargeCustomerProfileRequest
 };
 
+use App\Http\Controllers\QuickbooksController;
+
 class PaymentController extends Controller
 {
     public $gateway;
@@ -565,6 +567,8 @@ class PaymentController extends Controller
                     ]);
                     if ($customerActivity->save()) {
                         DB::commit();
+                        $qb = new QuickbooksController();
+                        $qb->createInvoice($request->customer_id, $request->job_id, Auth::user()->id);
                         return response()->json([
                                     'status' => true,
                                     'message' => 'Payment done successfully.',
