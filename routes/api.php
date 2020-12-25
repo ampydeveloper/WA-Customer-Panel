@@ -52,6 +52,7 @@ Route::group(['middleware' => 'auth:api'], function () {
 
 Route::group(['middleware' => 'auth:api', 'prefix' => 'my', 'as' => 'my'], function () {
     Route::get('jobs', 'JobController@myJobs')->name('jobs');
+    Route::get('jobs-mobile/{page_no}', 'JobController@myJobsMobile')->name('jobs');
     Route::get('jobs/upcoming', 'JobController@myUpcomingJobs')->name('upcoming.jobs');
     Route::get('farms', 'CustomerController@myFarms')->name('farms');
     Route::get('managers/{id?}', 'CustomerController@myManagers')->name('list-all');

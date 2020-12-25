@@ -31,6 +31,28 @@ class JobController extends Controller {
                     'data' => Auth::user()->myJobs()
                         ], 200);
     }
+    
+    public function myJobsMobile($page_no) {
+        if($page_no == 1) {
+            $skip = 0;
+        } else {
+            $skip = ($page_no - 1)*20;
+        }
+        $user = Auth::user();
+        if($user->role_id == config('constant.roles.Customer')) {
+            $data = Job::where('customer_id', $user->id)->skip($skip)->take(20)->with('farm','customer', 'manager', 'service')->get();
+        } elseif(Auth::user()->role_id == config('constant.roles.Customer_Manager')) {
+            $data = Job::where('manager_id', $user->id)->orWhere('farm_id', $this->farm_id)->skip($skip)->take(20)->with('farm','customer', 'manager', 'service')->get();
+        } else {
+            $data = Job::where('manager_id', $user->id)->skip($skip)->take(20)->with('farm','customer', 'manager', 'service')->get();
+        }
+            
+        return response()->json([
+                    'status' => true,
+                    'message' => 'Job List',
+                    'data' => $data
+                        ], 200);
+    }
 
     public function myUpcomingJobs() {
         return response()->json([
@@ -138,7 +160,7 @@ class JobController extends Controller {
                     'customer_id' => $job->customer_id,
                     'job_id' => $job->id,
                     'created_by' => $user->id,
-                    'activities' => config('constant.customer_activities.pickup_created'),
+                    'activities' => 'Pick is created with pickup id '.$job->id,
                 ]);
                 if ($customerActivity->save()) {
 
@@ -260,10 +282,10 @@ class JobController extends Controller {
                 ];
                 $this->_sendPaymentEmail($mailData);
                 $customerActivity = new CustomerActivity([
-                    'customer_id' => $job->customer_id,
-                    'job_id' => $job->id,
-                    'created_by' => $user->id,
-                    'activities' => config('constant.customer_activities.pickup_updated'),
+                    'customer_id' => $job_id->customer_id,
+                    'job_id' => $job_id->id,
+                    'created_by' => Auth::user()->id,
+                    'activities' => 'Pickup '.$job_id->id.' is updated.',
                 ]);
                 if ($customerActivity->save()) {
 

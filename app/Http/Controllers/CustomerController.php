@@ -50,7 +50,7 @@ class CustomerController extends Controller {
             if($id != null){
                 $data = User::where('id', $id)->with('managerDetails')->get();
             }else{
-                $data = User::where('created_by', Auth::user()->id)->get();
+                $data = User::where('created_by', Auth::user()->id)->with('farm')->get();
             }
             return response()->json([
                     'status' => true,

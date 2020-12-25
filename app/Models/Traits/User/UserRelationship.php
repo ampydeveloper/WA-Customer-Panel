@@ -32,4 +32,8 @@ trait UserRelationship
     {
         return $this->hasMany('App\Models\CustomerCardDetail', 'customer_id', 'id');
     }
+    public function farm()
+    {
+        return $this->hasOne('App\Models\CustomerFarm', 'id', 'farm_id');
+    }
 }
