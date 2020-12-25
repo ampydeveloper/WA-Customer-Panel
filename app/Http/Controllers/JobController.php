@@ -389,35 +389,45 @@ class JobController extends Controller {
                         ], 200);
     }
 
-    public function chatMembers(Request $request) {
-        die('red');
+     public function chatMembers(Request $request) {
         $chatMembers = Job::whereId($request->job_id)->with(['customer' => function($q) {
                         $q->select('id', 'first_name', 'user_image');
                     }])->with(['manager' => function($q) {
-
                         $q->select('id', 'first_name', 'user_image');
                     }])->with(['truck_driver' => function($q) {
-
                         $q->select('id', 'first_name', 'user_image');
                     }])->with(['skidsteer_driver' => function($q) {
-
                         $q->select('id', 'first_name', 'user_image');
                     }])->first();
+
+        $chatMembers->customer->user_image = env('APP_URL') . '/storage/user_images/' . $chatMembers->customer->id . '/' . $chatMembers->customer->user_image;
+        $chatMembers->manager->user_image = env('APP_URL') . '/storage/user_images/' . $chatMembers->manager->id . '/' . $chatMembers->manager->user_image;
+        $chatMembers->skidsteer_driver->user_image = env('APP_URL') . '/' . $chatMembers->skidsteer_driver->user_image;
+        $chatMembers->truck_driver->user_image = env('APP_URL') . '/' . $chatMembers->truck_driver->user_image;
+
+        $all_admin = User::where('role_id', config('constant.roles.Admin'))->select('id', 'first_name', 'user_image')->get();
+        foreach ($all_admin as $key => $admin) {
+            $all_admin[$key]->user_image = env('APP_URL') . '/' . $admin->user_image;
+        }
+        $chatMembers2 = collect($chatMembers);
+        $all_admin2 = collect(array('admin' => $all_admin));
+        $allChatMembers = $chatMembers2->merge($all_admin2);
+
         return response()->json([
                     'status' => true,
                     'message' => 'Chat members',
-                    'data' => $chatMembers
+                    'data' => $allChatMembers
                         ], 200);
     }
 
     public function jobChat(Request $request) {
         $data = array(
-            'jobId' => $request->job_id,
+            'jobId' => $request->jobId,
         );
         $postData = json_encode($data);
 
         $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, "http://" . env('SOCKET_SERVER_IP') . ":" . env('SOCKET_SERVER_PORT') . "/job-chat");
+        curl_setopt($ch, CURLOPT_URL, "https://wa.customer.leagueofclicks.com:3100/job-chat");
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type:application/json'));
@@ -425,7 +435,12 @@ class JobController extends Controller {
         curl_setopt($ch, CURLOPT_POSTFIELDS, $postData);
         $output = curl_exec($ch);
         curl_close($ch);
-        $messages = array_reverse(json_decode($output));
+        $messages = json_decode($output);
+        if (!empty($messages)) {
+            $messages = array_reverse($messages);
+        } else {
+            $messages = [];
+        }
 
         return response()->json([
                     'status' => true,

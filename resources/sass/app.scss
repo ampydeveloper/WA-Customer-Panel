@@ -1464,6 +1464,11 @@ select.form-control {
     border-radius: 6px;
     background-color: #11b276;
     color: #fff;
+    display: inline-block;
+    margin-left: 15px;
+    width: 60%;
+    position: relative;
+    font-size: 14px;
 }
 
 .chat-area .chat-sender .chat-msg:before {
@@ -1475,8 +1480,6 @@ select.form-control {
     padding: 10px 14px;
     border-radius: 6px;
     background-color: #fff;
-    // color: #fff;
-    // font-weight: 300;
     margin-right: 15px;
     width: 60%;
     margin-left: 0;
@@ -1504,6 +1507,15 @@ select.form-control {
     float: right;
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.12), 0 2px 4px 0 rgba(0, 0, 0, 0.08) !important;
 }
+.chat-area .chat-sender .chat-img{
+    float: left;
+}
+
+.chat-area .chat-sender{
+    float: left;
+    width: 100%;
+    margin-bottom: 15px;
+}
 
 .chat-area .chat-img img {
     width: 40px;
@@ -1517,12 +1529,9 @@ select.form-control {
     height: 44px;
     padding: 0 15px;
 }
-
-// .map-route-outer{
-//     #map{
-//         margin-bottom: 25px;
-//     }
-// }
+#image-file {
+    display: none;
+}
 .content-left-outer {
     .job-summary-outer {
         background: #fafafb;

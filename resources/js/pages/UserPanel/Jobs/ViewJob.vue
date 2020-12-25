@@ -38,14 +38,14 @@
               <div class="job-summary-outer">
                 <!-- <h5 class="heading2">Job Summary</h5> -->
 
-                <!-- <div class="images-list">
+                <div class="images-list">
                   <h6>Service Images</h6>
                   <div class="images-all row">
                     <div v-for="image in jobImages">
- <img :src="image" alt="">
-                    </div>                   
+                      <img :src="image" alt="" />
+                    </div>
                   </div>
-                </div> -->
+                </div>
 
                 <div class="details-list-outer row">
                   <div class="each-details col-sm-6">
@@ -57,10 +57,6 @@
                     <p class="detail-item">
                       {{ job.service ? job.service.service_name : "" }}
                     </p>
-                  </div>
-                  <div class="each-details col-sm-6">
-                    <p class="head-item">Cost</p>
-                    <p class="detail-item">${{ job.amount }}</p>
                   </div>
 
                   <div class="each-details col-sm-6">
@@ -75,11 +71,26 @@
                       {{ job.farm ? job.farm.full_address : "" }}
                     </p>
                   </div>
+                  <div class="each-details-full col-sm-12">
+                    <p class="head-item">Techs</p>
+                    <p class="detail-item">
+                      {{
+                        job.skidsteer_driver.first_name +
+                        " " +
+                        job.skidsteer_driver.last_name +
+                        ", "
+                      }}
+                      {{
+                        job.truck_driver.first_name +
+                        " " +
+                        job.truck_driver.last_name
+                      }}
+                    </p>
+                  </div>
                   <!-- <div class="each-details col-sm-6">
                     <p class="head-item">Date / Est. Time</p>
                     <p class="detail-item">24, May 2020 at 9:30 AM</p>
                   </div> -->
-
                   <div class="each-details col-sm-6">
                     <p class="head-item">Quantity</p>
                     <p class="detail-item">{{ job.weight }} Ton</p>
@@ -97,6 +108,10 @@
                     <p class="detail-item green-sm-box">
                       {{ job.job_status_name }}
                     </p>
+                  </div>
+                  <div class="each-details col-sm-6">
+                    <p class="head-item">Total</p>
+                    <p class="detail-item">${{ job.amount }}</p>
                   </div>
 
                   <div class="each-details-full col-sm-12">
@@ -134,15 +149,29 @@
                         :value="userdata.id"
                       />
                       <input type="hidden" id="job-id" :value="job.id" />
-<input type="hidden" id="job-lat" :value="job.farm.latitude" />
-                <input type="hidden" id="job-long" :value="job.farm.longitude" />
+                      <input
+                        type="hidden"
+                        id="job-lat"
+                        :value="job.farm.latitude"
+                      />
+                      <input
+                        type="hidden"
+                        id="job-long"
+                        :value="job.farm.longitude"
+                      />
                       <input
                         type="hidden"
                         id="current-user-image"
                         :value="userdata.image_url"
                       />
+                      <input
+                        type="hidden"
+                        id="all-user-data"
+                        :value="JSON.stringify(chatUsers)"
+                      />
 
                       <span class="upload-images-out">
+                        <input type="file" id="image-file" name="chat-image" />
                         <image-icon
                           size="1.5x"
                           class="custom-class"
@@ -178,7 +207,6 @@ import AppSmallHeader from "../../../shared/components/AppSmallHeader";
 import AppSmallFooter from "../../../shared/components/AppSmallFooter";
 import JobService from "../../../services/JobService";
 import router from "../../../router";
-// import mapboxgl from "mapbox-gl";
 import { SendIcon, ImageIcon, LoaderIcon } from "vue-feather-icons";
 export default {
   components: {
@@ -192,6 +220,7 @@ export default {
     return {
       userdata: [],
       jobImages: [],
+      chatUsers: "",
       job: {
         farm_id: "",
         service_id: "",
@@ -215,7 +244,7 @@ export default {
     try {
       const response = await JobService.get(this.$route.params.jobId);
       this.job = response.data.data;
-      this.jobImages = JSON.parse(JSON.stringify(response.data.data.images));
+      this.jobImages = JSON.parse(response.data.data.images);
     } catch (error) {
       this.$toast.open({
         message: error.response.data.message,
@@ -225,49 +254,60 @@ export default {
       });
     }
 
-    // try {
-    //   const response = await JobService.chatUsers(this.$route.params.jobId);
-    //   var result = response.data.data;
-    //   var users = [];
-    //   users[response.data.customer_id] = result.customer;
-    //   users[response.data.manager_id] = result.manager;
-    //   users[response.data.skidsteer_driver_id] = result.skidsteer_driver;
-    //   users[response.data.truck_driver_id] = result.truck_driver;
-    // } catch (error) {
-    //   this.$toast.open({
-    //     message: error.response.data.message,
-    //     type: "error",
-    //     position: "bottom-right",
-    //     dismissible: false,
-    //   });
-    // }
+    setTimeout(() => {
+      (async () => {
+        const response = await JobService.chatUsers(this.$route.params.jobId);
+        var result = response.data.data;
+        var users = [];
+        users[result.customer_id] = result.customer;
+        users[result.manager_id] = result.manager;
+        users[result.skidsteer_driver_id] = result.skidsteer_driver;
+        users[result.truck_driver_id] = result.truck_driver;
+        result.admin.forEach(function (val, index) {
+          users[val.id] = val;
+        });
 
-    // try {
-    //   const response = await JobService.getJobChatMessages(
-    //     this.$route.params.jobId
-    //   );
-    //   if (response) {
-    //     response.data.data.forEach(function (val, index) {
-    //       const messageElement = document.createElement("div");
-    //       messageElement.className = "chat-receiver";
-    //       messageElement.innerHTML =
-    //         '<div class="chat-msg">' +
-    //         `${val.message}` +
-    //         '</div><div class="chat-img"><img src="' +
-    //         `${environment.baseUrl + "/images/avatar.png"}` +
-    //         '"></div>';
-    //       $(document).find("#message-container").prepend(messageElement);
-    //       $("#message-container .empty-message").remove();
-    //     });
-    //   }
-    // } catch (error) {
-    //   this.$toast.open({
-    //     message: error.response.data.message,
-    //     type: "error",
-    //     position: "bottom-right",
-    //     dismissible: false,
-    //   });
-    // }
+        this.chatUsers = users;
+      })();
+    }, 1000);
+
+    setTimeout(() => {
+      (async () => {
+        const chatUsersList = this.chatUsers;
+        const currentUserDetails = this.userdata;
+        const response = await JobService.getJobChatMessages({
+          jobId: this.$route.params.jobId,
+        });
+        if (response) {
+          response.data.data.forEach(function (val, index) {
+            if (typeof val.username != "undefined") {
+              if (typeof chatUsersList[val.username] != "undefined") {
+                var userImageLink = chatUsersList[val.username].user_image;
+              } else {
+                var userImageLink = "/images/avatar.png";
+              }
+              const messageElement = document.createElement("div");
+              if (currentUserDetails.id == val.username) {
+                messageElement.className = "chat-receiver";
+              } else {
+                messageElement.className = "chat-sender";
+              }
+              messageElement.innerHTML =
+                '<div class="chat-msg">' +
+                `${val.message}` +
+                '</div><div class="chat-img"><img src="' +
+                `${userImageLink}` +
+                '"></div>';
+              $(document)
+                .find("#message-container")
+                .find(".os-content")
+                .prepend(messageElement);
+              $("#message-container .empty-message").remove();
+            }
+          });
+        }
+      })();
+    }, 6000);
 
     $(document).ready(function () {
       feather.replace();
@@ -280,24 +320,22 @@ export default {
       start: new google.maps.MarkerImage(
         "http://wa.customer.leagueofclicks.com/img/car-marker2.png",
         new google.maps.Size(72, 100),
-        // The origin point (x,y)
         new google.maps.Point(0, 0),
-        // The anchor point (x,y)
         new google.maps.Point(22, 32)
       ),
       end: new google.maps.MarkerImage(
         "http://wa.customer.leagueofclicks.com/img/map-icon2.png",
         new google.maps.Size(55, 55),
-        // The origin point (x,y)
         new google.maps.Point(0, 0),
-        // The anchor point (x,y)
         new google.maps.Point(22, 32)
       ),
     };
     var map;
     function initMap() {
       const directionsService = new google.maps.DirectionsService();
-      const directionsRenderer = new google.maps.DirectionsRenderer({suppressMarkers: true});
+      const directionsRenderer = new google.maps.DirectionsRenderer({
+        suppressMarkers: true,
+      });
       map = new google.maps.Map(document.getElementById("map"), {
         zoom: 7,
         center: { lat: 41.85, lng: -87.65 },
@@ -483,27 +521,19 @@ export default {
       });
       directionsRenderer.setMap(map);
 
-      // const onChangeHandler = function () {
       calculateAndDisplayRoute(directionsService, directionsRenderer);
-      // };
-      // document
-      //   .getElementById("start")
-      //   .addEventListener("change", onChangeHandler);
-      // document
-      //   .getElementById("end")
-      //   .addEventListener("change", onChangeHandler);
     }
 
     function calculateAndDisplayRoute(directionsService, directionsRenderer) {
-const jobLat = document.getElementById("job-lat")._value;
-        const joblong = document.getElementById("job-long")._value;
+      const jobLat = document.getElementById("job-lat")._value;
+      const joblong = document.getElementById("job-long")._value;
       directionsService.route(
         {
           origin: {
-            query: wellOffice, //"st louis, mo"
+            query: wellOffice,
           },
           destination: {
-            query: jobLat+','+joblong,
+            query: jobLat + "," + joblong,
           },
           travelMode: google.maps.TravelMode.DRIVING,
         },
@@ -511,10 +541,8 @@ const jobLat = document.getElementById("job-lat")._value;
           if (status === "OK") {
             directionsRenderer.setDirections(response);
             var leg = response.routes[0].legs[0];
-            makeMarker(leg.start_location, icons.start, "title");
-            makeMarker(leg.end_location, icons.end, "title");
-          } else {
-            window.alert("Directions request failed due to " + status);
+            makeMarker(leg.start_location, icons.start, "Wellington Office");
+            makeMarker(leg.end_location, icons.end, "Farm");
           }
         }
       );
@@ -528,9 +556,9 @@ const jobLat = document.getElementById("job-lat")._value;
       });
     }
 
-    setTimeout(function(){
- initMap();
-},6000); 
+    setTimeout(function () {
+      initMap();
+    }, 6000);
 
     let socketScript = document.createElement("script");
     socketScript.setAttribute(
@@ -559,39 +587,53 @@ const jobLat = document.getElementById("job-lat")._value;
         {}
       );
 
-      const socket = io.connect("https://wa.customer.leagueofclicks.com:3100", { secure: true });
+      const socket = io.connect("https://wa.customer.leagueofclicks.com:3100", {
+        secure: true,
+      });
       const messageContainer = document.getElementById("message-container");
       const messageForm = document.getElementById("send-container");
       const messageInput = document.getElementById("message-input");
       const name = document.getElementById("user-details-id");
       const jobId = document.getElementById("job-id");
+      const allUserData = document.getElementById("all-user-data");
 
       socket.emit("new-user", name._value);
       messageContainerScroll.scroll([0, "100%"], 50, { x: "", y: "linear" });
 
-      const emitChannel = "chat-message";//"chatmessage"+jobId
+      const chatUsersList = JSON.parse(allUserData.value);
+      const emitChannel = "chat-message"; //"chatmessage"+jobId
       socket.on(emitChannel, (data) => {
         const userImage = $("#current-user-image").val();
-if (data.job_id == jobId._value) {
-        if (data.name == name._value) {
-          appendMessage(
-            '<div class="chat-msg">' +
-              `${data.message.message}` +
-              '</div><div class="chat-img"><img src="' +
-              `${userImage}` +
-              '"></div>'
-          );
-        } else {
-          appendMessage(
-            '<div class="chat-msg">' +
-              `${data.message.message}` +
-              '</div><div class="chat-img"><img src="' +
-              `${"/images/avatar.png"}` +
-              '"></div>'
-          );
+        if (data.job_id == jobId._value) {
+          if (data.name == name._value) {
+            appendMessage(
+              '<div class="chat-msg">' +
+                `${data.message.message}` +
+                '</div><div class="chat-img"><img src="' +
+                `${userImage}` +
+                '"></div>',
+              "chat-receiver"
+            );
+          } else {
+            if (typeof chatUsersList[data.name] != "undefined") {
+              var userImageLink = chatUsersList[data.name].user_image;
+            } else {
+              var userImageLink = "/images/avatar.png";
+            }
+            appendMessage(
+              '<div class="chat-msg">' +
+                `${data.message.message}` +
+                '</div><div class="chat-img"><img src="' +
+                `${userImageLink}` +
+                '"></div>',
+              "chat-sender"
+            );
+          }
+          messageContainerScroll.scroll([0, "100%"], 50, {
+            x: "",
+            y: "linear",
+          });
         }
-        messageContainerScroll.scroll([0, "100%"], 50, { x: "", y: "linear" });
-}
       });
       $(document).on("submit", "#send-container", function (e) {
         const message = messageInput.value;
@@ -602,7 +644,8 @@ if (data.job_id == jobId._value) {
               `${message}` +
               '</div><div class="chat-img"><img src="' +
               `${userImage}` +
-              '"></div>'
+              '"></div>',
+            "chat-receiver"
           );
           socket.emit("send-chat-message", {
             message: message,
@@ -617,9 +660,9 @@ if (data.job_id == jobId._value) {
         }
         e.preventDefault();
       });
-      function appendMessage(message) {
+      function appendMessage(message, className) {
         const messageElement = document.createElement("div");
-        messageElement.className = "chat-receiver";
+        messageElement.className = className;
         messageElement.innerHTML = message;
         $(document)
           .find("#message-container")
@@ -627,37 +670,54 @@ if (data.job_id == jobId._value) {
           .prepend(messageElement);
         $("#message-container .empty-message").remove();
       }
+
+      $(document).on("click", ".upload-images-out", function () {
+        $("#image-file").click();
+      });
+      $("#image-file").on("click", function (e) {
+        e.stopPropagation();
+      });
+      $("#image-file").on("change", function (e) {
+        var $this = $(this);
+        if ($this.val() != "") {
+          const currentUser = authenticationService.currentUserValue || {};
+
+          var imageData = new FormData();
+          imageData.append("uploadImage", $("#image-file").prop("files")[0]);
+
+          $.ajax({
+            url: environment.apiUrl + `uploadImage`,
+            headers: {
+              Authorization: "Bearer " + currentUser.data.access_token,
+            },
+            data: imageData,
+            cache: false,
+            contentType: false,
+            processData: false,
+            dataType: "multipart/form-data",
+            type: "post",
+            success: function (result) {
+              clicked = false;
+              const messageElement = document.createElement("div");
+              messageElement.className = className; //"chat-receiver"
+              messageElement.innerHTML =
+                '<div class="chat-msg"><img class="chat-image-in" src="' +
+                `${result}` +
+                '"></div><div class="chat-img"><img src="' +
+                `${userImage}` +
+                '"></div>';
+              $(document)
+                .find("#message-container")
+                .find(".os-content")
+                .prepend(messageElement);
+
+              console.log(result);
+            },
+          });
+        }
+        e.stopPropagation();
+      });
     }, 2000);
-  },
-  methods: {
-    // getChatMembers() {
-    //   const response = await JobService.chatUsers(this.$route.params.jobId);
-    //   var result = response.data.data;
-    //   var users = [];
-    //       users[response.data.customer_id] = result.customer;
-    //       users[response.data.manager_id] = result.manager;
-    //       users[response.data.skidsteer_driver_id] =
-    //         result.skidsteer_driver;
-    //       users[response.data.truck_driver_id] = result.truck_driver;
-    //       // this.chatUsers = users;
-    // },
-    // getChatMessages() {
-    //   const response = await JobService.getJobChatMessages(this.$route.params.jobId);
-    //   if (response) {
-    //         response.data.data.forEach(function (val, index) {
-    //           const messageElement = document.createElement("div");
-    //           messageElement.className = "chat-receiver";
-    //           messageElement.innerHTML =
-    //             '<div class="chat-msg">' +
-    //             `${val.message}` +
-    //             '</div><div class="chat-img"><img src="' +
-    //             `${environment.baseUrl + "/images/avatar.png"}` +
-    //             '"></div>';
-    //           $(document).find("#message-container").prepend(messageElement);
-    //           $("#message-container .empty-message").remove();
-    //         });
-    //       }
-    // },
   },
 };
 </script>
