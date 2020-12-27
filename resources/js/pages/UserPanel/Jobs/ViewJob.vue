@@ -71,7 +71,7 @@
                       {{ job.farm ? job.farm.full_address : "" }}
                     </p>
                   </div>
-                  <div class="each-details-full col-sm-12">
+                  <!-- <div class="each-details-full col-sm-12">
                     <p class="head-item">Techs</p>
                     <p class="detail-item">
                       {{
@@ -86,7 +86,7 @@
                         job.truck_driver.last_name
                       }}
                     </p>
-                  </div>
+                  </div> -->
                   <!-- <div class="each-details col-sm-6">
                     <p class="head-item">Date / Est. Time</p>
                     <p class="detail-item">24, May 2020 at 9:30 AM</p>
@@ -245,6 +245,7 @@ export default {
       const response = await JobService.get(this.$route.params.jobId);
       this.job = response.data.data;
       this.jobImages = JSON.parse(response.data.data.images);
+      // console.log(JSON.parse(response.data.data.images));
     } catch (error) {
       this.$toast.open({
         message: error.response.data.message,
@@ -286,6 +287,14 @@ export default {
               } else {
                 var userImageLink = "/images/avatar.png";
               }
+                if (val.message.indexOf("uploads") > -1) {
+                  var messageText =
+                    '<img class="chat-image-in" src="' +
+                    `${val.message}` +
+                    '">';
+                } else {
+                  var messageText = val.message;
+                }
               const messageElement = document.createElement("div");
               if (currentUserDetails.id == val.username) {
                 messageElement.className = "chat-receiver";
@@ -294,7 +303,7 @@ export default {
               }
               messageElement.innerHTML =
                 '<div class="chat-msg">' +
-                `${val.message}` +
+                `${messageText}` +
                 '</div><div class="chat-img"><img src="' +
                 `${userImageLink}` +
                 '"></div>';
@@ -670,21 +679,14 @@ export default {
           .prepend(messageElement);
         $("#message-container .empty-message").remove();
       }
-
-      $(document).on("click", ".upload-images-out", function () {
-        $("#image-file").click();
-      });
-      $("#image-file").on("click", function (e) {
-        e.stopPropagation();
-      });
-      $("#image-file").on("change", function (e) {
+ $(document).on("change", "#image-file", function (e) {
         var $this = $(this);
-        if ($this.val() != "") {
+        if ($this.val() != "" && !self.fired) {
+          self.fired = true;
           const currentUser = authenticationService.currentUserValue || {};
 
           var imageData = new FormData();
           imageData.append("uploadImage", $("#image-file").prop("files")[0]);
-
           $.ajax({
             url: environment.apiUrl + `uploadImage`,
             headers: {
@@ -694,15 +696,13 @@ export default {
             cache: false,
             contentType: false,
             processData: false,
-            dataType: "multipart/form-data",
-            type: "post",
+            type: "POST",
             success: function (result) {
-              clicked = false;
               const messageElement = document.createElement("div");
-              messageElement.className = className; //"chat-receiver"
+              messageElement.className = "chat-receiver"; //"chat-receiver"
               messageElement.innerHTML =
                 '<div class="chat-msg"><img class="chat-image-in" src="' +
-                `${result}` +
+                `${environment.baseUrl + result}` +
                 '"></div><div class="chat-img"><img src="' +
                 `${userImage}` +
                 '"></div>';
@@ -710,13 +710,24 @@ export default {
                 .find("#message-container")
                 .find(".os-content")
                 .prepend(messageElement);
-
-              console.log(result);
+              socket.emit("send-chat-message", {
+                message: environment.baseUrl + result,
+                job_id: jobId._value,
+                username: name._value,
+              });
+              messageContainerScroll.scroll([0, "100%"], 50, {
+            x: "",
+            y: "linear",
+          });
+            },
+            complete: function () {
+              $("#image-file").val("");
+              self.fired = false;
             },
           });
         }
-        e.stopPropagation();
       });
+     
     }, 2000);
   },
 };

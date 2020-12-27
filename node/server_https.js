@@ -82,10 +82,10 @@ io.on('connection', socket => {
 
     socket.on('send-chat-message', message => {
          console.log({ username: socket.nickname, message: message });
-        Chat.create({ username: socket.nickname, message: message.message, job_id: message.job_id }).then(() => {
+        Chat.create({ username: message.username, message: message.message, job_id: message.job_id }).then(() => {
             let emitChannel = 'chat-message'; //'chatmessage' + message.job_id
-            console.log(emitChannel);
-            socket.broadcast.emit(emitChannel, { message: message, name: users[socket.nickname], job_id: message.job_id });
+//            console.log(emitChannel);
+            socket.broadcast.emit(emitChannel, { message: message, name: message.username, job_id: ''+message.job_id });
         }).catch(err => console.error(err));
     });
 
