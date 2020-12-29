@@ -51,11 +51,11 @@ Route::group(['middleware' => 'auth:api'], function () {
 });
 
 Route::group(['middleware' => 'auth:api', 'prefix' => 'my', 'as' => 'my'], function () {
-    Route::get('jobs', 'JobController@myJobs')->name('jobs');
-    Route::get('jobs-mobile/{page_no}', 'JobController@myJobsMobile')->name('jobs');
+    Route::get('jobs/{page_no?}', 'JobController@myJobs')->name('jobs');
+    // Route::get('jobs-mobile/{page_no?}', 'JobController@myJobsMobile')->name('jobs');
     Route::get('jobs/upcoming', 'JobController@myUpcomingJobs')->name('upcoming.jobs');
-    Route::get('farms', 'CustomerController@myFarms')->name('farms');
-    Route::get('managers/{id?}', 'CustomerController@myManagers')->name('list-all');
+    Route::get('farms/{page_no?}', 'CustomerController@myFarms')->name('farms');
+    Route::get('managers/{id?}/{page_no?}', 'CustomerController@myManagers')->name('list-all');
     
      Route::post('job-chat', 'JobController@jobChat');
     Route::get('chat-members/{job_id}', 'JobController@chatMembers');

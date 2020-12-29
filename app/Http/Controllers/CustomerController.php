@@ -23,18 +23,30 @@ use App\Models\CustomerFarm;
 
 class CustomerController extends Controller {
     
-    public function myFarms() {
+    public function myFarms($page_no=null) {
         if(Auth::user()->role_id == config('constant.roles.Customer')) {
+            $farms = Auth::user()->farms;
+            if ($page_no != null) {
+                $size = 20;
+                $skip = ($page_no - 1) * $size;
+                $farms = $farms->skip($skip)->take($size);
+            }
             return response()->json([
                     'status' => true,
                     'message' => 'Customer farms details',
-                    'farms' => Auth::user()->farms
+                    'farms' => $farms
                 ], 200);
         } elseif(Auth::user()->role_id == config('constant.roles.Customer_Manager')) {
+            $farms = CustomerFarm::whereId(Auth::user()->farm_id);
+            if ($page_no != null) {
+                $size = 20;
+                $skip = ($page_no - 1) * $size;
+                $farms = $farms->skip($skip)->take($size);
+            }
             return response()->json([
                     'status' => true,
                     'message' => 'Customer farms details',
-                    'farms' => CustomerFarm::whereId(Auth::user()->farm_id)->get()
+                    'farms' => $farms->get()
                 ], 200);
         } else {
             return response()->json([
@@ -45,13 +57,19 @@ class CustomerController extends Controller {
         }
     }
     
-    public function myManagers($id=null) {
+    public function myManagers($id=null, $page_no=null) {
         if(Auth::user()->role_id == config('constant.roles.Customer') || Auth::user()->role_id == config('constant.roles.Haulers')) {
-            if($id != null){
-                $data = User::where('id', $id)->with('managerDetails')->get();
+            if($id != null && $id != 'null'){
+                $data = User::where('id', $id)->with('managerDetails');
             }else{
-                $data = User::where('created_by', Auth::user()->id)->with('farm')->get();
+                $data = User::where('created_by', Auth::user()->id)->with('farm');
             }
+            if ($page_no != null) {
+                $size = 20;
+                $skip = ($page_no - 1) * $size;
+                $data = $data->skip($skip)->take($size);
+            }
+            $data = $data->get();
             return response()->json([
                     'status' => true,
                     'message' => 'Customer all managers details',

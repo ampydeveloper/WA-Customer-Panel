@@ -24,36 +24,14 @@ use App\Http\Requests\Job\{
 
 class JobController extends Controller {
 
-    public function myJobs() {
+    public function myJobs($page_no=null) {
         return response()->json([
                     'status' => true,
                     'message' => 'Job List',
-                    'data' => Auth::user()->myJobs()
+                    'data' => Auth::user()->myJobs($page_no)
                         ], 200);
     }
     
-    public function myJobsMobile($page_no) {
-        if($page_no == 1) {
-            $skip = 0;
-        } else {
-            $skip = ($page_no - 1)*20;
-        }
-        $user = Auth::user();
-        if($user->role_id == config('constant.roles.Customer')) {
-            $data = Job::where('customer_id', $user->id)->skip($skip)->take(20)->with('farm','customer', 'manager', 'service')->get();
-        } elseif(Auth::user()->role_id == config('constant.roles.Customer_Manager')) {
-            $data = Job::where('manager_id', $user->id)->orWhere('farm_id', $this->farm_id)->skip($skip)->take(20)->with('farm','customer', 'manager', 'service')->get();
-        } else {
-            $data = Job::where('manager_id', $user->id)->skip($skip)->take(20)->with('farm','customer', 'manager', 'service')->get();
-        }
-            
-        return response()->json([
-                    'status' => true,
-                    'message' => 'Job List',
-                    'data' => $data
-                        ], 200);
-    }
-
     public function myUpcomingJobs() {
         return response()->json([
                     'status' => true,
