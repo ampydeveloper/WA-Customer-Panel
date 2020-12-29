@@ -87,7 +87,7 @@ class JobController extends Controller {
         try {
             $data = [
                 'job_created_by' => $user->id,
-                'card_id' => $createJobRequest->card_id,
+                'card_id' => $createJobRequest->card_id == 'null' ? null : $createJobRequest->card_id,
                 'service_id' => $createJobRequest->service_id,
                 'gate_no' => (isset($createJobRequest->gate_no) && $createJobRequest->gate_no != '' && $createJobRequest->gate_no != null) ? $createJobRequest->gate_no : null,
                 'time_slots_id' => (isset($createJobRequest->time_slots_id) && $createJobRequest->time_slots_id != '' && $createJobRequest->time_slots_id != null) ? $createJobRequest->time_slots_id : null,

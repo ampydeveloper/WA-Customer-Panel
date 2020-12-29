@@ -61,7 +61,7 @@
               </v-col>
             </v-row>
             <v-row>
-              <v-col class="pl-0 manager-cols" cols="2" md="2" >
+              <v-col class="pl-0 manager-cols" cols="4" md="4" >
                 <div class="custom-col">
                   <span class="label-align pt-0">
                     <label>Salutation</label>
@@ -73,7 +73,7 @@
                   ></v-select>
                 </div>
               </v-col>
-              <v-col col="5" md="5" class="pl-0 manager-cols">
+              <v-col col="4" md="4" class="pl-0 manager-cols">
                 <div class="custom-col">
                     <span class="label-align pt-0">
                     <label>First Name</label>
@@ -86,7 +86,7 @@
                     ></v-text-field>
                 </div>
               </v-col>
-              <v-col col="5" md="5" class="pl-0 manager-cols">
+              <v-col col="4" md="4" class="pl-0 manager-cols">
                 <div class="custom-col">
                   <span class="label-align pt-0">
                     <label>Last Name</label>
@@ -102,7 +102,7 @@
             </v-row>
 
             <v-row>
-              <v-col cols="6" md="6" class="pl-0 manager-cols">
+              <v-col cols="4" md="4" class="pl-0 manager-cols">
                 <div class="custom-col">
                   <span class="label-align pt-0">
                     <label>Mobile Number</label>
@@ -116,7 +116,7 @@
                   ></v-text-field>
                 </div>
               </v-col>
-              <v-col cols="6" md="6" class="pl-0 manager-cols">
+              <v-col cols="4" md="4" class="pl-0 manager-cols">
                 <div class="custom-col">
                   <span class="label-align pt-0">
                     <label>Email</label>
@@ -134,7 +134,7 @@
             <v-row>
               <v-col cols="12" md="12">
                 <div class="custom-col row">
-                  <v-col sm="4" class="pt-0 pb-0">
+                  <v-col sm="2" class="pt-0 pb-0">
                     <v-btn
                       type="button"
                       :loading="loading"

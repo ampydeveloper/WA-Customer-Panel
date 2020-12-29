@@ -14,7 +14,7 @@ class AuthService {
   }
 
   static changePassword(changePasswordRequest) {
-    return Axios.post("/api/auth/change-password", changePasswordRequest);
+    return Axios.post("/api/auth/change-password-web", changePasswordRequest);
   }
 }
 

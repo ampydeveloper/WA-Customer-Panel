@@ -152,12 +152,12 @@
                       <input
                         type="hidden"
                         id="job-lat"
-                        :value="job.farm.latitude"
+                        :value="job.farm != null ? job.farm.latitude : ''"
                       />
                       <input
                         type="hidden"
                         id="job-long"
-                        :value="job.farm.longitude"
+                        :value="job.farm != null ? job.farm.longitude : ''"
                       />
                       <input
                         type="hidden"

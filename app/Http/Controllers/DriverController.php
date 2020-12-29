@@ -62,23 +62,23 @@ class DriverController extends Controller
                     if ($request->driver_image) {
                         $imageName = $user->putImage($request->driver_image);
                         $user->user_image = $imageName;
-                        if ($user->save()) {
-                            $this->_confirmPassword($user, $newPassword);
-                            
-                            // Notification is required.
-                            $customerActivity = new CustomerActivity([
-                                'customer_id' => $request->user()->id,
-                                'created_by' => $request->user()->id,
-                                'activities' => 'Hauler created ' . $user->first_name . ' as driver.',
-                            ]);
-                            if ($customerActivity->save()) {
-                                DB::commit();
-                                return response()->json([
-                                            'status' => true,
-                                            'message' => 'Driver created successfully.',
-                                            'data' => $user
-                                                ], 200);
-                            }
+                    }
+                    if ($user->save()) {
+                        $this->_confirmPassword($user, $newPassword);
+                        
+                        // Notification is required.
+                        $customerActivity = new CustomerActivity([
+                            'customer_id' => $request->user()->id,
+                            'created_by' => $request->user()->id,
+                            'activities' => 'Hauler created ' . $user->first_name . ' as driver.',
+                        ]);
+                        if ($customerActivity->save()) {
+                            DB::commit();
+                            return response()->json([
+                                        'status' => true,
+                                        'message' => 'Driver created successfully.',
+                                        'data' => $user
+                                            ], 200);
                         }
                     }
                 }
