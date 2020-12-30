@@ -52,8 +52,7 @@ Route::group(['middleware' => 'auth:api'], function () {
 
 Route::group(['middleware' => 'auth:api', 'prefix' => 'my', 'as' => 'my'], function () {
     Route::get('jobs/{page_no?}', 'JobController@myJobs')->name('jobs');
-    // Route::get('jobs-mobile/{page_no?}', 'JobController@myJobsMobile')->name('jobs');
-    Route::get('jobs/upcoming', 'JobController@myUpcomingJobs')->name('upcoming.jobs');
+    Route::get('jobs/upcoming/{page_no?}', 'JobController@myUpcomingJobs')->name('upcoming.jobs');
     Route::get('farms/{page_no?}', 'CustomerController@myFarms')->name('farms');
     Route::get('managers/{id?}/{page_no?}', 'CustomerController@myManagers')->name('list-all');
     
@@ -102,7 +101,7 @@ Route::group(['middleware' => 'auth:api', 'prefix' => 'customer', 'as' => 'custo
 });
 
 Route::group(['middleware' => 'auth:api', 'prefix' => 'hauler/driver', 'as' => 'hauler/driver'], function () {
-    Route::get('all', 'DriverController@allDriversList')->name('all-drivers');
+    Route::get('all/{page_no?}', 'DriverController@allDriversList')->name('all-drivers');
     Route::post('create', 'DriverController@create')->name('create');
     Route::post('{driver}', 'DriverController@update')->name('update');
     Route::get('{driver}', 'DriverController@get')->name('get');

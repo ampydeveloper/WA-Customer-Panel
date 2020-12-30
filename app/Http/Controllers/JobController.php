@@ -32,11 +32,11 @@ class JobController extends Controller {
                         ], 200);
     }
     
-    public function myUpcomingJobs() {
+    public function myUpcomingJobs($page_no=null) {
         return response()->json([
                     'status' => true,
                     'message' => 'Job List',
-                    'data' => Auth::user()->myUpcomingJobs()
+                    'data' => Auth::user()->myUpcomingJobs($page_no)
                         ], 200);
     }
 

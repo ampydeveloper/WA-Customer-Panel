@@ -13,12 +13,18 @@ use App\Models\CustomerActivity;
 
 class DriverController extends Controller
 {
-    public function allDriversList() {
+    public function allDriversList($page_no=null) {
         if(Auth::user()->role_id == config('constant.roles.Haulers')) {
+            $data = User::where('role_id', config('constant.roles.Hauler_driver'))->where('created_by', Auth::user()->id);
+            if ($page_no != null) {
+                $size = 20;
+                $skip = ($page_no - 1) * $size;
+                $data = $data->skip($skip)->take($size);
+            }
             return response()->json([
                 'status' => true,
                 'message' => 'Hauler Driver details',
-                'data' => User::where('role_id', config('constant.roles.Hauler_driver'))->where('created_by', Auth::user()->id)->get()
+                'data' => $data->get()
             ], 200);
         }
         return response()->json([

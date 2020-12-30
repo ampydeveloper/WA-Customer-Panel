@@ -70,14 +70,20 @@ trait UserMethods
         return $jobs->get();
     }
     
-    public function myUpcomingJobs()
+    public function myUpcomingJobs($page_no=null)
     {
         if ($this->isCustomer()) {
-            return Job::where('customer_id', $this->id)->where('job_providing_date', '>', Carbon::now())->with('farm','customer', 'manager', 'service')->get();
+            $jobs = Job::where('customer_id', $this->id)->where('job_providing_date', '>', Carbon::now())->with('farm','customer', 'manager', 'service');
         } elseif($this->role_id == config('constant.roles.Customer_Manager')) {
-            return Job::where('manager_id', $this->id)->orWhere('farm_id', $this->farm_id)->where('job_providing_date', '>', Carbon::now())->with('farm','customer', 'manager', 'service')->get();
+            $jobs = Job::where('manager_id', $this->id)->orWhere('farm_id', $this->farm_id)->where('job_providing_date', '>', Carbon::now())->with('farm','customer', 'manager', 'service');
         }else {
-            return Job::where('manager_id', $this->id)->where('job_providing_date', '>', Carbon::now())->with('farm','customer', 'manager', 'service')->get();
+            $jobs = Job::where('manager_id', $this->id)->where('job_providing_date', '>', Carbon::now())->with('farm','customer', 'manager', 'service');
         }
+        if($page_no != null){
+            $size = 20;
+            $skip = ($page_no - 1) * $size;
+            $jobs = $jobs->skip($skip)->take($size);
+        }
+        return $jobs->get();
     }
 }
