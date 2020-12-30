@@ -85,7 +85,7 @@ io.on('connection', socket => {
         Chat.create({ username: message.username, message: message.message, job_id: message.job_id }).then(() => {
             let emitChannel = 'chat-message'; //'chatmessage' + message.job_id
 //            console.log(emitChannel);
-            socket.broadcast.emit(emitChannel, { message: message, name: message.username, job_id: ''+message.job_id });
+            socket.broadcast.emit(emitChannel, { message: message, name: message.username, job_id: message.job_id });
         }).catch(err => console.error(err));
     });
 
