@@ -177,46 +177,10 @@ export default {
       });
       window.localStorage.removeItem("verifyEmail");
     }
-  $(document).ready(function() {
-    feather.replace();
-  });
-  setTimeout(function() {
-      $(document).ready(function() {
-        
-          if (!$.fn.dataTable.isDataTable(".basic-table")) {
-            $(".basic-table").DataTable({
-                "bSort": false,
-                oLanguage: {
-                    sSearch: "",
-                    "sEmptyTable": "No data available."
-                },
-                drawCallback: function(settings) {
-                    $(".dataTables_paginate .paginate_button.previous").html(
-                        $("#table-chevron-left").html()
-                    );
-                    $(".dataTables_paginate .paginate_button.next").html(
-                        $("#table-chevron-right").html()
-                    );
-                },
-            });
-            $(".dataTables_filter").append($("#search-input-icon").html());
-            $(".dataTables_filter input").attr(
-                "placeholder",
-                "Search Pickup by Pickup ID / Service Name / Farm Location"
-            );
-            $(".dataTables_paginate .paginate_button.previous").html(
-                $("#table-chevron-left").html()
-            );
-            $(".dataTables_paginate .paginate_button.next").html(
-                $("#table-chevron-right").html()
-            );
-            
-        }
-        $(".basic-table").css({
-            opacity: 1
-        });
-      });
-  }, 1000);
+    $(document).ready(function() {
+      feather.replace();
+    });
+  
 
   },
 
@@ -236,7 +200,11 @@ export default {
           routeName === "FarmJobsDashboard" ? "list" : "upcomingJobsList";
       }
       JobService[getRouteName](route.params.farmId).then((response) => {
+        if ($.fn.dataTable.isDataTable(".basic-table")) {
+          $(".basic-table").DataTable().destroy();
+        }
         this.alljobs = response.data.data;
+        this.initDt();
       });
     },
     cancelJob: async function (jobId) {
@@ -257,6 +225,7 @@ export default {
         }
         JobService[getRouteName](this.$route.params.farmId).then((response) => {
           this.alljobs = response.data.data;
+          this.initDt();
         });
       } catch (error) {
         this.$toast.open({
@@ -267,6 +236,45 @@ export default {
         });
       }
     },
+    initDt: () => {
+      setTimeout(function() {
+        $(document).ready(function() {
+          
+            if (!$.fn.dataTable.isDataTable(".basic-table")) {
+              $(".basic-table").DataTable({
+                  "bSort": false,
+                  oLanguage: {
+                      sSearch: "",
+                      "sEmptyTable": "No data available."
+                  },
+                  drawCallback: function(settings) {
+                      $(".dataTables_paginate .paginate_button.previous").html(
+                          $("#table-chevron-left").html()
+                      );
+                      $(".dataTables_paginate .paginate_button.next").html(
+                          $("#table-chevron-right").html()
+                      );
+                  },
+              });
+              $(".dataTables_filter").append($("#search-input-icon").html());
+              $(".dataTables_filter input").attr(
+                  "placeholder",
+                  "Search Pickup by Pickup ID / Service Name / Farm Location"
+              );
+              $(".dataTables_paginate .paginate_button.previous").html(
+                  $("#table-chevron-left").html()
+              );
+              $(".dataTables_paginate .paginate_button.next").html(
+                  $("#table-chevron-right").html()
+              );
+              
+          }
+          $(".basic-table").css({
+              opacity: 1
+          });
+        });
+      }, 1000);
+    }
   },
 };
 </script>

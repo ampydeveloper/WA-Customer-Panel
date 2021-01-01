@@ -268,6 +268,7 @@ export default {
             });
           }, 2000);
         } catch (error) {
+          this.loading = false;
           this.$toast.open({
             message: error.response.data.message,
             type: "error",

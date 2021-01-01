@@ -104,9 +104,17 @@
                   </div>
                 </li>
                 <div class="basic-button-out clearfix mt-3">
-                  <button class="btn-full-green" @click="saveFarm">
+                  <v-btn
+                    type="button"
+                    :loading="loading"
+                    :disabled="loading"
+                    class="btn-full-green"
+                    @click="saveFarm"
+                    >Save <i data-feather="arrow-right"></i
+                  ></v-btn>
+                  <!-- <button class="btn-full-green" @click="saveFarm">
                     Save <i data-feather="arrow-right"></i>
-                  </button>
+                  </button> -->
                 </div>
               </ul>
             </div>
@@ -165,6 +173,7 @@ export default {
       model: {... emptyFarmRequest},
       fileContainer: [],
       isEdit: false,
+      loading: false,
       schema: {
         fields: [
           {
@@ -322,6 +331,7 @@ export default {
       if (isValidated !== true) {
         return false;
       }
+      this.loading = true;
       var saveFarmRequest = new FormData();
 
       /**
@@ -361,9 +371,11 @@ export default {
                 position: "top-right",
                 dismissible: false,
               });
+              this.loading = false;
               router.push({ name: "farmsList" });
             },
             (error) => {
+              this.loading = false;
               this.$toast.open({
                 message: error.response.data.message,
                 type: "error",

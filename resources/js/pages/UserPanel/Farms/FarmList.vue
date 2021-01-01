@@ -125,52 +125,17 @@ export default {
   },
   created() {
     FarmService.list().then((response) => {
+      if ($.fn.dataTable.isDataTable(".basic-table")) {
+        $(".basic-table").DataTable().destroy();
+      }
       this.farmList = response.data.farms;
+      this.initDt();
     });
     this.user = JSON.parse(window.localStorage.getItem("user"));
 
     $(document).ready(function() {
       feather.replace();
     });
-
-    setTimeout(function() {
-      $(document).ready(function() {
-        
-          if (!$.fn.dataTable.isDataTable(".basic-table")) {
-          $(".basic-table").DataTable({
-              "bSort": false,
-              oLanguage: {
-                  sSearch: "",
-                  "sEmptyTable": "No data available."
-              },
-              drawCallback: function(settings) {
-                  $(".dataTables_paginate .paginate_button.previous").html(
-                      $("#table-chevron-left").html()
-                  );
-                  $(".dataTables_paginate .paginate_button.next").html(
-                      $("#table-chevron-right").html()
-                  );
-              },
-          });
-          $(".dataTables_filter").append($("#search-input-icon").html());
-          $(".dataTables_filter input").attr(
-              "placeholder",
-              "Search Farms by Farm Location / Manager"
-          );
-          $(".dataTables_paginate .paginate_button.previous").html(
-              $("#table-chevron-left").html()
-          );
-          $(".dataTables_paginate .paginate_button.next").html(
-              $("#table-chevron-right").html()
-          );
-          
-      }
-      $(".basic-table").css({
-              opacity: 1
-          });
-      });
-    }, 1000);
-
   },
   methods: {
     deleteFarm: async function (farmId) {
@@ -196,6 +161,7 @@ export default {
               (farm) => farm.id === farmId
             );
             this.farmList.splice(farmIndex, 1);
+            this.initDt();
           } catch (error) {
             this.$toast.open({
               message: error.response.data.message,
@@ -207,6 +173,45 @@ export default {
         }
       });
     },
+    initDt: () => {
+      setTimeout(function() {
+        $(document).ready(function() {
+          
+          if (!$.fn.dataTable.isDataTable(".basic-table")) {
+            $(".basic-table").DataTable({
+                "bSort": false,
+                oLanguage: {
+                    sSearch: "",
+                    "sEmptyTable": "No data available."
+                },
+                drawCallback: function(settings) {
+                    $(".dataTables_paginate .paginate_button.previous").html(
+                        $("#table-chevron-left").html()
+                    );
+                    $(".dataTables_paginate .paginate_button.next").html(
+                        $("#table-chevron-right").html()
+                    );
+                },
+            });
+            $(".dataTables_filter").append($("#search-input-icon").html());
+            $(".dataTables_filter input").attr(
+                "placeholder",
+                "Search Farms by Farm Location / Manager"
+            );
+            $(".dataTables_paginate .paginate_button.previous").html(
+                $("#table-chevron-left").html()
+            );
+            $(".dataTables_paginate .paginate_button.next").html(
+                $("#table-chevron-right").html()
+            );
+            
+        }
+        $(".basic-table").css({
+                opacity: 1
+            });
+        });
+      }, 1000);
+    }
   },
 };
 </script>

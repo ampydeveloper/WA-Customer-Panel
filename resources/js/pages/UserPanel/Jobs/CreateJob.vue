@@ -645,6 +645,7 @@ export default {
       menu2: false,
       timeMenu: false,
       weightShow: false,
+      overhead_cost: 0,
       slotTypes: [],
       servicePrice: 0,
       fileContainer: [],
@@ -700,12 +701,14 @@ export default {
       this.weightShow = service_type === 1;
       this.jobRequest.amount = parseInt(price) + parseInt(overhead_cost);
       this.servicePrice = price;
+      this.overhead_cost = parseInt(overhead_cost);
+      if(this.weightShow) this.jobRequest.amount *= parseInt(this.jobRequest.weight); 
     },
     selectedTimePeriod: function (timePeriod) {
       this.slotsForPeriod = this.serviceTimeSlotMap[timePeriod];
     },
     "jobRequest.weight": function (weight) {
-      this.jobRequest.amount = this.servicePrice * weight;
+      this.jobRequest.amount = (this.servicePrice + this.overhead_cost) * weight;
     },
     "jobRequest.farm_id": function (farmId) {
       const selectedFarm = _.filter(

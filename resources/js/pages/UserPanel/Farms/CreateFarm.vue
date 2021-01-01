@@ -89,9 +89,14 @@
               </ul>
 
               <div class="basic-button-out clearfix mt-3">
-                <button class="btn-full-green" @click="createFarm">
-                  Create Farm <i data-feather="arrow-right"></i>
-                </button>
+                <v-btn
+                  type="button"
+                  :loading="loading"
+                  :disabled="loading"
+                  class="btn-full-green"
+                  @click="createFarm"
+                  >Create Farm <i data-feather="arrow-right"></i
+                ></v-btn>
               </div>
             </div>
           </div>
@@ -156,6 +161,7 @@ export default {
       model: emptyFarmRequest,
       fileContainer: [],
       isEdit: false,
+      loading: false,
       schema: {
         styleClasses: "row",
         fields: [
@@ -246,11 +252,13 @@ $(document).ready(function() {
       this.managerKey = Math.random().toString(36).substring(7);
     },
     createFarm: function () {
+      return false;
       const isValidated = this.$refs.form.validate();
       if (isValidated !== true) {
         return false;
       }
 
+      this.loading = true;
       var createFarmRequest = new FormData();
 
       /**
@@ -278,9 +286,11 @@ $(document).ready(function() {
        * If user image is uploaded then add it to form data
        */
       if (this.fileContainer.length > 0) {
-        this.fileContainer.forEach((file, ind) => {
-          createFarmRequest.append(`farm_image[${ind}]`, file, file.name);
-        });
+        let file = this.fileContainer[0];
+        createFarmRequest.append('farm_image', file, file.name);
+        // this.fileContainer.forEach((file, ind) => {
+          // createFarmRequest.append(`farm_image[${ind}]`, file, file.name);
+        // });
       }
 
       FarmService.create(createFarmRequest)
@@ -292,11 +302,13 @@ $(document).ready(function() {
               position: "top-right",
               dismissible: false,
             });
+            this.loading = false;
             this.model = emptyFarmRequest;
             this.addManagers = false;
             router.push({ name: "farmsList" });
           },
           (error) => {
+            this.loading = false;
             this.$toast.open({
               message: error.response.data.message,
               type: "error",

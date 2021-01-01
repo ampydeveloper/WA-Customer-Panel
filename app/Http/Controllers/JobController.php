@@ -60,6 +60,9 @@ class JobController extends Controller {
                             'data' => []
                                 ], 421);
             }
+        } else if ($user->role_id == config('constant.roles.Hauler_driver')) {
+            $Owner = User::whereId($user->created_by)->first();
+            $createJobRequest->payment_mode = $Owner->payment_mode;
         }
         DB::beginTransaction();
         try {
@@ -234,13 +237,13 @@ class JobController extends Controller {
                 $jobUpdate = [
                     'gate_no' => (isset($request->gate_no) && $request->gate_no != '' && $request->gate_no != null && $request->gate_no != 'null') ? $request->gate_no : null,
                     'service_id' => $request->service_id,
-                    'time_slots_id' => (isset($request->time_slots_id) && $request->time_slots_id != '' && $request->time_slots_id != null) ? $request->time_slots_id : null,
+                    'time_slots_id' => (isset($request->time_slots_id) && $request->time_slots_id != '' && $request->time_slots_id != null && $request->time_slots_id != 'null') ? $request->time_slots_id : null,
                     'job_providing_date' => $request->job_providing_date,
                     'job_providing_time' => $request->job_providing_time,
                     'weight' => (isset($request->weight) && $request->weight != '' && $request->weight != null) ? $request->weight : null,
                     'is_repeating_job' => ($request->is_repeating_job == "false" || $request->is_repeating_job == false) ? 1 : 2,
                     'repeating_days' => (isset($request->repeating_days) && $request->repeating_days != '' && $request->repeating_days != null) ? json_encode(explode(',', $request->repeating_days)) : null,
-                    'payment_mode' => (isset($request->payment_mode) && $request->payment_mode != '' && $request->payment_mode != null) ? $request->payment_mode : 3,
+                    'payment_mode' => (isset($request->payment_mode) && $request->payment_mode != '' && $request->payment_mode != null && $request->payment_mode != 'null') ? $request->payment_mode : 3,
                     'images' => (isset($request->images) && $request->images != '' && $request->images != null) ? $request->images : null,
                     'notes' => (isset($request->notes) && $request->notes != '' && $request->notes != null && $request->notes != 'null') ? $request->notes : '',
                     'amount' => $request->amount,
@@ -249,7 +252,7 @@ class JobController extends Controller {
                 if (isset($request->manager_id)) {
                     $jobUpdate['manager_id'] = $request->manager_id;
                 }
-                if (isset($request->farm_id)) {
+                if (isset($request->farm_id) && $request->farm_id != 'null') {
                     $jobUpdate['farm_id'] = $request->farm_id;
                 }
                 $job_id->update($jobUpdate);

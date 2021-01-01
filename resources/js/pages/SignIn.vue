@@ -77,7 +77,13 @@ export default {
                     const { access_token, user } = response.data.data;
                     window.localStorage.setItem("token", access_token);
                     window.localStorage.setItem("user", JSON.stringify(user));
-                    window.location.href = "/pickups";
+
+                    let cpToken = btoa(user.email);
+                    if((user.role_id == 5 || user.role_id == 7) && user.password_changed_at == null){
+                      window.location.href = "/change-password/"+cpToken;
+                    }else{
+                      window.location.href = "/pickups";
+                    }
                   },
                   error => {
                     this.$toast.open({

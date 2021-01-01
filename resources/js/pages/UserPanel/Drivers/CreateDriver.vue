@@ -209,6 +209,7 @@ export default {
       const isValidated = this.$refs.form.validate();
       if (isValidated === true) {
         try {
+          this.loading = true;
           var createDriverRequest = new FormData();
 
           /**
@@ -235,13 +236,14 @@ export default {
             position: "top-right",
             dismissible: false,
           });
-
+          this.loading = false;
           setTimeout(() => {
             router.push({
               name: "DriversDashboard"
             });
           }, 2000);
         } catch (error) {
+          this.loading = false;
           this.$toast.open({
             message: error.response.data.message,
             type: "error",

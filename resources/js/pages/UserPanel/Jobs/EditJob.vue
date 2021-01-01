@@ -35,6 +35,19 @@
             <div class="row">
               <div class="col-sm-6 content-left-outer">
                 <div class="row">
+                  <v-col cols="12" md="12" v-if="isHauler">
+                    <div class="label-align pt-0">
+                      <label>Driver</label>
+                    </div>
+                    <div class="pt-0 pb-0 farm-conatiner">
+                      <v-select
+                        v-model="jobRequest.manager_id"
+                        :items="driverList"
+                        placeholder="Select Driver"
+                        :rules="[(v) => !!v || 'Driver is required.']"
+                      ></v-select>
+                    </div>
+                  </v-col>
                   <v-col cols="12" md="12" class="pt-0 pb-0">
                     <div class="label-align pt-0">
                       <label>Service</label>
@@ -157,7 +170,7 @@
                         md="8"
                         class="pt-0 pb-0"
                       >
-                        <div class="label-align pt-0">
+                        <div class="label-align pt-0" v-if='slotTypes.length > 0'>
                           <label>Service Time</label>
                         </div>
                         <div class="pt-0 pb-0 service-time-timing-out">
@@ -501,6 +514,7 @@ import subFooter from "../subFooter";
 import jobFormSchema from "../../../forms/jobFormSchema";
 import JobService from "../../../services/JobService";
 import FarmService from "../../../services/FarmService";
+import DriverService from '../../../services/DriverService';
 import router from "../../../router";
 import _ from "lodash";
 
@@ -532,6 +546,7 @@ export default {
         payment_mode: null,
         time_slots_id: "",
         job_providing_date: "2020-01-01",
+        job_providing_time: null,
         weight: 1,
         gate_no: "",
         amount: 0,
@@ -549,10 +564,12 @@ export default {
       farmList: [],
       allServices: [],
       managerList: [],
+      driverList: [],
       slotTypes: [],
       menu2: false,
       timeMenu: false,
       weightShow: false,
+      overhead_cost: 0,
       servicePrice: 0,
       fileContainer: [],
       timePeriod: { 1: "Morning", 2: "Afternoon", 3: "Evening" },
@@ -568,7 +585,7 @@ export default {
   },
   watch: {
     "jobRequest.service_id": function (serviceId) {
-      const { timeSlots, service_type, slot_type, price } = _.find(
+      const { timeSlots, service_type, slot_type, price, overhead_cost } = _.find(
         this.allServices,
         {
           id: serviceId,
@@ -603,14 +620,16 @@ export default {
 
       if(slot_type != null){ this.slotTypes = slot_type; }
       this.weightShow = service_type === 1;
-      this.jobRequest.amount = price;
+      this.jobRequest.amount = parseInt(price) + parseInt(overhead_cost);
       this.servicePrice = price;
+      this.overhead_cost = parseInt(overhead_cost);
+      if(this.weightShow) this.jobRequest.amount *= parseInt(this.jobRequest.weight); 
     },
     selectedTimePeriod: function (timePeriod) {
       this.slotsForPeriod = this.serviceTimeSlotMap[timePeriod];
     },
     "jobRequest.weight": function (weight) {
-      this.jobRequest.amount = this.servicePrice * weight;
+      this.jobRequest.amount = (this.servicePrice + this.overhead_cost) * weight;
     },
     "jobRequest.farm_id": function (farmId) {
       const selectedFarm = _.filter(
@@ -681,6 +700,18 @@ export default {
       };
     });
 
+    /** Collection of drivers */
+    if(user.role_id == 6){
+      DriverService.list().then((response) => {
+        this.driverList = [...response.data.data].map((driver) => {
+          return {
+            text: driver.full_name,
+            value: driver.id
+          };
+        });
+      });
+    }
+
     if(user.role_id == 4 || user.role_id == 5){
       /** Collection of farms */
       const {
@@ -711,6 +742,7 @@ export default {
         manager_id: job.manager_id,
         payment_mode: job.payment_mode,
         job_providing_date: job.job_providing_date,
+        job_providing_time: job.job_providing_time,
         is_repeating_job: job.is_repeating_job == 1 ? false : true,
         repeating_days:
           job.repeating_days != null

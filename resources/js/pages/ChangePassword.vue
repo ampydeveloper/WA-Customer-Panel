@@ -74,9 +74,16 @@ export default {
                       position: "bottom-right",
                       dismissible: false,
                     });
+
+                    this.$toast.open({
+                      message: 'You are being logged-out. Please login using the new password!',
+                      type: "info",
+                      position: "top-right",
+                      dismissible: false,
+                    });
                     setTimeout(() => {
                       window.location.href = "/sign-in";
-                    }, 500);
+                    }, 3000);
                   },
                   (error) => {
                     this.$toast.open({
