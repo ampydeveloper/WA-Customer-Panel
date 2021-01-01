@@ -330,13 +330,19 @@ class FarmController extends Controller
         }
     }
     
-    public function getFarmManagers(CustomerFarm $customer_farm)
+    public function getFarmManagers(CustomerFarm $customer_farm, $page_no=null)
     {
         if(Auth::user()->role_id == config('constant.roles.Customer') || Auth::user()->role_id == config('constant.roles.Customer_Manager')) {
+            $managers = $customer_farm->managers;
+            if ($page_no != null) {
+                $size = 20;
+                $skip = ($page_no - 1) * $size;
+                $managers = $managers->skip($skip)->take($size);
+            }
             return response()->json([
                 'status' => true,
                 'message' => 'Farm manager details.',
-                'data' => $customer_farm->managers
+                'data' => $managers
             ], 200);
         }
         return response()->json([

@@ -79,8 +79,8 @@ Route::group(['middleware' => 'auth:api', 'prefix' => 'customer', 'as' => 'custo
     // Farm related apis
     Route::group(['prefix' => 'farm', 'as' => 'farm'], function () {
         Route::group(['prefix' => '{customer_farm}', 'as' => 'jobs'], function () {
-            Route::get('jobs', 'JobController@getJobsOfFram')->name('list');
-            Route::get('jobs/upcoming', 'JobController@upcomingJobsOfFarm')->name('upcoming-jobs-list');
+            Route::get('jobs/{page_no?}', 'JobController@getJobsOfFram')->name('list');
+            Route::get('jobs/upcoming/{page_no?}', 'JobController@upcomingJobsOfFarm')->name('upcoming-jobs-list');
         });
         Route::post('', 'FarmController@create')->name('create');
         Route::get('{customer_farm}', 'FarmController@get')->name('get');
@@ -90,7 +90,7 @@ Route::group(['middleware' => 'auth:api', 'prefix' => 'customer', 'as' => 'custo
 
         // Route group to manage farm managers
         Route::group(['prefix' => '{customer_farm}', 'as' => 'manager'], function () {
-            Route::get('managers', 'FarmController@getFarmManagers')->name('list');
+            Route::get('managers/{page_no?}', 'FarmController@getFarmManagers')->name('list');
             Route::post('manager', 'FarmController@createFarmManager')->name('create');
             Route::get('manager/{manager}', 'FarmController@getFarmManager')->name('single-farm-manager');
             Route::post('manager/{manager}', 'FarmController@updateFarmManager')->name('update');

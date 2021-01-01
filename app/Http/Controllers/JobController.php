@@ -356,7 +356,7 @@ class JobController extends Controller {
                         ], 421);
     }
 
-    public function getJobsOfFram(CustomerFarm $customerFarm) {
+    public function getJobsOfFram(CustomerFarm $customerFarm, $page_no=null) {
         if (!Auth::user()->canAccessFarm($customerFarm)) {
             return response()->json([
                         'status' => false,
@@ -364,15 +364,20 @@ class JobController extends Controller {
                         'data' => []
                             ], 421);
         }
-
+        $jobs = $customerFarm->jobs;
+        if($page_no != null){
+            $size = 20;
+            $skip = ($page_no - 1) * $size;
+            $jobs = $jobs->skip($skip)->take($size);
+        }
         return response()->json([
                     'status' => true,
                     'message' => 'Job List Of Farm',
-                    'data' => $customerFarm->jobs
+                    'data' => $jobs
                         ], 200);
     }
 
-    public function upcomingJobsOfFarm(CustomerFarm $customerFarm) {
+    public function upcomingJobsOfFarm(CustomerFarm $customerFarm, $page_no = null) {
         if (!Auth::user()->canAccessFarm($customerFarm)) {
             return response()->json([
                         'status' => false,
@@ -380,12 +385,19 @@ class JobController extends Controller {
                         'data' => []
                             ], 421);
         }
+        $jobs = Job::where('farm_id', $customerFarm->id)->where('job_providing_date', '>', Carbon::now())->with('truck_driver', 'truck');
+        if ($page_no != null) {
+            $size = 20;
+            $skip = ($page_no - 1) * $size;
+            $jobs = $jobs->skip($skip)->take($size);
+        }
+        $jobs = $jobs->get();
 
         return response()->json([
                     'status' => true,
                     'message' => 'Upcoming Jobs',
                     'now' => Carbon::now()->format('Y-m-d'),
-                    'data' => Job::where('farm_id', $customerFarm->id)->where('job_providing_date', '>', Carbon::now())->with('truck_driver', 'truck')->get()
+                    'data' => $jobs
                         ], 200);
     }
 
