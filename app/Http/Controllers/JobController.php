@@ -346,10 +346,13 @@ class JobController extends Controller {
     public function get(Job $job) {
         $user = Auth::user();
         If ($user->id == $job->customer_id || $user->id == $job->manager_id || ($user->farm_id == $job->farm_id && $user->role_id == config('constant.roles.Customer_Manager'))) {
+            $data = $job->where('id', $job->id)->with('farm', 'manager', 'service')->first();
+            $images = ($data->images != null) ? json_decode($data->images) : null;
             return response()->json([
                         'status' => true,
                         'message' => 'Job Details.',
-                        'data' => $job->where('id', $job->id)->with('farm', 'manager', 'service')->first()
+                        'data' => $data,
+                        'images' => $images
                             ], 200);
         }
         return response()->json([
