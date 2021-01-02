@@ -58,6 +58,7 @@
                     :rules="[v => !!v || 'Driver Salutation is required.']"
                     v-model='addForm.prefix'
                   ></v-select>
+                  <span class="text-danger" v-for='e in errors.prefix' v-text='e'></span>
                 </div>
               </v-col>
               <v-col col="4" md="4" class="pl-0 manager-cols">
@@ -71,6 +72,7 @@
                       required
                       placeholder
                     ></v-text-field>
+                    <span class="text-danger" v-for='e in errors.first_name' v-text='e'></span>
                 </div>
               </v-col>
               <v-col col="4" md="4" class="pl-0 manager-cols">
@@ -84,6 +86,7 @@
                     required
                     placeholder
                   ></v-text-field>
+                  <span class="text-danger" v-for='e in errors.last_name' v-text='e'></span>
                 </div>
               </v-col>
             </v-row>
@@ -101,6 +104,7 @@
                     placeholder
                     maxlength="10"
                   ></v-text-field>
+                  <span class="text-danger" v-for='e in errors.driver_phone' v-text='e'></span>
                 </div>
               </v-col>
               <v-col cols="4" md="4" class="pl-0 manager-cols">
@@ -115,6 +119,7 @@
                     required
                     placeholder
                   ></v-text-field>
+                  <span class="text-danger" v-for='e in errors.email' v-text='e'></span>
                 </div>
               </v-col>
             </v-row>
@@ -170,6 +175,7 @@ export default {
     return {
       valid: true,
       prefixes: ['Mr', 'Miss', 'Mrs.'],
+      errors: [],
       addForm:{
         prefix: "",
         driver_first_name: "",
@@ -210,6 +216,7 @@ export default {
       if (isValidated === true) {
         try {
           this.loading = true;
+          this.errors = [];
           var createDriverRequest = new FormData();
 
           /**
@@ -243,6 +250,7 @@ export default {
             });
           }, 2000);
         } catch (error) {
+          this.errors = error.response.data.data;
           this.loading = false;
           this.$toast.open({
             message: error.response.data.message,

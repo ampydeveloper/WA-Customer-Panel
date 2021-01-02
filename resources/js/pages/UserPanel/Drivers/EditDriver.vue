@@ -128,6 +128,7 @@
                     required
                     placeholder
                   ></v-text-field>
+                  <span class="text-danger" v-for='e in errors.email' v-text='e'></span>
                 </div>
               </v-col>
             </v-row>
@@ -186,6 +187,7 @@ export default {
       driverId: 0,
       image_url: null,
       uploadImage: false,
+      errors: [],
       addForm:{
         prefix: "",
         first_name: "",
@@ -235,6 +237,7 @@ export default {
       if (isValidated === true) {
         try {
           this.loading = true;
+          this.errors = [];
           var editDriverRequest = new FormData();
 
           /**
@@ -268,6 +271,7 @@ export default {
             });
           }, 2000);
         } catch (error) {
+          this.errors = error.response.data.data;
           this.loading = false;
           this.$toast.open({
             message: error.response.data.message,
