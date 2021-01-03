@@ -47,6 +47,7 @@ class JobController extends Controller {
                 return response()->json([
                             'status' => false,
                             'message' => 'No card added',
+                            'no_card_added' => 1,
                             'data' => []
                                 ], 421);
             }

@@ -643,6 +643,7 @@ class AuthController extends Controller {
             }
             try {
                 $data = [
+                    'prefix' => (isset($request->prefix)) ? $request->prefix : null,
                     'first_name' => $request->first_name,
                     'last_name' => $request->last_name,
                     'email' => $request->email,
