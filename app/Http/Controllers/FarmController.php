@@ -217,21 +217,22 @@ class FarmController extends Controller
                 }
                 
                 foreach ($request->manager_details as $manager) {
-
-                    $managerCheck = User::whereId($manager['id'])->first();
-                    if ($manager['email'] != '' && $manager['email'] != null) {
-                        if ($managerCheck->email !== $manager['email']) {
-                            $checkEmail = User::where('email', $manager['email'])->first();
-                            if ($checkEmail !== null) {
-                                if ($checkEmail->id !== $managerCheck->id) {
-                                    return response()->json([
-                                                'status' => false,
-                                                'message' => 'Email is already taken.',
-                                                'data' => []
-                                                    ], 422);
+                    if (array_key_exists('id', $manager)) {
+                        $managerCheck = User::whereId($manager['id'])->first();
+                        if ($manager['email'] != '' && $manager['email'] != null) {
+                            if ($managerCheck->email !== $manager['email']) {
+                                $checkEmail = User::where('email', $manager['email'])->first();
+                                if ($checkEmail !== null) {
+                                    if ($checkEmail->id !== $managerCheck->id) {
+                                        return response()->json([
+                                                    'status' => false,
+                                                    'message' => 'Email is already taken.',
+                                                    'data' => []
+                                                        ], 422);
+                                    }
                                 }
+                                $confirmed = 0;
                             }
-                            $confirmed = 0;
                         }
                     }
                     $data = [
@@ -245,8 +246,9 @@ class FarmController extends Controller
                         'state' => $manager['manager_province'],
                         'zip_code' => $manager['manager_zipcode'],
                         'farm_id' => $customerFarm->id,
-                        'is_active' => $manager['is_active']
+                        'is_active' => array_key_exists('is_active', $manager) ? $manager['is_active'] : 1
                     ];
+                    
                     if (isset($confirmed)) {
                         $data['is_confirmed'] = $confirmed;
                     }
@@ -255,11 +257,24 @@ class FarmController extends Controller
                         $imageName = $request->user()->putImage($manager['manager_image']);
                         $data['user_image'] = json_encode($imageName);
                     }
-                    if (User::where('id', $manager['id'])->update($data)) {
-                        if (isset($confirmed)) {
-                            $this->_updateEmail($manager, $request->email);
+
+                    if (!array_key_exists('id', $manager)) {
+                        $newPassword = Str::random();
+                        $data['password'] = bcrypt($newPassword);
+                        $saveManager = new User($data);
+                        if ($saveManager->save()) {
+                            $manager['id'] = $saveManager->id;
+                            $this->_confirmPassword($saveManager, $newPassword);
+                            $this->_updateEmail($saveManager, $data['email']);
+                        }
+                    }else{
+                        if (User::where('id', $manager['id'])->update($data)) {
+                            if (isset($confirmed)) {
+                                $this->_updateEmail($manager, $request->email);
+                            }
                         }
                     }
+
                 }
                 $customerActivity = new CustomerActivity([
                     'customer_id' => $user->id,
@@ -279,6 +294,7 @@ class FarmController extends Controller
                 }
             } catch (\Exception $e) {
                 DB::rollBack();
+                dd($e);
                 return response()->json([
                             'status' => false,
                             'message' => $e->getMessage(),
