@@ -18,21 +18,22 @@ use App\Models\CustomerCardDetail;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\PaymentController;
-use App\Http\Requests\Job\{
+
+use App\Http\Requests\Job\ {
     CreateJobRequest
 };
 
 class JobController extends Controller {
 
-    public function myJobs($page_no=null) {
+    public function myJobs($page_no = null) {
         return response()->json([
                     'status' => true,
                     'message' => 'Job List',
                     'data' => Auth::user()->myJobs($page_no)
                         ], 200);
     }
-    
-    public function myUpcomingJobs($page_no=null) {
+
+    public function myUpcomingJobs($page_no = null) {
         return response()->json([
                     'status' => true,
                     'message' => 'Job List',
@@ -142,7 +143,7 @@ class JobController extends Controller {
                     'customer_id' => $job->customer_id,
                     'job_id' => $job->id,
                     'created_by' => $user->id,
-                    'activities' => 'Pick is created with pickup id '.$job->id,
+                    'activities' => 'Pick is created with pickup id ' . $job->id,
                 ]);
                 if ($customerActivity->save()) {
 
@@ -267,7 +268,7 @@ class JobController extends Controller {
                     'customer_id' => $job_id->customer_id,
                     'job_id' => $job_id->id,
                     'created_by' => Auth::user()->id,
-                    'activities' => 'Pickup '.$job_id->id.' is updated.',
+                    'activities' => 'Pickup ' . $job_id->id . ' is updated.',
                 ]);
                 if ($customerActivity->save()) {
 
@@ -363,7 +364,7 @@ class JobController extends Controller {
                         ], 421);
     }
 
-    public function getJobsOfFram(CustomerFarm $customerFarm, $page_no=null) {
+    public function getJobsOfFram(CustomerFarm $customerFarm, $page_no = null) {
         if (!Auth::user()->canAccessFarm($customerFarm)) {
             return response()->json([
                         'status' => false,
@@ -372,7 +373,7 @@ class JobController extends Controller {
                             ], 421);
         }
         $jobs = $customerFarm->jobs;
-        if($page_no != null){
+        if ($page_no != null) {
             $size = 20;
             $skip = ($page_no - 1) * $size;
             $jobs = $jobs->skip($skip)->take($size);
@@ -408,7 +409,7 @@ class JobController extends Controller {
                         ], 200);
     }
 
-     public function chatMembers(Request $request) {
+    public function chatMembers(Request $request) {
         $chatMembers = Job::whereId($request->job_id)->with(['customer' => function($q) {
                         $q->select('id', 'first_name', 'user_image');
                     }])->with(['manager' => function($q) {
@@ -419,11 +420,18 @@ class JobController extends Controller {
                         $q->select('id', 'first_name', 'user_image');
                     }])->first();
 
-        $chatMembers->customer->user_image = env('APP_URL') . '/storage/user_images/' . $chatMembers->customer->id . '/' . $chatMembers->customer->user_image;
-        $chatMembers->manager->user_image = env('APP_URL') . '/storage/user_images/' . $chatMembers->manager->id . '/' . $chatMembers->manager->user_image;
-        $chatMembers->skidsteer_driver->user_image = env('APP_URL') . '/' . $chatMembers->skidsteer_driver->user_image;
-        $chatMembers->truck_driver->user_image = env('APP_URL') . '/' . $chatMembers->truck_driver->user_image;
-
+        if (isset($chatMembers->customer->user_image)) {
+            $chatMembers->customer->user_image = env('APP_URL') . '/storage/user_images/' . $chatMembers->customer->id . '/' . $chatMembers->customer->user_image;
+        }
+        if (isset($chatMembers->manager->user_image)) {
+            $chatMembers->manager->user_image = env('APP_URL') . '/storage/user_images/' . $chatMembers->manager->id . '/' . $chatMembers->manager->user_image;
+        }
+        if (isset($chatMembers->skidsteer_driver->user_image)) {
+            $chatMembers->skidsteer_driver->user_image = env('APP_URL') . '/' . $chatMembers->skidsteer_driver->user_image;
+        }
+        if (isset($chatMembers->truck_driver->user_image)) {
+            $chatMembers->truck_driver->user_image = env('APP_URL') . '/' . $chatMembers->truck_driver->user_image;
+        }
         $all_admin = User::where('role_id', config('constant.roles.Admin'))->select('id', 'first_name', 'user_image')->get();
         foreach ($all_admin as $key => $admin) {
             $all_admin[$key]->user_image = env('APP_URL') . '/' . $admin->user_image;
@@ -432,10 +440,18 @@ class JobController extends Controller {
         $all_admin2 = collect(array('admin' => $all_admin));
         $allChatMembers = $chatMembers2->merge($all_admin2);
 
+        $all_manager = User::where('role_id', config('constant.roles.Admin_Manager'))->select('id', 'first_name', 'user_image')->get();
+        foreach ($all_manager as $key => $manager) {
+            $all_manager[$key]->user_image = env('APP_URL') . '/' . $manager->user_image;
+        }
+        $allChatMembers2 = collect($allChatMembers);
+        $all_manager2 = collect(array('admin_manager' => $all_manager));
+        $allChatMembersTotal = $allChatMembers2->merge($all_manager2);
+
         return response()->json([
                     'status' => true,
                     'message' => 'Chat members',
-                    'data' => $allChatMembers
+                    'data' => $allChatMembersTotal
                         ], 200);
     }
 
@@ -460,11 +476,17 @@ class JobController extends Controller {
         } else {
             $messages = [];
         }
-
+        foreach ($messages as $key => $message) {
+            $messages[$key]->job_id = (int) $message->job_id;
+            if (isset($message->username)) {
+                $messages[$key]->username = (int) $message->username;
+            }
+        }
         return response()->json([
                     'status' => true,
                     'message' => 'Chat messages',
                     'data' => $messages
                         ], 200);
     }
+
 }

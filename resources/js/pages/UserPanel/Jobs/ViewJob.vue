@@ -36,9 +36,7 @@
 
             <div class="col-sm-4 content-left-outer">
               <div class="job-summary-outer">
-                <!-- <h5 class="heading2">Job Summary</h5> -->
-
-                <div class="images-list">
+                                <div class="images-list" v-if='jobImages!=""'>
                   <h6>Service Images</h6>
                   <div class="images-all row">
                     <div v-for="image in jobImages">
@@ -71,26 +69,26 @@
                       {{ job.farm ? job.farm.full_address : "" }}
                     </p>
                   </div>
-                  <!-- <div class="each-details-full col-sm-12">
+                  <div class="each-details-full col-sm-12">
                     <p class="head-item">Techs</p>
                     <p class="detail-item">
-                      {{
-                        job.skidsteer_driver.first_name +
-                        " " +
-                        job.skidsteer_driver.last_name +
-                        ", "
-                      }}
-                      {{
-                        job.truck_driver.first_name +
-                        " " +
-                        job.truck_driver.last_name
-                      }}
+                      <span v-if="job.skidsteer_driver"
+                  >{{
+                    job.skidsteer_driver.first_name +
+                    " " +
+                    job.skidsteer_driver.last_name +
+                    ", "
+                  }}
+                </span>
+                <span v-if="job.skidsteer_driver">
+                  {{
+                    job.truck_driver.first_name +
+                    " " +
+                    job.truck_driver.last_name
+                  }}
+                </span>
                     </p>
-                  </div> -->
-                  <!-- <div class="each-details col-sm-6">
-                    <p class="head-item">Date / Est. Time</p>
-                    <p class="detail-item">24, May 2020 at 9:30 AM</p>
-                  </div> -->
+                  </div>
                   <div class="each-details col-sm-6">
                     <p class="head-item">Quantity</p>
                     <p class="detail-item">{{ job.weight }} Ton</p>
@@ -111,7 +109,7 @@
                   </div>
                   <div class="each-details col-sm-6">
                     <p class="head-item">Total</p>
-                    <p class="detail-item">${{ job.amount }}</p>
+                    <p class="detail-item">${{ job.amount ? job.amount : "0" }}</p>
                   </div>
 
                   <div class="each-details-full col-sm-12">
@@ -267,6 +265,9 @@ export default {
         result.admin.forEach(function (val, index) {
           users[val.id] = val;
         });
+        result.admin_manager.forEach(function (val, index) {
+          users[val.id] = val;
+        });
 
         this.chatUsers = users;
       })();
@@ -292,8 +293,10 @@ export default {
                     '<img class="chat-image-in" src="' +
                     `${val.message}` +
                     '">';
+                    var imageClass = 'inc-img';
                 } else {
                   var messageText = val.message;
+                  var imageClass = '';
                 }
               const messageElement = document.createElement("div");
               if (currentUserDetails.id == val.username) {
@@ -302,7 +305,7 @@ export default {
                 messageElement.className = "chat-sender";
               }
               messageElement.innerHTML =
-                '<div class="chat-msg">' +
+                '<div class="chat-msg '+imageClass+'">' +
                 `${messageText}` +
                 '</div><div class="chat-img"><img src="' +
                 `${userImageLink}` +
@@ -316,7 +319,7 @@ export default {
           });
         }
       })();
-    }, 6000);
+    }, 8000);
 
     $(document).ready(function () {
       feather.replace();
@@ -613,11 +616,22 @@ export default {
       const emitChannel = "chat-message"; //"chatmessage"+jobId
       socket.on(emitChannel, (data) => {
         const userImage = $("#current-user-image").val();
+        var messageText;
+        if (data.message.message.indexOf("uploads") > -1) {
+           messageText =
+            '<img class="chat-image-in" src="' +
+            `${data.message.message}` +
+            '">';
+            var imageClass = 'inc-img';
+        } else {
+           messageText = data.message.message;
+           var imageClass = '';
+        }
         if (data.job_id == jobId._value) {
           if (data.name == name._value) {
             appendMessage(
-              '<div class="chat-msg">' +
-                `${data.message.message}` +
+              '<div class="chat-msg '+imageClass+'">' +
+                `${messageText}` +
                 '</div><div class="chat-img"><img src="' +
                 `${userImage}` +
                 '"></div>',
@@ -631,7 +645,7 @@ export default {
             }
             appendMessage(
               '<div class="chat-msg">' +
-                `${data.message.message}` +
+                `${messageText}` +
                 '</div><div class="chat-img"><img src="' +
                 `${userImageLink}` +
                 '"></div>',
@@ -659,6 +673,7 @@ export default {
           socket.emit("send-chat-message", {
             message: message,
             job_id: jobId._value,
+            username: name._value,
           });
           messageInput.value = "";
           $("#send-button").attr("disabled", false);
@@ -701,7 +716,7 @@ export default {
               const messageElement = document.createElement("div");
               messageElement.className = "chat-receiver"; //"chat-receiver"
               messageElement.innerHTML =
-                '<div class="chat-msg"><img class="chat-image-in" src="' +
+                '<div class="chat-msg inc-img"><img class="chat-image-in" src="' +
                 `${environment.baseUrl + result}` +
                 '"></div><div class="chat-img"><img src="' +
                 `${userImage}` +
