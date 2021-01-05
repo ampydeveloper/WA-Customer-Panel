@@ -471,7 +471,13 @@ class FarmController extends Controller
                             ], 422);
         }
         if(Auth::user()->role_id == config('constant.roles.Customer') || Auth::user()->role_id == config('constant.roles.Customer_Manager')) {
-
+            $farmManagerCount = CustomerFarm::whereId($manager->farm_id)->first()->managers->count();
+                if ($farmManagerCount <= 1) {
+                    return response()->json([
+                                'status' => false,
+                                'message' => 'Exising farm has only 1 manager, hence manager`s farm cannot be changed.',
+                                    ], 423);
+                }
             try {
                 DB::beginTransaction();
                 if ($request->email != '' && $request->email != null) {

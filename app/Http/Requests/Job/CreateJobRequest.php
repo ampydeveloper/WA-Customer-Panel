@@ -42,6 +42,10 @@ class CreateJobRequest extends FormRequest
         }
         if (Auth::user()->role_id == config('constant.roles.Haulers')) {
             $rules['manager_id'] = 'required';
+            $rules['job_providing_time'] = 'required';
+        }
+        if(Auth::user()->role_id == config('constant.roles.Hauler_driver')) {
+            $rules['job_providing_time'] = 'required';
         }
         return $rules;
     }
@@ -51,7 +55,7 @@ class CreateJobRequest extends FormRequest
     {
         throw new HttpResponseException(response()->json([
             'errors' => $validator->errors(),
-            'message' => 'The given data is invalid.',
+            'message' => $validator->errors(),
             'status' => false,
         ], 422));
     }
