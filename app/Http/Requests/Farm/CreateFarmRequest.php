@@ -49,12 +49,20 @@ class CreateFarmRequest extends FormRequest
         ];
     }
 
+    public function messages(){
+        $messages = [];
+        foreach($this->get('manager_details') as $key => $val){
+            $messages['manager_details.'.$key.'.email.unique'] = "Manager email ".$val['email']." has been already taken!";
+        }
+        return $messages;
+    }
+
 
     protected function failedValidation(Validator $validator)
     {
         throw new HttpResponseException(response()->json([
             'errors' => $validator->errors(),
-            'message' => $validator->errors(),
+            'message' => $validator->messages(),
             'status' => false,
         ], 422));
     }

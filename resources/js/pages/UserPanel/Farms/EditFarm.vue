@@ -320,6 +320,14 @@ export default {
       this.addManagers = true;
       this.isEdit = false;
     },
+    onManagerDelete: function (manager) {
+      this.model.manager_details = _.filter(
+        this.model.manager_details,
+        function (man) {
+          return man.email !== manager.email;
+        }
+      );
+    },
     onManagerEdit: function (manager, index) {
       this.newManager = { ...manager };
       this.refreshManagerKey();

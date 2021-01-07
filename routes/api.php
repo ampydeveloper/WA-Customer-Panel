@@ -47,7 +47,7 @@ Route::group(['prefix' => 'auth'], function () {
 
 Route::group(['middleware' => 'auth:api'], function () {
     Route::post('uploadImage', 'ImageController@uploadImage');
-        Route::delete('deleteImage', 'ImageController@deleteImage');
+    Route::delete('deleteImage', 'ImageController@deleteImage');
 });
 
 Route::group(['middleware' => 'auth:api', 'prefix' => 'my', 'as' => 'my'], function () {

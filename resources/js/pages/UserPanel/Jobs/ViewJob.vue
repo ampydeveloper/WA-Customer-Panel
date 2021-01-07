@@ -167,14 +167,13 @@
                         id="all-user-data"
                         :value="JSON.stringify(chatUsers)"
                       />
-<input type="file" id="image-file" name="chat-image" />
-                      <span class="upload-images-out">
-                        
+                      <input type="file" id="image-file" name="chat-image" />
+                      <label class="upload-images-out" for="image-file">
                         <image-icon
                           size="1.5x"
                           class="custom-class"
                         ></image-icon>
-                      </span>
+                      </label>
                       <input
                         type="text"
                         class="write_msg"
@@ -243,6 +242,7 @@ export default {
       const response = await JobService.get(this.$route.params.jobId);
       this.job = response.data.data;
       this.jobImages = JSON.parse(response.data.data.images);
+      this.getChatMembers();
       // console.log(JSON.parse(response.data.data.images));
     } catch (error) {
       this.$toast.open({
@@ -252,74 +252,6 @@ export default {
         dismissible: false,
       });
     }
-
-    setTimeout(() => {
-      (async () => {
-        const response = await JobService.chatUsers(this.$route.params.jobId);
-        var result = response.data.data;
-        var users = [];
-        users[result.customer_id] = result.customer;
-        users[result.manager_id] = result.manager;
-        users[result.skidsteer_driver_id] = result.skidsteer_driver;
-        users[result.truck_driver_id] = result.truck_driver;
-        result.admin.forEach(function (val, index) {
-          users[val.id] = val;
-        });
-        result.admin_manager.forEach(function (val, index) {
-          users[val.id] = val;
-        });
-console.log(users);
-        this.chatUsers = users;
-      })();
-    }, 1000);
-
-    setTimeout(() => {
-      (async () => {
-        const chatUsersList = this.chatUsers;
-        const currentUserDetails = this.userdata;
-        const response = await JobService.getJobChatMessages({
-          jobId: this.$route.params.jobId,
-        });
-        if (response) {
-          response.data.data.forEach(function (val, index) {
-            if (typeof val.username != "undefined") {
-              if (typeof chatUsersList[val.username] != "undefined") {
-                var userImageLink = chatUsersList[val.username].user_image;
-              } else {
-                var userImageLink =  environment.baseUrl + "/images/avatar.png";
-              }
-                if (val.message.indexOf("uploads") > -1) {
-                  var messageText =
-                    '<img class="chat-image-in" src="' +
-                    `${val.message}` +
-                    '">';
-                    var imageClass = 'inc-img';
-                } else {
-                  var messageText = val.message;
-                  var imageClass = '';
-                }
-              const messageElement = document.createElement("div");
-              if (currentUserDetails.id == val.username) {
-                messageElement.className = "chat-receiver";
-              } else {
-                messageElement.className = "chat-sender";
-              }
-              messageElement.innerHTML =
-                '<div class="chat-msg '+imageClass+'">' +
-                `${messageText}` +
-                '</div><div class="chat-img"><img src="' +
-                `${userImageLink}` +
-                '"></div>';
-              $(document)
-                .find("#message-container")
-                .find(".os-content")
-                .prepend(messageElement);
-              $("#message-container .empty-message").remove();
-            }
-          });
-        }
-      })();
-    }, 8000);
 
     $(document).ready(function () {
       feather.replace();
@@ -700,12 +632,12 @@ console.log(users);
           .prepend(messageElement);
         $("#message-container .empty-message").remove();
       }
- $(document).on("change", "#image-file", function (e) {
+      $(document).on("change", "#image-file", function (e) {
         var $this = $(this);
         if ($this.val() != "" && !self.fired) {
           self.fired = true;
           const currentUser = authenticationService.currentUserValue || {};
-const userImage = $("#current-user-image").val();
+          const userImage = $("#current-user-image").val();
           var imageData = new FormData();
           imageData.append("uploadImage", $("#image-file").prop("files")[0]);
           $.ajax({
@@ -753,5 +685,70 @@ const userImage = $("#current-user-image").val();
      
     }, 2000);
   },
+  methods: {
+    getChatMembers: () => {
+      const response = JobService.chatUsers(this.$route.params.jobId);
+      var result = response.data.data;
+      var users = [];
+      users[result.customer_id] = result.customer;
+      users[result.manager_id] = result.manager;
+      users[result.skidsteer_driver_id] = result.skidsteer_driver;
+      users[result.truck_driver_id] = result.truck_driver;
+      result.admin.forEach(function (val, index) {
+        users[val.id] = val;
+      });
+      result.admin_manager.forEach(function (val, index) {
+        users[val.id] = val;
+      });
+      // console.log(users);
+      this.chatUsers = users;
+      this.getChatMsgs();
+    },
+    getChatMsgs: () => {
+      const chatUsersList = this.chatUsers;
+      const currentUserDetails = this.userdata;
+      const response = JobService.getJobChatMessages({
+        jobId: this.$route.params.jobId,
+      });
+      if (response) {
+        response.data.data.forEach(function (val, index) {
+          if (typeof val.username != "undefined") {
+            if (typeof chatUsersList[val.username] != "undefined") {
+              var userImageLink = chatUsersList[val.username].user_image;
+            } else {
+              var userImageLink =  environment.baseUrl + "/images/avatar.png";
+            }
+              if (val.message.indexOf("uploads") > -1) {
+                var messageText =
+                  '<img class="chat-image-in" src="' +
+                  `${val.message}` +
+                  '">';
+                  var imageClass = 'inc-img';
+              } else {
+                var messageText = val.message;
+                var imageClass = '';
+              }
+            const messageElement = document.createElement("div");
+            if (currentUserDetails.id == val.username) {
+              messageElement.className = "chat-receiver";
+            } else {
+              messageElement.className = "chat-sender";
+            }
+            messageElement.innerHTML =
+              '<div class="chat-msg '+imageClass+'">' +
+              `${messageText}` +
+              '</div><div class="chat-img"><img src="' +
+              `${userImageLink}` +
+              '"></div>';
+            $(document)
+              .find("#message-container")
+              .find(".os-content")
+              .prepend(messageElement);
+            $("#message-container .empty-message").remove();
+          }
+        });
+      }
+    }
+  }
 };
 </script>

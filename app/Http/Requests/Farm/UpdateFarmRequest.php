@@ -5,6 +5,7 @@ namespace App\Http\Requests\Farm;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
+use Illuminate\Validation\Rule;
 
 class UpdateFarmRequest extends FormRequest
 {
@@ -36,7 +37,7 @@ class UpdateFarmRequest extends FormRequest
             // 'manager_details.*.id' => 'required',
             'manager_details.*.manager_first_name' => 'required',
             'manager_details.*.manager_last_name' => 'required',
-            'manager_details.*.email' => 'required|email',
+            'manager_details.*.email' => ['required', 'email'],
             'manager_details.*.manager_phone' => 'required',
             'manager_details.*.manager_address' => 'required',
             'manager_details.*.manager_city' => 'required',

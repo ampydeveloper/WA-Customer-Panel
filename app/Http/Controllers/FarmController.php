@@ -215,10 +215,16 @@ class FarmController extends Controller
                     //     }
                     // }
                 }
+
+                $existingManagers = $customerFarm->managers->map(function($man){
+                    return $man->id;
+                })->toArray();
                 
+                $newManagerIds = [];
                 foreach ($request->manager_details as $manager) {
                     if (array_key_exists('id', $manager)) {
-                        $managerCheck = User::whereId($manager['id'])->first();
+                        array_push($newManagerIds, $manager['id']);
+                        $managerCheck = User::whereId($manager['id'])->withTrashed()->first();
                         if ($manager['email'] != '' && $manager['email'] != null) {
                             if ($managerCheck->email !== $manager['email']) {
                                 $checkEmail = User::where('email', $manager['email'])->first();
@@ -226,13 +232,22 @@ class FarmController extends Controller
                                     if ($checkEmail->id !== $managerCheck->id) {
                                         return response()->json([
                                                     'status' => false,
-                                                    'message' => 'Email is already taken.',
+                                                    'message' => 'Email '. $manager['email'] .' is already taken.',
                                                     'data' => []
                                                         ], 422);
                                     }
                                 }
                                 $confirmed = 0;
                             }
+                        }
+                    }else{
+                        $checkEmail = User::where('email', $manager['email'])->withTrashed()->first();
+                        if ($checkEmail !== null) {
+                            return response()->json([
+                                'status' => false,
+                                'message' => 'Email ' . $manager['email'] . ' is already taken.',
+                                'data' => []
+                            ], 422);
                         }
                     }
                     $data = [
@@ -275,6 +290,13 @@ class FarmController extends Controller
                         }
                     }
 
+                }
+
+                if(count($existingManagers) != count($newManagerIds)){
+                    $toBeDeleted = array_diff($existingManagers, $newManagerIds);
+                    if(count($toBeDeleted) > 0){
+                        User::whereIn('id', array_values($toBeDeleted))->delete();
+                    }
                 }
                 $customerActivity = new CustomerActivity([
                     'customer_id' => $user->id,
