@@ -11,9 +11,7 @@
     <link href="{{ mix('css/app.css') }}" type="text/css" rel="stylesheet" />
     <link rel="stylesheet" href="//cdn.datatables.net/1.10.7/css/jquery.dataTables.min.css">
     <!-- Vendor CSS Files -->
-    <!--<link href="assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">-->
     <link href="assets/vendor/aos/aos.css" rel="stylesheet">
-    <!--<link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">-->
     <link rel="stylesheet" type="text/css" href="css/font-awesome.min.css">
     <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.css' rel='stylesheet' />
 
@@ -22,12 +20,8 @@
     <link href="css/owl.carousel.min.css" rel="stylesheet">
     <!--<link href="css/owl.theme.css" rel="stylesheet">-->
     <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet">
-    <link
-     href="https://cdn.jsdelivr.net/npm/@mdi/font@4.x/css/materialdesignicons.min.css" rel="stylesheet">
-     <script async src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCymw6I3DWcllnp9aCBz3HYTWqtj916DFA&libraries=geometry,places"></script>
-    <!-- <script async src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAJNnFDVwxq7H2eFWW5MZTQc8Pg7uD47Dk&libraries=geometry,places"></script> -->
-    <!-- <script async src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAQEbFYBxoq9qSepomK_1KEM7TxU3vSOyw&libraries=geometry,places"></script> -->
-
+    <link href="https://cdn.jsdelivr.net/npm/@mdi/font@4.x/css/materialdesignicons.min.css" rel="stylesheet">
+    <script async src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCymw6I3DWcllnp9aCBz3HYTWqtj916DFA&libraries=geometry,places"></script>
 </head>
 
 <body class="home-page">
@@ -36,7 +30,6 @@
     </div>
     <script src="{{ mix('js/app.js') }}" type="text/javascript"></script>
     <script src="//cdn.datatables.net/1.10.7/js/jquery.dataTables.min.js"></script>
-    <!--<script src="assets/js/bootstrap.min.js"></script>-->
     <script src="assets/js/owl.carousel.js" defer></script>
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script src="https://unpkg.com/feather-icons"></script>
@@ -112,47 +105,47 @@
         setTimeout(function() {
             $(document).ready(function() {
                 if (!$.fn.dataTable.isDataTable(".basic-table")) {
-                $(".basic-table").DataTable({
-                    "bSort": false,
-                    oLanguage: {
-                        sSearch: "",
-                        "sEmptyTable": "No data available."
-                    },
-                    drawCallback: function(settings) {
-                        $(".dataTables_paginate .paginate_button.previous").html(
-                            $("#table-chevron-left").html()
-                        );
-                        $(".dataTables_paginate .paginate_button.next").html(
-                            $("#table-chevron-right").html()
-                        );
-                    },
-                });
-                $(".dataTables_filter").append($("#search-input-icon").html());
-                $(".dataTables_filter input").attr(
-                    "placeholder",
-                    "Search Pickup by Pickup ID / Service Name / Farm Location"
-                );
-                $(".dataTables_paginate .paginate_button.previous").html(
-                    $("#table-chevron-left").html()
-                );
-                $(".dataTables_paginate .paginate_button.next").html(
-                    $("#table-chevron-right").html()
-                );
-                
-                $("#all-farms-table_filter input").attr(
-                    "placeholder",
-                    "Search Farms by Farm Location / Manager"
-                );
-                $("#all-drivers-table_filter input").attr(
-                    "placeholder",
-                    "Search Drivers by Name / Email / Phone / Address"
-                );
-                $("#all-managers-table_filter input").attr(
-                    "placeholder",
-                    "Search Managers by Name / Email / Phone / Address"
-                );
-            }
-            $(".basic-table").css({
+                    $(".basic-table").DataTable({
+                        "bSort": false,
+                        oLanguage: {
+                            sSearch: "",
+                            "sEmptyTable": "No data available."
+                        },
+                        drawCallback: function(settings) {
+                            $(".dataTables_paginate .paginate_button.previous").html(
+                                $("#table-chevron-left").html()
+                            );
+                            $(".dataTables_paginate .paginate_button.next").html(
+                                $("#table-chevron-right").html()
+                            );
+                        },
+                    });
+                    $(".dataTables_filter").append($("#search-input-icon").html());
+                    $(".dataTables_filter input").attr(
+                        "placeholder",
+                        "Search Pickup by Pickup ID / Service Name / Farm Location"
+                    );
+                    $(".dataTables_paginate .paginate_button.previous").html(
+                        $("#table-chevron-left").html()
+                    );
+                    $(".dataTables_paginate .paginate_button.next").html(
+                        $("#table-chevron-right").html()
+                    );
+
+                    $("#all-farms-table_filter input").attr(
+                        "placeholder",
+                        "Search Farms by Farm Location / Manager"
+                    );
+                    $("#all-drivers-table_filter input").attr(
+                        "placeholder",
+                        "Search Drivers by Name / Email / Phone / Address"
+                    );
+                    $("#all-managers-table_filter input").attr(
+                        "placeholder",
+                        "Search Managers by Name / Email / Phone / Address"
+                    );
+                }
+                $(".basic-table").css({
                     opacity: 1
                 });
             });
@@ -169,5 +162,4 @@
     </script>
 
 </body>
-
 </html>

@@ -1,7 +1,7 @@
 <template>
   <div>
     <app-header />
-    <div class="main-wrapper" style="padding-top: 0;">
+    <div class="main-wrapper" style="padding-top: 0">
       <div class="sign-up-form-outer">
         <div class="sign-up-form-inner">
           <div class="row">
@@ -32,8 +32,8 @@
 
                 <p class="already-account">
                   Don't have an account?
-                  <a href="/sign-up">Sign Up</a>
-                   <a href="/forgot-password" class="for-pass-link">Forgot Password?</a>
+                  <router-link to="/sign-up">Sign Up</router-link>
+                  <router-link class="for-pass-link" to="/forgot-password">Forgot Password?</router-link>
                 </p>
               </div>
             </div>
@@ -51,13 +51,13 @@ import AuthService from "../services/AuthService";
 
 export default {
   components: {
-    AppHeader
+    AppHeader,
   },
   data() {
     return {
       model: {
         email: "",
-        password: ""
+        password: "",
       },
       schema: {
         fields: [
@@ -73,39 +73,50 @@ export default {
               this.isSigningIn = true;
               AuthService.signIn(model)
                 .then(
-                  response => {
+                  (response) => {
                     const { access_token, user } = response.data.data;
                     window.localStorage.setItem("token", access_token);
                     window.localStorage.setItem("user", JSON.stringify(user));
 
                     let cpToken = btoa(user.email);
-                    if((user.role_id == 5 || user.role_id == 7) && user.password_changed_at == null){
-                      window.location.href = "/change-password/"+cpToken;
-                    }else{
+                    if (
+                      (user.role_id == 5 || user.role_id == 7) &&
+                      user.password_changed_at == null
+                    ) {
+                      window.location.href = "/change-password/" + cpToken;
+                    } else {
                       window.location.href = "/pickups";
                     }
                   },
-                  error => {
+                  (error) => {
                     this.$toast.open({
                       message: error.response.data.message,
                       type: "error",
                       position: "top-right",
-                      dismissible: false
+                      dismissible: false,
                     });
                   }
                 )
-                .finally(_ => {
+                .finally((_) => {
                   this.isSigningIn = false;
                 });
-            }
-          }
-        ]
+            },
+          },
+        ],
       },
       formOptions: {
-        validateAfterChanged: true
+        validateAfterChanged: true,
       },
-      isSigningIn: false
+      isSigningIn: false,
     };
-  }
+  },
+  created: async function () {
+    feather.replace();
+  },
+  mounted() {
+   
+      feather.replace();
+ 
+  },
 };
 </script>

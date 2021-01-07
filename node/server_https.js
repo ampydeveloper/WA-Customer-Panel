@@ -26,7 +26,7 @@ app.use(bodyParser.json());
 
 app.post('/job-chat', (req, res) => {
     console.log(req.body.jobId);
-    Chat.find({job_id:req.body.jobId}).sort('-date').limit(10).then(messages => {
+    Chat.find({job_id:req.body.jobId}).sort('-date').skip(req.body.skip).limit(10).then(messages => {
         res.json(messages);
     }).catch(err => console.error(err));
 });
@@ -51,20 +51,20 @@ const privateUsers = {};
 
 
 ///// Redis /////
-console.log(process.env.REDIS_PORT, process.env.REDIS_HOST);
+//console.log(process.env.REDIS_PORT, process.env.REDIS_HOST);
 // const redisClient = redis.createClient(process.env.REDIS_PORT, process.env.REDIS_HOST);
-const redisClient = redis.createClient();
-redisClient.subscribe('live-new-model');
-redisClient.subscribe('broadcast-message');
-redisClient.subscribe('message');
-redisClient.on('live-new-model', function(channel, message) {
-    io.emit('live-new-model', "111111fdbfgnfghmnfgb");
-});
-
-redisClient.on('message', function(channel, message) {
-
-    io.emit(channel, message);
-});
+//const redisClient = redis.createClient();
+//redisClient.subscribe('live-new-model');
+//redisClient.subscribe('broadcast-message');
+//redisClient.subscribe('message');
+//redisClient.on('live-new-model', function(channel, message) {
+//    io.emit('live-new-model', "111111fdbfgnfghmnfgb");
+//});
+//
+//redisClient.on('message', function(channel, message) {
+//
+//    io.emit(channel, message);
+//});
 
 
 
@@ -82,10 +82,10 @@ io.on('connection', socket => {
 
     socket.on('send-chat-message', message => {
          console.log({ username: socket.nickname, message: message });
-        Chat.create({ username: message.username, message: message.message, job_id: message.job_id }).then(() => {
+         Chat.create({ username: message.username, message: message.message, job_id: message.job_id }).then((saveMessage) => {
             let emitChannel = 'chat-message'; //'chatmessage' + message.job_id
-//            console.log(emitChannel);
-            socket.broadcast.emit(emitChannel, { message: message, name: message.username, job_id: message.job_id });
+//            console.log(saveMessage._id);
+            socket.broadcast.emit(emitChannel, { message: message, name: message.username, job_id: message.job_id , message_id:saveMessage._id, check_string:message.check_string});
         }).catch(err => console.error(err));
     });
 

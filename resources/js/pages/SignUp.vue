@@ -32,7 +32,7 @@
 
                 <p class="already-account">
                   Already have an account?
-                  <a href="/sign-in">Sign In</a>
+                  <router-link to="sign-in">Sign In</router-link>
                 </p>
               </div>
             </div>
@@ -113,6 +113,14 @@ export default {
       },
       isRegistering: false,
     };
+  },
+  created: async function () {
+    feather.replace();
+  },
+  mounted() {
+    
+      feather.replace();
+   
   },
 };
 </script>

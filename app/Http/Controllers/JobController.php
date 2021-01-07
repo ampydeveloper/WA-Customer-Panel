@@ -42,6 +42,8 @@ class JobController extends Controller {
     }
 
     public function create(CreateJobRequest $createJobRequest) {
+        
+//        dd($createJobRequest->all());
         $user = Auth::user();
         if ($user->role_id == config('constant.roles.Customer')) {
             if ($user->authorize_net_id == null && $createJobRequest->attach_card == 0) {
@@ -419,7 +421,7 @@ class JobController extends Controller {
                     }])->with(['skidsteer_driver' => function($q) {
                         $q->select('id', 'first_name', 'user_image');
                     }])->first();
-
+                    
         if (isset($chatMembers->customer->user_image)) {
             $chatMembers->customer->user_image = env('APP_URL') . '/storage/user_images/' . $chatMembers->customer->id . '/' . $chatMembers->customer->user_image;
         }
@@ -427,14 +429,14 @@ class JobController extends Controller {
             $chatMembers->manager->user_image = env('APP_URL') . '/storage/user_images/' . $chatMembers->manager->id . '/' . $chatMembers->manager->user_image;
         }
         if (isset($chatMembers->skidsteer_driver->user_image)) {
-            $chatMembers->skidsteer_driver->user_image = env('APP_URL') . '/' . $chatMembers->skidsteer_driver->user_image;
+            $chatMembers->skidsteer_driver->user_image = env('IMAGE_URL') . '/' . $chatMembers->skidsteer_driver->user_image;
         }
         if (isset($chatMembers->truck_driver->user_image)) {
-            $chatMembers->truck_driver->user_image = env('APP_URL') . '/' . $chatMembers->truck_driver->user_image;
+            $chatMembers->truck_driver->user_image = env('IMAGE_URL') . '/' . $chatMembers->truck_driver->user_image;
         }
         $all_admin = User::where('role_id', config('constant.roles.Admin'))->select('id', 'first_name', 'user_image')->get();
         foreach ($all_admin as $key => $admin) {
-            $all_admin[$key]->user_image = env('APP_URL') . '/' . $admin->user_image;
+            $all_admin[$key]->user_image = env('IMAGE_URL') . '/' . $admin->user_image;
         }
         $chatMembers2 = collect($chatMembers);
         $all_admin2 = collect(array('admin' => $all_admin));
@@ -442,12 +444,12 @@ class JobController extends Controller {
 
         $all_manager = User::where('role_id', config('constant.roles.Admin_Manager'))->select('id', 'first_name', 'user_image')->get();
         foreach ($all_manager as $key => $manager) {
-            $all_manager[$key]->user_image = env('APP_URL') . '/' . $manager->user_image;
+            $all_manager[$key]->user_image = env('IMAGE_URL') . '/' . $manager->user_image;
         }
         $allChatMembers2 = collect($allChatMembers);
         $all_manager2 = collect(array('admin_manager' => $all_manager));
         $allChatMembersTotal = $allChatMembers2->merge($all_manager2);
-
+//dd($allChatMembersTotal->toArray());
         return response()->json([
                     'status' => true,
                     'message' => 'Chat members',

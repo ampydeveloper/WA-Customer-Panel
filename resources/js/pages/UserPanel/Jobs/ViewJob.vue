@@ -167,9 +167,9 @@
                         id="all-user-data"
                         :value="JSON.stringify(chatUsers)"
                       />
-
+<input type="file" id="image-file" name="chat-image" />
                       <span class="upload-images-out">
-                        <input type="file" id="image-file" name="chat-image" />
+                        
                         <image-icon
                           size="1.5x"
                           class="custom-class"
@@ -268,7 +268,7 @@ export default {
         result.admin_manager.forEach(function (val, index) {
           users[val.id] = val;
         });
-
+console.log(users);
         this.chatUsers = users;
       })();
     }, 1000);
@@ -286,7 +286,7 @@ export default {
               if (typeof chatUsersList[val.username] != "undefined") {
                 var userImageLink = chatUsersList[val.username].user_image;
               } else {
-                var userImageLink = "/images/avatar.png";
+                var userImageLink =  environment.baseUrl + "/images/avatar.png";
               }
                 if (val.message.indexOf("uploads") > -1) {
                   var messageText =
@@ -629,28 +629,32 @@ export default {
         }
         if (data.job_id == jobId._value) {
           if (data.name == name._value) {
+            if($('.'+data.message_id).length == 0 && $("." + data.message.check_string).length == 0){
             appendMessage(
-              '<div class="chat-msg '+imageClass+'">' +
+              '<div class="chat-msg '+data.message_id +' '+imageClass+'">' +
                 `${messageText}` +
                 '</div><div class="chat-img"><img src="' +
                 `${userImage}` +
                 '"></div>',
               "chat-receiver"
             );
+            }
           } else {
             if (typeof chatUsersList[data.name] != "undefined") {
               var userImageLink = chatUsersList[data.name].user_image;
             } else {
               var userImageLink = "/images/avatar.png";
             }
+             if($('.'+data.message_id).length == 0){
             appendMessage(
-              '<div class="chat-msg">' +
+              '<div class="chat-msg '+data.message_id+ " " + imageClass +'">' +
                 `${messageText}` +
                 '</div><div class="chat-img"><img src="' +
                 `${userImageLink}` +
                 '"></div>',
               "chat-sender"
             );
+             }
           }
           messageContainerScroll.scroll([0, "100%"], 50, {
             x: "",
@@ -661,9 +665,10 @@ export default {
       $(document).on("submit", "#send-container", function (e) {
         const message = messageInput.value;
         const userImage = $("#current-user-image").val();
+        const check_string = Math.random().toString(36).substring(3);
         if (message != "") {
           appendMessage(
-            '<div class="chat-msg">' +
+            '<div class="chat-msg '+check_string+'">' +
               `${message}` +
               '</div><div class="chat-img"><img src="' +
               `${userImage}` +
@@ -674,6 +679,7 @@ export default {
             message: message,
             job_id: jobId._value,
             username: name._value,
+            check_string:check_string
           });
           messageInput.value = "";
           $("#send-button").attr("disabled", false);
@@ -699,7 +705,7 @@ export default {
         if ($this.val() != "" && !self.fired) {
           self.fired = true;
           const currentUser = authenticationService.currentUserValue || {};
-
+const userImage = $("#current-user-image").val();
           var imageData = new FormData();
           imageData.append("uploadImage", $("#image-file").prop("files")[0]);
           $.ajax({
@@ -713,10 +719,11 @@ export default {
             processData: false,
             type: "POST",
             success: function (result) {
+              var check_string = Math.random().toString(36).substring(3);
               const messageElement = document.createElement("div");
               messageElement.className = "chat-receiver"; //"chat-receiver"
               messageElement.innerHTML =
-                '<div class="chat-msg inc-img"><img class="chat-image-in" src="' +
+                '<div class="chat-msg inc-img '+check_string+'"><img class="chat-image-in" src="' +
                 `${environment.baseUrl + result}` +
                 '"></div><div class="chat-img"><img src="' +
                 `${userImage}` +
@@ -729,6 +736,7 @@ export default {
                 message: environment.baseUrl + result,
                 job_id: jobId._value,
                 username: name._value,
+                check_string: check_string,
               });
               messageContainerScroll.scroll([0, "100%"], 50, {
             x: "",
