@@ -588,7 +588,13 @@ class FarmController extends Controller
                         'message' => 'Unauthorized access.',
                             ], 421);
         }
-
+        $farmManagerCount = CustomerFarm::whereId($user->farm_id)->first()->managers->count();
+                if ($farmManagerCount <= 1) {
+                    return response()->json([
+                                'status' => false,
+                                'message' => 'Only this manager is associated with a farm. Please delete farm to delete the manager.',
+                                    ], 423);
+                }
         try {
             // There is no need to delete data from manager details table.
             DB::beginTransaction();
