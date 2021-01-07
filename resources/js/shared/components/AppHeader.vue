@@ -2,24 +2,15 @@
   <header class="site-header">
     <div class="container-fluid">
       <div class="logo-area">
-        <a href="/">
+        <router-link class="navbar-brand" to="/">
           <img src="img/main-logo.png" alt />
-        </a>
+        </router-link>
       </div>
       <span class="menu-toggle" onclick="openNav()">
         <i data-feather="menu"></i>
       </span>
     </div>
     <div id="mySidenav" class="sidenav">
-      <!-- <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
-      <a href="/about">About</a>
-      <a href="/services">Services</a>
-      <a href="/faq">FAQ</a>
-      <a href="/contact">Contact</a>
-      <a v-if="!isLoggedIn" href="/sign-in">Sign In</a>
-      <a v-if="!isLoggedIn" href="/sign-up">Sign Up</a>
-      <a v-if="isLoggedIn" href="javascript:void()" @click="logout()">Logout</a> -->
-
       <div class="nav-topfull">
         <div class="close-but" onclick="closeNav()">
           <i data-feather="x"></i>
@@ -85,7 +76,9 @@
                   </a>
                 </li>
                 <li>
-                  <a href="https://www.youtube.com/channel/UCy1HGr7-iLfV8tLqs6dvMxw">
+                  <a
+                    href="https://www.youtube.com/channel/UCy1HGr7-iLfV8tLqs6dvMxw"
+                  >
                     <i class="fa fa-youtube" aria-hidden="true"></i>
                   </a>
                 </li>
@@ -103,10 +96,7 @@
                 <div
                   class="img"
                   v-bind:style="{
-                    backgroundImage:
-                      'url(' +
-                      item.service_image +
-                      ')',
+                    backgroundImage: 'url(' + item.service_image + ')',
                   }"
                 ></div>
               </div>
@@ -115,13 +105,13 @@
                 <p>
                   {{ item.description }}
                 </p>
-                <ul>
+                <!-- <ul>
                   <li>Year Round Service</li>
                   <li>Weekly or Daily Schedule</li>
                   <li>Scale Back In The Summer</li>
                   <li>Auto Pick Up</li>
                   <li>Largest Volume</li>
-                </ul>
+                </ul> -->
                 <router-link class="schedule-now" to="/pickups/create">
                   <i class="fa fa-angle-right" aria-hidden="true"></i>
                   Schedule Now
@@ -172,6 +162,11 @@ export default {
       const token = window.localStorage.getItem("token");
       return token !== undefined && token !== null;
     },
+  },
+  mounted() {
+    AOS.init({
+      duration: 1200,
+    });
   },
 };
 </script>

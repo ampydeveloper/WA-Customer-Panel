@@ -10,7 +10,6 @@
         <div class="owl-carousel owl-theme" id="service-slide-home">
           <div class="item" v-for="item in services">
             <div class="service-block-img">
-              <!-- <img :src="'http://wellington.leagueofclicks.com/'+item.service_image" alt /> -->
                 <div class="img" v-bind:style="{ backgroundImage: 'url(' + item.service_image + ')' }" ></div>
             </div>
             <div class="service-block-custom-inner">
@@ -18,13 +17,13 @@
               <p>
                 {{ item.description }}
               </p>
-              <ul>
+              <!-- <ul>
                 <li>Year Round Service</li>
                 <li>Weekly or Daily Schedule</li>
                 <li>Scale Back In The Summer</li>
                 <li>Auto Pick Up</li>
                 <li>Largest Volume</li>
-              </ul>
+              </ul> -->
                 <router-link class="schedule-now" to="/pickups/create">
                 <i class="fa fa-angle-right" aria-hidden="true"></i>
                 Schedule Now

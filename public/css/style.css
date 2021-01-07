@@ -1631,7 +1631,7 @@ p.already-account .for-pass-link {
         top: 40px;
     }
     .im-text h2 {
-        font-size: 65px;
+        font-size: 56px;
     }
     .im-text h2 small {
         font-size: 19px;
@@ -1643,7 +1643,7 @@ p.already-account .for-pass-link {
 
 @media only screen and (max-width: 991px) {
     .im-text h2 {
-        font-size: 48px;
+        font-size: 40px;
     }
     .im-text h2 small {
         font-size: 14px;
@@ -2089,7 +2089,7 @@ p.already-account .for-pass-link {
         padding-bottom: 0;
     }
     .im-text h2 {
-        font-size: 42px;
+        font-size: 33px;
     }
     .im-text h2 small {
         font-size: 11px;
