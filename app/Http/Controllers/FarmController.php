@@ -276,6 +276,10 @@ class FarmController extends Controller
                     if (!array_key_exists('id', $manager)) {
                         $newPassword = Str::random();
                         $data['password'] = bcrypt($newPassword);
+                        $data['role_id'] = config('constant.roles.Customer_Manager');
+                        $data['created_from_id'] = $user->id;
+                        $data['created_by'] = $user->id;
+                        
                         $saveManager = new User($data);
                         if ($saveManager->save()) {
                             $manager['id'] = $saveManager->id;
