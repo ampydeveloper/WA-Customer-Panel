@@ -54,7 +54,7 @@ class CustomerFarm extends Model
         $imageName = ($imageName) ? $imageName : rand().time().'.'.$image->extension();
         $path = $this->customer_id.'/farms/'.$this->id.'/'.$imageName;
         
-        return (Storage::disk('user_images')->put($path, file_get_contents($image))) ? Storage::disk('user_images')->url($path) : false;
+        return (Storage::disk('public')->put($path, file_get_contents($image))) ? config('constant.base_url').'/'.$path : false;
     }
 
     public function getFullAddressAttribute()

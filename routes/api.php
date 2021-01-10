@@ -28,27 +28,22 @@ Route::group(['prefix' => 'auth'], function () {
     Route::get('confirm-email/{decode_code}', 'AuthController@confirmEmail')->name('confirm.email');
     Route::post('social-signup', 'AuthController@SocialSignup')->name('social.login');
     Route::post('login', 'AuthController@login')->name('login');
-    
-    
     Route::post('send-otp', 'AuthController@sendOtp');
     Route::post('check-otp', 'AuthController@checkOtp');
     Route::post('forget-password-mobile', 'AuthController@forgotPasswordMobile');
-    
-    
     Route::post('forgot-password', 'AuthController@forgotPassword')->name('forgot.password');
     Route::post('change-password-web', 'AuthController@changePassword')->name('change.password');
     Route::post('change-password', 'AuthController@changePasswordMobile')->middleware('auth:api')->name('change.password.mobile');
     Route::get('logout', 'AuthController@logout')->middleware('auth:api')->name('logout');
+    Route::post('uploadImage', 'ImageController@uploadImage')->middleware('auth:api');
+//    Route::post('uploadImageFile', 'ImageController@uploadImageFile')->middleware('auth:api');
+    Route::delete('deleteImage', 'ImageController@deleteImage')->middleware('auth:api');
     Route::group(['prefix' => 'profile', 'as' => 'profile'], function () {
         Route::get('', 'AuthController@profile')->middleware('auth:api')->name('get');
         Route::post('', 'AuthController@updateProfile')->middleware('auth:api')->name('update');
     });
 });
 
-Route::group(['middleware' => 'auth:api'], function () {
-    Route::post('uploadImage', 'ImageController@uploadImage');
-    Route::delete('deleteImage', 'ImageController@deleteImage');
-});
 
 Route::group(['middleware' => 'auth:api', 'prefix' => 'my', 'as' => 'my'], function () {
     Route::get('jobs/{page_no?}', 'JobController@myJobs')->name('jobs');
@@ -58,6 +53,7 @@ Route::group(['middleware' => 'auth:api', 'prefix' => 'my', 'as' => 'my'], funct
     
      Route::post('job-chat', 'JobController@jobChat');
     Route::get('chat-members/{job_id}', 'JobController@chatMembers');
+    Route::get('chat-members-and/{job_id}', 'JobController@chatMembersAnd');
 });
 
 Route::group(['middleware' => 'auth:api', 'prefix' => 'customer', 'as' => 'customer'], function () {

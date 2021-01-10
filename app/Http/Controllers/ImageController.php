@@ -13,25 +13,40 @@ class ImageController extends Controller
     {
 
         //set path blank initially
-        $file = "";
+        $imageName = "";
         if ($request->uploadImage != null && $request->uploadImage != '') {
-
-            //check if directory exist if not create one
-            $path = public_path() . '/uploads';
-            if (!file_exists($path)) {
-                mkdir($path, 0777, true);
-            }
 
             $cover = $request->file('uploadImage');
             $extension = $cover->getClientOriginalExtension();
             $file = $cover->getFilename() . '.' . $extension;
-            if (!Storage::disk('public')->put($cover->getFilename() . '.' . $extension,  File::get($cover))) {
-                $file = "";
-            } else {
-                $file = 'uploads/' . $file;
+
+            if (Storage::disk('public')->put($request->user()->id . '/' . $file, file_get_contents($cover))) {
+                $imageName = config('constant.base_url') . '/' . $request->user()->id . '/' . $file;
             }
         }
-        return $file;
+        return $imageName;
+    }
+
+    public function uploadImageFile(Request $request)
+    {
+
+        //set path blank initially
+        $imageName = "";
+        if ($request->uploadImage != null && $request->uploadImage != '') {
+
+            $cover = $request->file('uploadImage');
+            $extension = $cover->getClientOriginalExtension();
+            $file = $cover->getFilename() . '.' . $extension;
+            
+            if(Storage::disk('public')->put($request->user()->id.'/'.$file, file_get_contents($cover))) {
+                $imageName = config('constant.base_url').'/'.$request->user()->id.'/'.$file;
+            }
+        }
+        return response()->json([
+                    'status' => true,
+                    'message' => 'Image Upload',
+                    'data' => $imageName
+                        ], 200);
     }
     
     public function deleteImage() {

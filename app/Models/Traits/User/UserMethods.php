@@ -44,8 +44,12 @@ trait UserMethods
     public function putImage($image, $imageName = null)
     {
         $imageName = ($imageName) ? $imageName : rand().time().'.'.$image->extension();
-
-        return (Storage::disk('user_images')->put($this->id.'/'.$imageName, file_get_contents($image))) ? $imageName : false;
+        if(Storage::disk('public')->put($this->id.'/'.$imageName, file_get_contents($image))) {
+            $imageName = config('constant.base_url').'/'.$this->id.'/'.$imageName;
+        } else {
+            $imageName = false;
+        }
+        return $imageName; 
     }
 
     public function defaultCard()
