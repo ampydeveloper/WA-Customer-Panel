@@ -46,7 +46,7 @@ class CreateFarmManagerRequest extends FormRequest
     {
         throw new HttpResponseException(response()->json([
             'errors' => $validator->errors(),
-            'message' => 'The given data is invalid.',
+            'message' => $validator->errors(),
             'status' => false,
         ], 422));
     }
