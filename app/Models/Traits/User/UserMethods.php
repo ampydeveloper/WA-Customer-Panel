@@ -44,11 +44,20 @@ trait UserMethods
     public function putImage($image, $imageName = null)
     {
         $imageName = ($imageName) ? $imageName : rand().time().'.'.$image->extension();
-        if(Storage::disk('public')->put($this->id.'/'.$imageName, file_get_contents($image))) {
-            $imageName = config('constant.base_url').'/'.$this->id.'/'.$imageName;
+        if($this->id != null) {
+            if (Storage::disk('public')->put($this->id . '/' . $imageName, file_get_contents($image))) {
+                $imageName = config('constant.base_url') . '/' . $this->id . '/' . $imageName;
+            } else {
+                $imageName = false;
+            }
         } else {
-            $imageName = false;
+            if (Storage::disk('public')->put($imageName, file_get_contents($image))) {
+                $imageName = config('constant.base_url') . '/' . $imageName;
+            } else {
+                $imageName = false;
+            }
         }
+
         return $imageName; 
     }
 

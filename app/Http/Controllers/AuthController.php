@@ -729,13 +729,31 @@ class AuthController extends Controller {
         $data = array(
             'name' => $name,
             'email' => $email,
-            'verificationLink' => env('APP_URL') . 'confirm-update-email/' . base64_encode($email) . '/' . base64_encode($user->id)
+            'verificationLink' => env('APP_URL') . '/confirm-update-email/' . base64_encode($email) . '/' . base64_encode($user->id)
         );
 
         Mail::send('email_templates.welcome_email', $data, function ($message) use ($name, $email) {
             $message->to($email, $name)->subject('Email Address Confirmation');
             $message->from(env('MAIL_USERNAME'), env('MAIL_USERNAME'));
         });
+    }
+    
+    public function confirmUpdateEmail(Request $request, $email, $id) {
+        $userId = base64_decode($request->id);
+        $userEmail = base64_decode($email);
+        $getUser = User::whereId($userId)->first();
+        if($getUser->email == $userEmail && $getUser->is_confirmed == 0) {
+            $getUser->is_confirmed = 1;
+            $getUser->save();
+            $message = "Your email address has been successfully confirmed. Please login to proceed further.";
+            $status = true;
+            $errCode = 200;
+        } else {
+            $status = false;
+            $message = "Your confirmation link has been expired.";
+            $errCode = 400;
+        }
+        return redirect()->route('/');
     }
 
 }

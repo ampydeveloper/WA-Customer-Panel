@@ -41,6 +41,8 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/invoice/{q}/{type}', 'QuickbooksController@getInvoices'); //QuickBooks Invoice
 
+Route::get('confirm-update-email/{email}/{id}', 'AuthController@confirmUpdateEmail');
+
 Route::get('/{any}', function () {
     return view('welcome');
 })->where('any', '.*');

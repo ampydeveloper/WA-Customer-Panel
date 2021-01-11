@@ -26,6 +26,7 @@ Route::group(['prefix' => 'customer', 'as' => 'customer'], function () {
 Route::group(['prefix' => 'auth'], function () {
     Route::post('signup', 'AuthController@signup')->name('signup');
     Route::get('confirm-email/{decode_code}', 'AuthController@confirmEmail')->name('confirm.email');
+    Route::get('confirm-update-email/{email}/{id}', 'AuthController@confirmUpdateEmail');
     Route::post('social-signup', 'AuthController@SocialSignup')->name('social.login');
     Route::post('login', 'AuthController@login')->name('login');
     Route::post('send-otp', 'AuthController@sendOtp');

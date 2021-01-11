@@ -98,7 +98,7 @@ class FarmController extends Controller
                         ]);
                         if (isset($manager['manager_image'])) {
                             $imageName = $saveManger->putImage($manager['manager_image']);
-                            $saveManger['user_image'] = json_encode($imageName);
+                            $saveManger['user_image'] = $imageName;
                         }
                         if ($saveManger->save()) {
                             $this->_confirmPassword($saveManger, $newPassword);
@@ -270,7 +270,7 @@ class FarmController extends Controller
 
                     if (isset($manager['manager_image'])) {
                         $imageName = $request->user()->putImage($manager['manager_image']);
-                        $data['user_image'] = json_encode($imageName);
+                        $data['user_image'] = $imageName;
                     }
 
                     if (!array_key_exists('id', $manager)) {
@@ -422,8 +422,8 @@ class FarmController extends Controller
                     'password' => bcrypt($newPassword)
                 ]);
                 if ($request->manager_image) {
-                    $imageName = $saveManager->putImage($request->manager_image);
-                    $saveManager['user_image'] = json_encode($imageName);
+                    $imageName = $saveManager->putImage($request->manager_image, $imageName = null, $saveManager->id);
+                    $saveManager['user_image'] = $imageName;
                 }
                 if ($saveManager->save()) {
                     $this->_confirmPassword($saveManager, $newPassword);
@@ -537,7 +537,7 @@ class FarmController extends Controller
 
                 if ($request->manager_image) {
                     $imageName = $manager->putImage($request->manager_image);
-                    $data['user_image'] = json_encode($imageName);
+                    $data['user_image'] = $imageName;
                 }
                 if (User::where('id', $manager->id)->update($data)) {
                     if (isset($confirmed)) {
