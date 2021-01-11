@@ -164,9 +164,16 @@ export default {
     },
   },
   mounted() {
-    AOS.init({
-      duration: 1200,
-    });
+    setTimeout(function(){
+    if (typeof AOS.init == "function") {
+      AOS.init({
+        duration: 1200,
+      });
+    }
+    $(document).ready(function() {
+               feather.replace();
+  });
+    }, 1000);
   },
 };
 </script>

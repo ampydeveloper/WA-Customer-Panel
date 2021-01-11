@@ -541,12 +541,12 @@ export default {
       const messageInput = document.getElementById("message-input");
       const name = document.getElementById("user-details-id");
       const jobId = document.getElementById("job-id");
-      const allUserData = document.getElementById("all-user-data");
+      // const allUserData = document.getElementById("all-user-data");
 
       socket.emit("new-user", name._value);
       messageContainerScroll.scroll([0, "100%"], 50, { x: "", y: "linear" });
-
-      const chatUsersList = JSON.parse(allUserData.value);
+var chatUsersList;
+      chatUsersList = JSON.parse(document.getElementById("all-user-data").value);
       const emitChannel = "chat-message"; //"chatmessage"+jobId
       socket.on(emitChannel, (data) => {
         const userImage = $("#current-user-image").val();
@@ -574,6 +574,7 @@ export default {
             );
             }
           } else {
+            chatUsersList = JSON.parse(document.getElementById("all-user-data").value);
             if (typeof chatUsersList[data.name] != "undefined") {
               var userImageLink = chatUsersList[data.name].user_image;
             } else {
@@ -691,19 +692,7 @@ export default {
     getChatMembers(){
       JobService.chatUsers(this.$route.params.jobId).then((response2) => {
         var result = response2.data.data;
-        var users = [];
-        users[result.customer_id] = result.customer;
-        users[result.manager_id] = result.manager;
-        users[result.skidsteer_driver_id] = result.skidsteer_driver;
-        users[result.truck_driver_id] = result.truck_driver;
-        [...result.admin].forEach(function (val, index) {
-          users[val.id] = val
-        });
-        [...result.admin_manager].forEach(function (val, index) {
-          users[val.id] = val
-        });
-        users = users.filter(() => { return true });
-        this.chatUsers = users;
+        this.chatUsers = result;
         this.getChatMsgs();
       })
     },

@@ -141,7 +141,7 @@ class JobService {
 
     static chatUsers(jobId) {
         const token = window.localStorage.getItem("token");
-        return Axios.get(`/api/my/chat-members/${jobId}`, {
+        return Axios.get(`/api/my/chat-members-and/${jobId}`, {
             headers: {
                 Authorization: `Bearer ${token}`
             }

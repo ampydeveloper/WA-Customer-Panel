@@ -116,11 +116,6 @@ export default {
   },
   created: async function () {
     feather.replace();
-  },
-  mounted() {
-    
-      feather.replace();
-   
-  },
+  }
 };
 </script>
