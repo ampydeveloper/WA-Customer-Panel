@@ -496,13 +496,16 @@ class FarmController extends Controller
                             ], 422);
         }
         if(Auth::user()->role_id == config('constant.roles.Customer') || Auth::user()->role_id == config('constant.roles.Customer_Manager')) {
-            $farmManagerCount = CustomerFarm::whereId($manager->farm_id)->first()->managers->count();
+            if($manager->farm_id != $request->farm_id) {
+                $farmManagerCount = $customerFarm->managers->count();
                 if ($farmManagerCount <= 1) {
                     return response()->json([
                                 'status' => false,
                                 'message' => 'Exising farm has only 1 manager, hence manager`s farm cannot be changed.',
                                     ], 423);
                 }
+            }
+            
             try {
                 DB::beginTransaction();
                 if ($request->email != '' && $request->email != null) {
@@ -528,7 +531,7 @@ class FarmController extends Controller
                     'city' => $request->manager_city,
                     'state' => $request->manager_province,
                     'zip_code' => $request->manager_zipcode,
-                    'farm_id' => $customerFarm->id,
+                    'farm_id' => $request->farm_id,
                     'is_active' => $request->manager_is_active,
                 ];
                 if (isset($confirmed)) {
