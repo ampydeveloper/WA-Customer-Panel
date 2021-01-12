@@ -37,7 +37,7 @@ Route::group(['prefix' => 'auth'], function () {
     Route::post('change-password', 'AuthController@changePasswordMobile')->middleware('auth:api')->name('change.password.mobile');
     Route::get('logout', 'AuthController@logout')->middleware('auth:api')->name('logout');
     Route::post('uploadImage', 'ImageController@uploadImage')->middleware('auth:api');
-//    Route::post('uploadImageFile', 'ImageController@uploadImageFile')->middleware('auth:api');
+    Route::post('uploadImageFile', 'ImageController@uploadImageFile')->middleware('auth:api');
     Route::delete('deleteImage', 'ImageController@deleteImage')->middleware('auth:api');
     Route::group(['prefix' => 'profile', 'as' => 'profile'], function () {
         Route::get('', 'AuthController@profile')->middleware('auth:api')->name('get');
