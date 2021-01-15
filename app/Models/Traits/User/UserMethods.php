@@ -38,7 +38,7 @@ trait UserMethods
 
     public function defaultImageUrl()
     {
-        return Storage::disk('public')->url('default-user.jpg');
+        return config('constant.base_url').'/10556652611610387832.jpeg';
     }
 
     public function putImage($image, $imageName = null)
