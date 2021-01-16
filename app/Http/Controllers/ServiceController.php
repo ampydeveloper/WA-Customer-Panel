@@ -40,7 +40,7 @@ class ServiceController extends Controller {
     public function serviceForAll() {
         $getAllServices = Service::get();
         foreach ($getAllServices as $key => $services) {
-            $getAllServices[$key]['service_image'] = env('IMAGE_URL') . '/' . $services->service_image;
+            $getAllServices[$key]['service_image'] =  $services->service_image;
         }
         return response()->json([
                     'status' => true,
@@ -54,7 +54,7 @@ class ServiceController extends Controller {
         foreach ($news_all as $key => $new) {
 //            $slug = $this->slugify($new->heading);
 //            $news_all[$key]['slug'] = $slug;
-            $news_all[$key]['image'] = env('IMAGE_URL') . '/' . $new->image;
+            $news_all[$key]['image'] = $new->image;
             $news_all[$key]['description'] = $this->limitWords($new->description, 25);
             $news_all[$key]['heading'] = $this->limitWords($new->heading, 5);
         }
@@ -67,7 +67,7 @@ class ServiceController extends Controller {
 
     public function newsSingle($newsId = null) {
         $news = News::where('slug', $newsId)->first();
-        $news['image'] = env('IMAGE_URL') . '/' . $news['image'];
+        $news['image'] = $news['image'];
         $news['description'] = nl2br($news['description']);
         return response()->json([
                     'status' => true,
@@ -79,7 +79,7 @@ class ServiceController extends Controller {
     public function newsListTwo() {
         $news_all = News::limit(2)->get();
         foreach ($news_all as $key => $new) {
-            $news_all[$key]['image'] = env('IMAGE_URL') . '/' . $new->image;
+            $news_all[$key]['image'] = $new->image;
             $news_all[$key]['description'] = $this->limitWords($new->description, 25);
             $news_all[$key]['heading'] = $this->limitWords($new->heading, 5);
         }

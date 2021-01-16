@@ -458,6 +458,53 @@ class JobController extends Controller {
                         ], 200);
     }
 
+    public function chatMembersAnd(Request $request) {
+        $chatMembers = Job::whereId($request->job_id)->with(['customer' => function($q) {
+                        $q->select('id', 'first_name', 'user_image');
+                    }])->with(['manager' => function($q) {
+                        $q->select('id', 'first_name', 'user_image');
+                    }])->with(['truck_driver' => function($q) {
+                        $q->select('id', 'first_name', 'user_image');
+                    }])->with(['skidsteer_driver' => function($q) {
+                        $q->select('id', 'first_name', 'user_image');
+                    }])->first();
+                    
+        $all_admin = User::where('role_id', config('constant.roles.Admin'))->select('id', 'first_name', 'user_image')->get();
+        $chatMembers2 = collect($chatMembers);
+        $all_admin2 = collect(array('admin' => $all_admin));
+        $allChatMembers = $chatMembers2->merge($all_admin2);
+
+        $all_manager = User::where('role_id', config('constant.roles.Admin_Manager'))->select('id', 'first_name', 'user_image')->get();
+        $allChatMembers2 = collect($allChatMembers);
+        $all_manager2 = collect(array('admin_manager' => $all_manager));
+        $allChatMembersTotal = $allChatMembers2->merge($all_manager2);
+
+        foreach ($allChatMembersTotal['admin'] as $users) {
+            $all_users[$users->id] = $users;
+        }
+        foreach ($allChatMembersTotal['admin_manager'] as $users) {
+            $all_users[$users->id] = $users;
+        }
+        if (isset($chatMembers->customer)) {
+            $all_users[$chatMembers->customer->id] = $chatMembers->customer;
+        }
+        if (isset($chatMembers->manager)) {
+            $all_users[$chatMembers->manager->id] = $chatMembers->manager;
+        }
+        if (isset($chatMembers->skidsteer_driver)) {
+            $all_users[$chatMembers->skidsteer_driver->id] = $chatMembers->skidsteer_driver;
+        }
+        if (isset($chatMembers->truck_driver)) {
+            $all_users[$chatMembers->truck_driver->id] = $chatMembers->truck_driver;
+        }
+        
+        return response()->json([
+                    'status' => true,
+                    'message' => 'Chat members',
+                    'data' => $all_users
+                        ], 200);
+    }
+    
     public function jobChat(Request $request) {
         $data = array(
             'jobId' => $request->jobId,
