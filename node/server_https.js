@@ -13,7 +13,6 @@ const http = require('https').Server(certs, app);
 const bodyParser = require("body-parser");
 const redis = require('redis');
 const mongoose = require('mongoose');
-//const privateChatSchema = require('./models/PrivateChat');
 
 require('./libs/db-connection');
 
@@ -31,42 +30,11 @@ app.post('/job-chat', (req, res) => {
     }).catch(err => console.error(err));
 });
 
-//app.post('/private-chat', (req, res) => {
-//
-//    let table = 'chat-' + req.body.uniqueid;
-//    console.log(table);
-//    var PChat = mongoose.model(table, privateChatSchema);
-//    PChat.find({}).sort('-date').limit(10).then(messages => {
-//        // console.log(messages);
-//        res.json(messages);
-//    }).catch(err => console.error(err));
-//});
-
-
 
 // Socket Code //
 const io = require('socket.io')(http);
 const users = {};
 const privateUsers = {};
-
-
-///// Redis /////
-//console.log(process.env.REDIS_PORT, process.env.REDIS_HOST);
-// const redisClient = redis.createClient(process.env.REDIS_PORT, process.env.REDIS_HOST);
-//const redisClient = redis.createClient();
-//redisClient.subscribe('live-new-model');
-//redisClient.subscribe('broadcast-message');
-//redisClient.subscribe('message');
-//redisClient.on('live-new-model', function(channel, message) {
-//    io.emit('live-new-model', "111111fdbfgnfghmnfgb");
-//});
-//
-//redisClient.on('message', function(channel, message) {
-//
-//    io.emit(channel, message);
-//});
-
-
 
 io.on('connection', socket => {
            console.log('connected');
@@ -84,7 +52,6 @@ io.on('connection', socket => {
          console.log({ username: socket.nickname, message: message });
          Chat.create({ username: message.username, message: message.message, job_id: message.job_id }).then((saveMessage) => {
             let emitChannel = 'chat-message'; //'chatmessage' + message.job_id
-//            console.log(saveMessage._id);
             socket.broadcast.emit(emitChannel, { message: message, name: message.username, job_id: message.job_id , message_id:saveMessage._id, check_string:message.check_string});
         }).catch(err => console.error(err));
     });
@@ -96,38 +63,33 @@ io.on('connection', socket => {
             // socket.broadcast.emit('user-disconnected', users[socket.id]);
             delete users[socket.nickname];
         }
-
-//        if (typeof privateUsers[socket.nickname] != 'undefined') {
-//            let emit = 'private-user-disconnected-' + privateUsers[socket.nickname].token;
-//            socket.broadcast.emit(emit, privateUsers[socket.nickname].name);
-//            delete privateUsers[socket.nickname];
-//        }
+    });
+socket.on('send-driver-coordinates', details => {
+        console.log({ details });
+        socket.broadcast.emit('receive-driver-coordinates', { lat: details.lat, lng: details.lng, job_id: details.job_id });
     });
 
+var langs = [{lat:26.660139815234928, lng: -80.2731823294655},
+                {lat:26.660005580546965, lng: -80.27423375536107},
+                {lat:26.660043933331064, lng: -80.27537101194197},
+                {lat:26.65994805134664, lng: -80.27663701455091},
+                {lat:26.65902758019731, lng: -80.27882569702739}];
 
-    // one to one chat
-//    socket.on('private-new-user', data => {
-//        socket.nickname = data.name;
-//        if (typeof privateUsers[socket.nickname] == 'undefined') {
-//            privateUsers[socket.nickname] = data;
-//            let emit = 'private-user-connected-' + data.token;
-//            socket.broadcast.emit(emit, data.name);
+                for (let i = 0; i <= 4; i++) {
+        sendLocs(i);
+//                if (i == langs.length){
+//        i = 0;
 //        }
-//    });
-//
-//    socket.on('private-send-chat-message', message => {
-//        let table = 'chat-' + privateUsers[socket.nickname].getUniqueID;
-//        var PChat = mongoose.model(table, privateChatSchema);
-//        PChat.create({ username: privateUsers[socket.nickname].name, message: message }).then(() => {
-//            let emit = 'private-chat-message-' + privateUsers[socket.nickname].token;
-//            socket.broadcast.emit(emit, { message: message, name: privateUsers[socket.nickname].name });
-//        }).catch(err => console.error(err));
-//
-//    });
+        }
 
-
+        function sendLocs(i) {
+        setTimeout(function() {
+//            console.log(langs[i]['lng']);
+            var langArr = langs[i];
+socket.broadcast.emit('receive-driver-coordinates', { lat: langArr['lat'], lng: langArr['lng'], job_id: 10 });
+        }, 30000);
+        }
 });
-
 
 // listen
 http.listen(process.env.SOCKET_SERVER_PORT || 3000, () => {
