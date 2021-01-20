@@ -690,7 +690,7 @@ class AuthController extends Controller {
                     return response()->json([
                                 'status' => true,
                                 'message' => 'Please confirm email and login again',
-                                'data' => []
+                                'data' => $user
                     ]);
                 }
 
