@@ -76,18 +76,20 @@ var langs = [{lat:26.660139815234928, lng: -80.2731823294655},
                 {lat:26.65902758019731, lng: -80.27882569702739}];
 
                 for (let i = 0; i <= 4; i++) {
+                    setTimeout(function() {
         sendLocs(i);
-//                if (i == langs.length){
+        }, 30000);
+//                if (i == 4){
 //        i = 0;
 //        }
         }
 
         function sendLocs(i) {
-        setTimeout(function() {
-//            console.log(langs[i]['lng']);
+        
+            console.log(langs[i]['lng']);
             var langArr = langs[i];
 socket.broadcast.emit('receive-driver-coordinates', { lat: langArr['lat'], lng: langArr['lng'], job_id: 10 });
-        }, 30000);
+        
         }
 });
 

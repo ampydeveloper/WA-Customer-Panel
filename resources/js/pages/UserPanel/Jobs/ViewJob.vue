@@ -240,8 +240,8 @@ export default {
 
     try {
       const response = await JobService.get(this.$route.params.jobId);
-      console.log(response.data);
-      console.log(response.data.images);
+      // console.log(response.data);
+      // console.log(response.data.images);
       this.job = response.data.data;
       // this.jobImages = JSON.parse(response.data.images);
       this.getChatMembers();
@@ -541,7 +541,6 @@ export default {
       const messageInput = document.getElementById("message-input");
       const name = document.getElementById("user-details-id");
       const jobId = document.getElementById("job-id");
-      // const allUserData = document.getElementById("all-user-data");
 
       socket.emit("new-user", name._value);
       messageContainerScroll.scroll([0, "100%"], 50, { x: "", y: "linear" });
@@ -639,14 +638,14 @@ var chatUsersList;
         var $this = $(this);
         if ($this.val() != "" && !self.fired) {
           self.fired = true;
-          const currentUser = authenticationService.currentUserValue || {};
+          const currentToken = window.localStorage.getItem("token");
           const userImage = $("#current-user-image").val();
           var imageData = new FormData();
           imageData.append("uploadImage", $("#image-file").prop("files")[0]);
           $.ajax({
-            url: environment.apiUrl + `uploadImage`,
+            url: `http://wa.customer.leagueofclicks.com/api/auth/uploadImage`,
             headers: {
-              Authorization: "Bearer " + currentUser.data.access_token,
+              Authorization: "Bearer " + currentToken,
             },
             data: imageData,
             cache: false,
@@ -659,7 +658,7 @@ var chatUsersList;
               messageElement.className = "chat-receiver"; //"chat-receiver"
               messageElement.innerHTML =
                 '<div class="chat-msg inc-img '+check_string+'"><img class="chat-image-in" src="' +
-                `${environment.baseUrl + result}` +
+                `${result}` +
                 '"></div><div class="chat-img"><img src="' +
                 `${userImage}` +
                 '"></div>';
@@ -668,7 +667,7 @@ var chatUsersList;
                 .find(".os-content")
                 .prepend(messageElement);
               socket.emit("send-chat-message", {
-                message: environment.baseUrl + result,
+                message: result,
                 job_id: jobId._value,
                 username: name._value,
                 check_string: check_string,

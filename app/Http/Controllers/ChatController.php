@@ -8,8 +8,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
 use Request;
 use LRedis;
-//use App\SocialPosts;
 use App\Models\SocialPost;
+use App\Models\Settings;
 
 class ChatController extends Controller {
 
@@ -104,7 +104,13 @@ class ChatController extends Controller {
             return $b . "-" . $a;
     }
 
-    public function instgramRefreshToken() {
+//    public function instgramRefreshToken() {
+    public function getInstgramPosts() {
+//        https://api.instagram.com/oauth/authorize
+//  ?client_id=684477648739411
+//  &redirect_uri=https://socialsizzle.herokuapp.com/auth/
+//  &scope=user_profile,user_media
+//  &response_type=code
 //        $curl = curl_init();
 //        curl_setopt_array($curl, array(
 //            CURLOPT_URL => "https://api.instagram.com/oauth/access_token",
@@ -123,24 +129,26 @@ class ChatController extends Controller {
 //        $response = curl_exec($curl);
 //        curl_close($curl);
 //        print_r($response);
-//        $curl = curl_init();
-//        curl_setopt_array($curl, array(
-//            CURLOPT_URL => "https://graph.instagram.com/17841445037860695?fields=media&access_token=IGQVJVaFhtOVhDUDlKWWRQWXc5RVkwaHdUTGpZAUERsc1VFOWhrNk1aWjhILVo3cDk3NDlDOWRQYWI3eVdwNjdsZAUUxR1pIcDdlQjZAvWnJzc2dBTUpPNksxVzhudnQyamRwTmlqQ3lxckNjcXlqZA3NmeVpwcTBfSVNlamJv",
-//            CURLOPT_RETURNTRANSFER => true,
-//            CURLOPT_ENCODING => "",
-//            CURLOPT_MAXREDIRS => 10,
-//            CURLOPT_TIMEOUT => 0,
-//            CURLOPT_FOLLOWLOCATION => true,
-//            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-//            CURLOPT_CUSTOMREQUEST => "GET",
-////            CURLOPT_POSTFIELDS => array('access_token' => 'IGQVJVaFhtOVhDUDlKWWRQWXc5RVkwaHdUTGpZAUERsc1VFOWhrNk1aWjhILVo3cDk3NDlDOWRQYWI3eVdwNjdsZAUUxR1pIcDdlQjZAvWnJzc2dBTUpPNksxVzhudnQyamRwTmlqQ3lxckNjcXlqZA3NmeVpwcTBfSVNlamJv'),
-//            CURLOPT_HTTPHEADER => array(
-//                "Content-Type: multipart/form-data; boundary=--------------------------780367731654051340650991"
-//            ),
-//        ));
-//        $response = curl_exec($curl);
-//        curl_close($curl);
-//        print_r($response);
+//        
+        $curl = curl_init();
+        curl_setopt_array($curl, array(
+            CURLOPT_URL => "https://graph.instagram.com/17841445037860695?fields=media&access_token=AQB9l-WzMGyslzzIZs7Soo4dD-prU6P6XvHvWqAL7Bqt0_LJFFMKve8W4uuQnFqAyJ1v5pT8nA-CFOm_wtINy2YHfoOXpYbO25v7vAymecQxjzyudy4Vo2jRbNF1iTOMxLa2PEtCi9YejZc9xfTXe-SAWVC3k7LPJmlS3Xwxwuns7KfY1HjnfoKDDWBAGEtCi2Wn43rXrmPYVyyIWR5gVGjX476nzP4j3ZvfOg58-eaTbg",
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => "",
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 0,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => "GET",
+//            CURLOPT_POSTFIELDS => array('access_token' => 'IGQVJVaFhtOVhDUDlKWWRQWXc5RVkwaHdUTGpZAUERsc1VFOWhrNk1aWjhILVo3cDk3NDlDOWRQYWI3eVdwNjdsZAUUxR1pIcDdlQjZAvWnJzc2dBTUpPNksxVzhudnQyamRwTmlqQ3lxckNjcXlqZA3NmeVpwcTBfSVNlamJv'),
+            CURLOPT_HTTPHEADER => array(
+                "Content-Type: multipart/form-data; boundary=--------------------------780367731654051340650991"
+            ),
+        ));
+        $response = curl_exec($curl);
+        curl_close($curl);
+        print_r($response);
+//        
 //        $curl = curl_init();
 //        curl_setopt_array($curl, array(
 //            CURLOPT_URL => "https://graph.instagram.com/access_token?grant_type=ig_exchange_token&client_secret=3d3edfd09ff7b9b1bce9073da198f503&access_token=IGQVJVaFhtOVhDUDlKWWRQWXc5RVkwaHdUTGpZAUERsc1VFOWhrNk1aWjhILVo3cDk3NDlDOWRQYWI3eVdwNjdsZAUUxR1pIcDdlQjZAvWnJzc2dBTUpPNksxVzhudnQyamRwTmlqQ3lxckNjcXlqZA3NmeVpwcTBfSVNlamJv",
@@ -176,12 +184,15 @@ class ChatController extends Controller {
         $response = curl_exec($curl);
         curl_close($curl);
         print_r($response);
+//        Settings::first()->update(['instagram_access_token' => $accessTokenObj->getRefreshToken()]);
+//        $this->getInstgramPosts();
     }
 
-    public function getInstgramPosts() {
+    public function getInstgramPosts2() {
+        $tokens = Settings::first(['instagram_access_token']);
         $curl = curl_init();
         curl_setopt_array($curl, array(
-            CURLOPT_URL => "https://graph.instagram.com/17841445037860695?fields=media&access_token=IGQVJXRjBVeDZAZAUkg3aW5odER0YVhVYndKZAHA0SG8xZAVVVa0VsOXhwREFLX29GanQtZAHY5RW9ySko3bFNhNkJaT1VzdzA4LWoyckJzZAWZA0VnBrWExIazRna2xjb2U1U3pqRGFxSTdB",
+            CURLOPT_URL => "https://graph.instagram.com/17841445037860695?fields=media&access_token=".$tokens['instagram_access_token'],
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_ENCODING => "",
             CURLOPT_MAXREDIRS => 10,
@@ -194,7 +205,13 @@ class ChatController extends Controller {
             ),
         ));
         $response = curl_exec($curl);
+        if (curl_errno($curl)) {
+            $error_msg = curl_error($curl);
+        }
         curl_close($curl);
+        if (isset($error_msg)) {
+            $this->instgramRefreshToken();
+        }
 //        print_r($response);
 
         $messages = json_decode($response);
@@ -219,7 +236,7 @@ class ChatController extends Controller {
 //            print_r($response);
 
             $social_post = json_decode($response);
-            $social_posts = new SocialPosts([
+            $social_posts = new SocialPost([
                 'media_type' => $social_post->media_type,
                 'media_url' => $social_post->media_url,
                 'username' => $social_post->username,

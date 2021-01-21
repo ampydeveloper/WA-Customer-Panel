@@ -1475,6 +1475,7 @@ select.form-control {
     width: 60%;
     position: relative;
     font-size: 14px;
+    word-break: break-word;
 }
 
 .chat-area .chat-sender .chat-msg:before {
@@ -1491,6 +1492,7 @@ select.form-control {
     margin-left: 0;
     display: inline-block;
     text-align: left;
+    word-break: break-word;
 }
 
 .chat-area .chat-receiver {
