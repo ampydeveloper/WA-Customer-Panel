@@ -279,6 +279,8 @@ class FarmController extends Controller
                         $data['role_id'] = config('constant.roles.Customer_Manager');
                         $data['created_from_id'] = $user->id;
                         $data['created_by'] = $user->id;
+                        $data['is_confirmed'] = 1;
+                        $data['is_active'] = 1;
                         
                         $saveManager = new User($data);
                         if ($saveManager->save()) {
